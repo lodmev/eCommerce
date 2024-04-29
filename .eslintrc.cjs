@@ -8,6 +8,7 @@ module.exports = {
     'airbnb-typescript',
     'plugin:@typescript-eslint/recommended',
     'plugin:react-hooks/recommended',
+    'plugin:react/jsx-runtime',
     'prettier'
   ],
   ignorePatterns: ['dist', '.eslintrc.cjs'],
