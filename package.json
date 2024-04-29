@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "start": "npm run dev",
     "build": "tsc && vite build",
+    "dev:build": "tsc && vite build --mode development",
     "format": "prettier --write 'src/**/*.{ts,tsx,css}'",
     "ci:format": "prettier --check 'src/**/*.{ts,tsx,css}'",
     "lint": "eslint ./src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
