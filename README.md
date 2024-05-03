@@ -13,16 +13,26 @@ This project is currently in development. Users will be able to browse through a
 
 To get started with HarmonyHouse Furniture, follow these steps:
 
-1. Clone down this repository.
-2. Ensure that Node.js and npm are installed globally on your machine.
-3. Navigate to the project directory in your terminal.
-4. Run the following command to install dependencies:
-   npm install
-5. To start the development server, run:
-npm start
-6. Once the server is running, you can visit the app at:
-http://localhost:5173/
+1. **Clone down this repository:** 
 
+  `git clone https://github.com/lodmev/eCommerce`
+
+2. **Ensure that Node.js and npm are installed globally on your machine.** Run in terminal:
+
+`node -v && npm -v`
+
+3. **Navigate to the project directory in your terminal.**
+
+4. **Run the following command to install dependencies:**
+
+`npm install`
+
+5. **To start the development server, run:**
+
+`npm start`
+
+6. **Once the server is running, you can visit the app at:**
+   [http://localhost:5173/](http://localhost:5173/)
 
 
 ## Available Scripts
