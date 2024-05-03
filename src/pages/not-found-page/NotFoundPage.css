@@ -1,0 +1,16 @@
+.not-found-page-container {
+  text-align: center;
+}
+
+.not-found-page-title {
+  font-size: 2rem;
+  text-align: center;
+}
+
+.not-found-page-logo {
+  height: 70%;
+  width: 70%;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
