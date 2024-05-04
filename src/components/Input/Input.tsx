@@ -10,6 +10,7 @@ type Props = {
 
 export default function Input(props: Props) {
   const { onChange, placeholder, type, invalid } = props;
+
   return (
     <div className={styles['input-wrapper']}>
       <input
