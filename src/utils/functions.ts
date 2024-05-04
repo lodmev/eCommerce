@@ -6,3 +6,8 @@ export function validatePassword(password: string) {
   const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
   return regex.test(password);
 }
+
+export function validateName(name: string) {
+  const regex = /^[A-Za-z]+$/;
+  return regex.test(name);
+}
