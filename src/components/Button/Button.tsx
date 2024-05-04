@@ -10,9 +10,16 @@ type Props = {
 export default function Button(props: Props) {
   const { onClick, styleClass, type = 'button', children } = props;
 
+  if (type === 'button') {
+    return (
+      <button className={`${styles.button} ${styles[styleClass]}`} type="button" onClick={onClick}>
+        {children}
+      </button>
+    );
+  }
+
   return (
-    // eslint-disable-next-line react/button-has-type
-    <button className={`${styles.button} ${styles[styleClass]}`} type={type} onClick={onClick}>
+    <button className={`${styles.button} ${styles[styleClass]}`} type="submit" onClick={onClick}>
       {children}
     </button>
   );
