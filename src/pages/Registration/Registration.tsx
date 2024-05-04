@@ -5,9 +5,7 @@ export default function Registration() {
   return (
     <div>
       <Input placeholder="Enter your name" />
-      <Button onClick={() => {}} styleClass="green-filled">
-        Register
-      </Button>
+      <Button styleClass="green-filled">Register</Button>
     </div>
   );
 }

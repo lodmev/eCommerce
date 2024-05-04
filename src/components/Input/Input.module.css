@@ -9,4 +9,12 @@
   &:focus {
     border-color: #56b280;
   }
+
+  &.invalid {
+    border-color: #ea5555;
+  }
+}
+
+.invalid {
+  color: #ea5555;
 }
