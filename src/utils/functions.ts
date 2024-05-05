@@ -21,3 +21,9 @@ export function validateAge(dateOfBirth: string) {
 
   return date <= thirteenYearsAgo;
 }
+
+export function validateCity(city: string) {
+  const regex = /^[a-zA-Z]+$/;
+
+  return regex.test(city);
+}

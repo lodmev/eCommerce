@@ -16,3 +16,17 @@
     align-self: flex-end;
   }
 }
+
+.input-group {
+  display: flex;
+  gap: 1em;
+}
+
+.fieldset {
+  padding: 1em;
+  border-radius: 8px;
+
+  & legend {
+    padding: 0 0.7em;
+  }
+}

@@ -1,6 +1,12 @@
 import { FormEvent } from 'react';
 import useValidateInput from '../../hooks/useValidateInput';
-import { validateAge, validateEmail, validateName, validatePassword } from '../../utils/functions';
+import {
+  validateAge,
+  validateCity,
+  validateEmail,
+  validateName,
+  validatePassword,
+} from '../../utils/functions';
 import Button from '../Button/Button';
 import Input from '../Input/Input';
 import styles from './FormRegistration.module.css';
@@ -52,6 +58,22 @@ export default function FormRegistration(props: Props) {
     valueChangeHandler: dateChangeHandler,
   } = useValidateInput(validateAge);
 
+  const {
+    value: streetInputValue,
+    // isValid: lastNameIsValid,
+    hasError: streetHasError,
+    inputBlurHandler: streetBlurHandler,
+    valueChangeHandler: streetChangeHandler,
+  } = useValidateInput((value: string) => value.trim().length > 0);
+
+  const {
+    value: cityInputValue,
+    // isValid: lastNameIsValid,
+    hasError: cityHasError,
+    inputBlurHandler: cityBlurHandler,
+    valueChangeHandler: cityChangeHandler,
+  } = useValidateInput(validateCity);
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     onSumbit();
@@ -81,28 +103,30 @@ export default function FormRegistration(props: Props) {
         placeholder="Password"
         errorText="Minimum 8 characters, at least 1 uppercase letter, 1 lowercase letter, and 1 number"
       />
-      <Input
-        onBlur={firstNameBlurHandler}
-        onChange={firstNameChangeHandler}
-        value={firstNameInputValue}
-        invalid={firstNameHasError}
-        id="firstName"
-        label="Your first name"
-        type="text"
-        placeholder="First Name"
-        errorText="Must contain at least one character and no special characters or numbers"
-      />
-      <Input
-        onBlur={lastNameBlurHandler}
-        onChange={lastNameChangeHandler}
-        value={lastNameInputValue}
-        invalid={lastNameHasError}
-        id="lastName"
-        label="Your last name"
-        type="text"
-        placeholder="Last Name"
-        errorText="Must contain at least one character and no special characters or numbers"
-      />
+      <div className={styles['input-group']}>
+        <Input
+          onBlur={firstNameBlurHandler}
+          onChange={firstNameChangeHandler}
+          value={firstNameInputValue}
+          invalid={firstNameHasError}
+          id="firstName"
+          label="Your first name"
+          type="text"
+          placeholder="First Name"
+          errorText="Must contain at least one character and no special characters or numbers"
+        />
+        <Input
+          onBlur={lastNameBlurHandler}
+          onChange={lastNameChangeHandler}
+          value={lastNameInputValue}
+          invalid={lastNameHasError}
+          id="lastName"
+          label="Your last name"
+          type="text"
+          placeholder="Last Name"
+          errorText="Must contain at least one character and no special characters or numbers"
+        />
+      </div>
       <Input
         onBlur={dateBlurHandler}
         onChange={dateChangeHandler}
@@ -113,6 +137,33 @@ export default function FormRegistration(props: Props) {
         type="date"
         errorText="Must be older than 13 years"
       />
+      <fieldset className={styles.fieldset}>
+        <legend>Address</legend>
+        <div className={styles['input-group']}>
+          <Input
+            onBlur={streetBlurHandler}
+            onChange={streetChangeHandler}
+            value={streetInputValue}
+            invalid={streetHasError}
+            id="street"
+            placeholder="Your Street"
+            label="Street"
+            type="text"
+            errorText="Must contain at least one character"
+          />
+          <Input
+            onBlur={cityBlurHandler}
+            onChange={cityChangeHandler}
+            value={cityInputValue}
+            invalid={cityHasError}
+            id="city"
+            label="City"
+            placeholder="Your City"
+            type="text"
+            errorText="Must contain at least one character and no special characters or numbers"
+          />
+        </div>
+      </fieldset>
       <Button type="submit" styleClass="green-filled">
         Register
       </Button>
