@@ -14,9 +14,10 @@ export function validateName(name: string) {
 
 export function validateAge(dateOfBirth: string) {
   const date = new Date(dateOfBirth);
-  const yearOfBirth = date.getFullYear();
   const currentDate = new Date();
-  const currentYear = currentDate.getFullYear();
 
-  return currentYear - yearOfBirth > 13;
+  const thirteenYearsAgo = new Date(currentDate);
+  thirteenYearsAgo.setFullYear(thirteenYearsAgo.getFullYear() - 13);
+
+  return date <= thirteenYearsAgo;
 }
