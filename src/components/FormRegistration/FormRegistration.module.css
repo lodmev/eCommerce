@@ -1,0 +1,18 @@
+.form-registration {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 1em;
+  border: 2px solid #898989;
+  border-radius: 4px;
+
+  background-color: #f9f9f9;
+  box-shadow: -5px 5px 20px 8px #d7d7d7;
+
+  & button {
+    width: 160px;
+    align-self: flex-end;
+  }
+}

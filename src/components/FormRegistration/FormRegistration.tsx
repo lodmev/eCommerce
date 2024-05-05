@@ -1,8 +1,9 @@
 import { FormEvent } from 'react';
 import useValidateInput from '../../hooks/useValidateInput';
-import { validateEmail, validateName, validatePassword } from '../../utils/functions';
+import { validateAge, validateEmail, validateName, validatePassword } from '../../utils/functions';
 import Button from '../Button/Button';
 import Input from '../Input/Input';
+import styles from './FormRegistration.module.css';
 
 type Props = {
   onSumbit: () => void;
@@ -43,13 +44,21 @@ export default function FormRegistration(props: Props) {
     valueChangeHandler: lastNameChangeHandler,
   } = useValidateInput(validateName);
 
+  const {
+    value: dateInputValue,
+    // isValid: lastNameIsValid,
+    hasError: dateHasError,
+    inputBlurHandler: dateBlurHandler,
+    valueChangeHandler: dateChangeHandler,
+  } = useValidateInput(validateAge);
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     onSumbit();
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className={styles['form-registration']} onSubmit={handleSubmit}>
       <Input
         onBlur={emailBlurHandler}
         onChange={emailChangeHandler}
@@ -85,6 +94,14 @@ export default function FormRegistration(props: Props) {
         type="text"
         placeholder="Last Name"
         errorText="Must contain at least one character and no special characters or numbers"
+      />
+      <Input
+        onBlur={dateBlurHandler}
+        onChange={dateChangeHandler}
+        value={dateInputValue}
+        invalid={dateHasError}
+        type="date"
+        errorText="Must be older than 13 years"
       />
       <Button type="submit" styleClass="green-filled">
         Register
