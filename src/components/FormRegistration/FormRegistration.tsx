@@ -64,6 +64,8 @@ export default function FormRegistration(props: Props) {
         onChange={emailChangeHandler}
         value={emailInputValue}
         invalid={emailHasError}
+        id="email"
+        label="Your Email"
         type="email"
         placeholder="Email"
         errorText="Invalid email address"
@@ -73,6 +75,8 @@ export default function FormRegistration(props: Props) {
         onChange={passwordChangeHandler}
         value={passwordInputValue}
         invalid={passwordHasError}
+        id="password"
+        label="Your password"
         type="password"
         placeholder="Password"
         errorText="Minimum 8 characters, at least 1 uppercase letter, 1 lowercase letter, and 1 number"
@@ -82,6 +86,8 @@ export default function FormRegistration(props: Props) {
         onChange={firstNameChangeHandler}
         value={firstNameInputValue}
         invalid={firstNameHasError}
+        id="firstName"
+        label="Your first name"
         type="text"
         placeholder="First Name"
         errorText="Must contain at least one character and no special characters or numbers"
@@ -91,6 +97,8 @@ export default function FormRegistration(props: Props) {
         onChange={lastNameChangeHandler}
         value={lastNameInputValue}
         invalid={lastNameHasError}
+        id="lastName"
+        label="Your last name"
         type="text"
         placeholder="Last Name"
         errorText="Must contain at least one character and no special characters or numbers"
@@ -100,6 +108,8 @@ export default function FormRegistration(props: Props) {
         onChange={dateChangeHandler}
         value={dateInputValue}
         invalid={dateHasError}
+        id="dateOfBirth"
+        label="Your date of birth"
         type="date"
         errorText="Must be older than 13 years"
       />
