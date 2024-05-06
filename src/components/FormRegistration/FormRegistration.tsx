@@ -128,7 +128,7 @@ export default function FormRegistration(props: Props) {
         label="Your password"
         type="password"
         placeholder="Password"
-        errorText="Minimum 8 characters, at least 1 uppercase letter, 1 lowercase letter, and 1 number"
+        errorText="Minimum 8 characters, at least 1 uppercase letter, 1 lowercase letter, 1 number and must not contain leading or trailing whitespace."
       />
       <div className={styles['input-group']}>
         <Input
