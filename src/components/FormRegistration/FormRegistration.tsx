@@ -81,6 +81,7 @@ export default function FormRegistration(props: Props) {
 
   return (
     <form className={styles['form-registration']} onSubmit={handleSubmit}>
+      <h1 className={styles.heading}>Registration</h1>
       <Input
         onBlur={emailBlurHandler}
         onChange={emailChangeHandler}
