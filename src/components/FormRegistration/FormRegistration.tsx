@@ -1,4 +1,4 @@
-import { FormEvent } from 'react';
+import { FormEvent, useState } from 'react';
 import useValidateInput from '../../hooks/useValidateInput';
 import {
   validateAge,
@@ -6,9 +6,12 @@ import {
   validateEmail,
   validateName,
   validatePassword,
+  validatePostalCode,
 } from '../../utils/functions';
+import { COUNTRIES_OPTIONS_LIST } from '../../utils/globalVariables';
 import Button from '../Button/Button';
 import Input from '../Input/Input';
+import SelectComponent from '../SelectComponent/SelectComponent';
 import styles from './FormRegistration.module.css';
 
 type Props = {
@@ -17,6 +20,8 @@ type Props = {
 
 export default function FormRegistration(props: Props) {
   const { onSumbit } = props;
+
+  const [selectedCountry, setSelectedCountry] = useState({ value: '', label: '' });
 
   const {
     value: emailInputValue,
@@ -74,6 +79,16 @@ export default function FormRegistration(props: Props) {
     valueChangeHandler: cityChangeHandler,
   } = useValidateInput(validateCity);
 
+  const {
+    value: postalInputValue,
+    isValid: postalIsValid,
+    hasError: postalHasError,
+    inputBlurHandler: postalBlurHandler,
+    valueChangeHandler: postalChangeHandler,
+  } = useValidateInput(
+    selectedCountry.value ? validatePostalCode[selectedCountry.value] : () => false,
+  );
+
   const allInputs = [
     emailIsValid,
     passwordIsValid,
@@ -82,6 +97,8 @@ export default function FormRegistration(props: Props) {
     dateIsValid,
     streetIsValid,
     cityIsValid,
+    selectedCountry.value !== '',
+    postalIsValid,
   ];
 
   const formIsValid = allInputs.every((value) => value);
@@ -98,6 +115,8 @@ export default function FormRegistration(props: Props) {
     //   address: {
     //     street: streetInputValue,
     //     city: cityInputValue,
+    //     country: selectedCountry.value,
+    //     postalCode: postalInputValue,
     //   },
     // };
 
@@ -188,6 +207,25 @@ export default function FormRegistration(props: Props) {
             placeholder="Your City"
             type="text"
             errorText="Must contain at least one character and no special characters or numbers"
+          />
+        </div>
+        <div className={styles['input-group']}>
+          <SelectComponent
+            onChange={(value) => {
+              if (value) setSelectedCountry(value);
+            }}
+            options={COUNTRIES_OPTIONS_LIST}
+          />
+          <Input
+            onBlur={postalBlurHandler}
+            onChange={postalChangeHandler}
+            value={postalInputValue}
+            invalid={postalHasError}
+            id="postal"
+            label="Postal"
+            placeholder="Postal Code"
+            type="text"
+            errorText="Must follow the format for selected country"
           />
         </div>
       </fieldset>

@@ -1,3 +1,5 @@
+import IValidatePostalCode from '../types/interfaces';
+
 export function validateEmail(email: string) {
   if (email.trim() !== email) return false;
   return /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email);
@@ -29,3 +31,18 @@ export function validateCity(city: string) {
 
   return regex.test(city);
 }
+
+export const validatePostalCode: IValidatePostalCode = {
+  UA(code: string) {
+    const regex = /^\d{5}$/;
+    return regex.test(code);
+  },
+  RU(code: string) {
+    const regex = /^\d{6}$/;
+    return regex.test(code);
+  },
+  BY(code: string) {
+    const regex = /^\d{6}$/;
+    return regex.test(code);
+  },
+};
