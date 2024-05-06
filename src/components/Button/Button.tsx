@@ -4,22 +4,33 @@ type Props = {
   onClick?: () => void;
   type?: 'submit' | 'button';
   children?: React.ReactNode;
+  disabled?: boolean;
   styleClass: 'green-filled' | 'green-outlined';
 };
 
 export default function Button(props: Props) {
-  const { onClick, styleClass, type = 'button', children } = props;
+  const { onClick, disabled, styleClass, type = 'button', children } = props;
 
   if (type === 'button') {
     return (
-      <button className={`${styles.button} ${styles[styleClass]}`} type="button" onClick={onClick}>
+      <button
+        disabled={disabled}
+        className={`${styles.button} ${styles[styleClass]}`}
+        type="button"
+        onClick={onClick}
+      >
         {children}
       </button>
     );
   }
 
   return (
-    <button className={`${styles.button} ${styles[styleClass]}`} type="submit" onClick={onClick}>
+    <button
+      disabled={disabled}
+      className={`${styles.button} ${styles[styleClass]}`}
+      type="submit"
+      onClick={onClick}
+    >
       {children}
     </button>
   );

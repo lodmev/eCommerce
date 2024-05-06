@@ -20,7 +20,7 @@ export default function FormRegistration(props: Props) {
 
   const {
     value: emailInputValue,
-    // isValid: emailIsValid,
+    isValid: emailIsValid,
     hasError: emailHasError,
     inputBlurHandler: emailBlurHandler,
     valueChangeHandler: emailChangeHandler,
@@ -28,7 +28,7 @@ export default function FormRegistration(props: Props) {
 
   const {
     value: passwordInputValue,
-    // isValid: passwordIsValid,
+    isValid: passwordIsValid,
     hasError: passwordHasError,
     inputBlurHandler: passwordBlurHandler,
     valueChangeHandler: passwordChangeHandler,
@@ -36,7 +36,7 @@ export default function FormRegistration(props: Props) {
 
   const {
     value: firstNameInputValue,
-    // isValid: firstNameIsValid,
+    isValid: firstNameIsValid,
     hasError: firstNameHasError,
     inputBlurHandler: firstNameBlurHandler,
     valueChangeHandler: firstNameChangeHandler,
@@ -44,7 +44,7 @@ export default function FormRegistration(props: Props) {
 
   const {
     value: lastNameInputValue,
-    // isValid: lastNameIsValid,
+    isValid: lastNameIsValid,
     hasError: lastNameHasError,
     inputBlurHandler: lastNameBlurHandler,
     valueChangeHandler: lastNameChangeHandler,
@@ -52,7 +52,7 @@ export default function FormRegistration(props: Props) {
 
   const {
     value: dateInputValue,
-    // isValid: lastNameIsValid,
+    isValid: dateIsValid,
     hasError: dateHasError,
     inputBlurHandler: dateBlurHandler,
     valueChangeHandler: dateChangeHandler,
@@ -60,7 +60,7 @@ export default function FormRegistration(props: Props) {
 
   const {
     value: streetInputValue,
-    // isValid: lastNameIsValid,
+    isValid: streetIsValid,
     hasError: streetHasError,
     inputBlurHandler: streetBlurHandler,
     valueChangeHandler: streetChangeHandler,
@@ -68,14 +68,27 @@ export default function FormRegistration(props: Props) {
 
   const {
     value: cityInputValue,
-    // isValid: lastNameIsValid,
+    isValid: cityIsValid,
     hasError: cityHasError,
     inputBlurHandler: cityBlurHandler,
     valueChangeHandler: cityChangeHandler,
   } = useValidateInput(validateCity);
 
+  const allInputs = [
+    emailIsValid,
+    passwordIsValid,
+    firstNameIsValid,
+    lastNameIsValid,
+    dateIsValid,
+    streetIsValid,
+    cityIsValid,
+  ];
+
+  const formIsValid = allInputs.every((value) => value);
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     onSumbit();
   };
 
@@ -165,7 +178,7 @@ export default function FormRegistration(props: Props) {
           />
         </div>
       </fieldset>
-      <Button type="submit" styleClass="green-filled">
+      <Button disabled={!formIsValid} type="submit" styleClass="green-filled">
         Register
       </Button>
     </form>
