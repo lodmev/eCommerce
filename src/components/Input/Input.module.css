@@ -1,12 +1,35 @@
-.input-wrapper {
+.container {
   width: 100%;
+}
+
+.wrapper {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border: 1px solid #898989;
+  border-radius: 4px;
+  padding: 0.5em 1em;
+
+  & svg {
+    cursor: pointer;
+    transition: transform 0.3s ease;
+
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+}
+
+.toggler {
+  padding: 0;
+  border: none;
+  background: transparent;
 }
 
 .input {
   width: 100%;
-  border: 1px solid #898989;
+  border: none;
   border-radius: 4px;
-  padding: 0.5em 1em;
   font-size: 1em;
   line-height: 1.5;
   outline: none;
