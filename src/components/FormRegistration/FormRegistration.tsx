@@ -89,6 +89,19 @@ export default function FormRegistration(props: Props) {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    // const userData = {
+    //   email: emailInputValue,
+    //   password: passwordInputValue,
+    //   firstName: firstNameInputValue,
+    //   lastName: lastNameInputValue,
+    //   dateOfBirth: dateInputValue,
+    //   address: {
+    //     street: streetInputValue,
+    //     city: cityInputValue,
+    //   },
+    // };
+
+    // onSumbit(userData);
     onSumbit();
   };
 
