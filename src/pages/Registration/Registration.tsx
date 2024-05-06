@@ -1,3 +1,11 @@
+import FormRegistration from '../../components/FormRegistration/FormRegistration';
+
 export default function Registration() {
-  return <div>Registration page</div>;
+  const handleRegister = () => {};
+
+  return (
+    <div>
+      <FormRegistration onSumbit={handleRegister} />
+    </div>
+  );
 }
