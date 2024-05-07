@@ -1,3 +1,11 @@
+import FormLogin from '../../components/FormLogin/FormLogin';
+
 export default function Login() {
-  return <div>Login page</div>;
+  const handleLogin = () => {};
+
+  return (
+    <div>
+      <FormLogin onSubmit={handleLogin} />
+    </div>
+  );
 }
