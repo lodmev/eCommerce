@@ -9,10 +9,17 @@ export const ROUTE_PATH = {
   userProfile: '/user-profile',
 };
 
-// я добавил этот импорт пока сюда временно,
-// чтобы линтер не ругался
-// он будет просить меня поменять export const ROUTE_PATH = {}
-// на export default, т.к. пока только один експорт
-// потом можно убрать этот експорт
-// когда еще переменные добавятся
-export const FAKE_API_URL = '';
+export const COUNTRIES_OPTIONS_LIST = [
+  {
+    value: 'RU',
+    label: 'Russia',
+  },
+  {
+    value: 'UA',
+    label: 'Ukraine',
+  },
+  {
+    value: 'BY',
+    label: 'Belarus',
+  },
+];
