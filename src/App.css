@@ -6,3 +6,7 @@
   text-align: center;
   position: relative;
 }
+
+a {
+  text-decoration: inherit;
+}

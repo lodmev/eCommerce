@@ -23,6 +23,7 @@ footer {
   justify-content: start;
   display: flex;
   align-items: center;
+  margin-bottom: 25px;
 }
 
 .image {

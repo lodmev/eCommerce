@@ -1,0 +1,36 @@
+.button {
+  padding: 8px 44px;
+  border-radius: 4px;
+  line-height: 1.2;
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
+  font-size: 1.3em;
+  font-weight: 500;
+
+  @media (hover: hover) {
+    &:hover:enabled {
+      opacity: 0.75;
+      transform: scale(1.05);
+    }
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    background-color: #898989;
+  }
+}
+
+.green-filled {
+  background-color: #56b280;
+
+  color: #ffffff;
+  border: none;
+}
+
+.green-outlined {
+  background-color: white;
+  color: #56b280;
+  border: 1px solid #56b280;
+}

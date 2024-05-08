@@ -13,12 +13,12 @@ export default function AppLayout() {
   //   getProductById('e679b176-7421-4f41-8a33-b79b705298a8').then(console.log).catch(console.error);
   // });
   return (
-    <>
+    <div className="container">
       <Header />
       <main>
         <Outlet />
       </main>
       <Footer />
-    </>
+    </div>
   );
 }

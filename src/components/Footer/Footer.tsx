@@ -1,6 +1,4 @@
-import { Link } from 'react-router-dom';
 import styles from './Footer.module.css';
-import { ROUTE_PATH } from '../../utils/globalVariables';
 import github from '../../assets/github.png';
 import phone from '../../assets/phone.svg';
 import map from '../../assets/map.svg';
@@ -16,7 +14,7 @@ export default function Footer() {
           <div className={styles.github}>
             <img className={styles.image} src={github} alt="github" />
             <p>
-              <a className={styles.link} href="https://https://github.com/lodmev">
+              <a className={styles.link} href="https://github.com/lodmev">
                 DmitryLovyagin
               </a>
             </p>
@@ -25,7 +23,7 @@ export default function Footer() {
           <div className={styles.github}>
             <img className={styles.image} src={github} alt="github" />
             <p>
-              <a className={styles.link} href="https://https://github.com/AndyGuit">
+              <a className={styles.link} href="https://github.com/AndyGuit">
                 AndriiDmytryk
               </a>
             </p>
@@ -39,8 +37,6 @@ export default function Footer() {
               </a>
             </p>
           </div>
-
-          <Link to={ROUTE_PATH.login} />
         </div>
 
         <div className={styles.info}>
