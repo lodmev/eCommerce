@@ -1,7 +1,7 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faLocationDot, faMobileScreenButton } from '@fortawesome/free-solid-svg-icons';
 import styles from './Footer.module.css';
 import github from '../../assets/github.png';
-import phone from '../../assets/phone.svg';
-import map from '../../assets/map.svg';
 import rsschool from '../../assets/rsschool.png';
 
 export default function Footer() {
@@ -42,13 +42,13 @@ export default function Footer() {
         <div className={styles.info}>
           <p className={styles.text}>Info</p>
           <div className={styles.telephone}>
-            <img className={styles.image} src={phone} alt="github" />
+            <FontAwesomeIcon icon={faMobileScreenButton} />
             <a className={styles.link} href="tel:+16035550123">
               +1(603)555-0123
             </a>
           </div>
           <div className={styles.telephone}>
-            <img className={styles.image} src={map} alt="github" />
+            <FontAwesomeIcon icon={faLocationDot} />
             <a
               className={styles.link}
               href="https://maps.app.goo.gl/CedoyPirLy5drTNJ7"
@@ -59,7 +59,7 @@ export default function Footer() {
             </a>
           </div>
           <div className={styles.telephone}>
-            <img className={styles.image} src={rsschool} alt="github" />
+            <img className={styles.image} src={rsschool} alt="rsschool" />
             <a
               className={styles.link}
               href="https://https://github.com/rolling-scopes-school/tasks/tree/master/tasks/eCommerce-Application"
