@@ -1,3 +1,4 @@
+import { MyCustomerDraft } from '@commercetools/platform-sdk';
 import { FormEvent, useState } from 'react';
 import useValidateInput from '../../hooks/useValidateInput';
 import {
@@ -15,7 +16,7 @@ import SelectComponent from '../SelectComponent/SelectComponent';
 import styles from './FormRegistration.module.css';
 
 type Props = {
-  onSumbit: () => void;
+  onSumbit: (customer: MyCustomerDraft) => void;
 };
 
 export default function FormRegistration(props: Props) {
@@ -106,22 +107,23 @@ export default function FormRegistration(props: Props) {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // const userData = {
-    //   email: emailInputValue,
-    //   password: passwordInputValue,
-    //   firstName: firstNameInputValue,
-    //   lastName: lastNameInputValue,
-    //   dateOfBirth: dateInputValue,
-    //   address: {
-    //     street: streetInputValue,
-    //     city: cityInputValue,
-    //     country: selectedCountry.value,
-    //     postalCode: postalInputValue,
-    //   },
-    // };
+    const customerData = {
+      email: emailInputValue,
+      password: passwordInputValue,
+      firstName: firstNameInputValue,
+      lastName: lastNameInputValue,
+      dateOfBirth: dateInputValue,
+      addresses: [
+        {
+          streetName: streetInputValue,
+          city: cityInputValue,
+          country: selectedCountry.value,
+          postalCode: postalInputValue,
+        },
+      ],
+    };
 
-    // onSumbit(userData);
-    onSumbit();
+    onSumbit(customerData);
   };
 
   return (
