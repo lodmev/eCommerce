@@ -1,12 +1,11 @@
 import { ChangeEvent, FormEvent, useState } from 'react';
-import { MyCustomerSignin } from '@commercetools/platform-sdk';
 import { validateEmail, validatePassword } from '../../utils/functions';
 import Button from '../Button/Button';
 import Input from '../Input/Input';
 import styles from './FormLogin.module.css';
 
 type Props = {
-  onSubmit: (loginData: MyCustomerSignin) => void;
+  onSubmit: () => void;
 };
 
 export default function FormLogin(props: Props) {
@@ -41,11 +40,13 @@ export default function FormLogin(props: Props) {
 
     if (!formIsValid) return;
 
-    const userData = {
-      email: emailValue,
-      password: passwordValue,
-    };
-    onSubmit(userData);
+    // const userData = {
+    //   email: emailValue,
+    //   password: passwordValue
+    // };
+    // onSubmit(userData);
+
+    onSubmit();
   };
   return (
     <form className={styles['form-login']} onSubmit={handleSubmit}>

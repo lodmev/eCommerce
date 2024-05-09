@@ -1,7 +1,5 @@
 import {
   ClientBuilder,
-  PasswordAuthMiddlewareOptions,
-  UserAuthOptions,
   type AuthMiddlewareOptions,
   type HttpMiddlewareOptions,
 } from '@commercetools/sdk-client-v2';
@@ -22,23 +20,11 @@ const httpMiddlewareOptions: HttpMiddlewareOptions = {
   fetch,
 };
 
-const baseCtpClient = new ClientBuilder()
+const ctpClient = new ClientBuilder()
   .withProjectKey(import.meta.env.API_CTP_PROJECT_KEY)
   .withClientCredentialsFlow(authMiddlewareOptions)
-  .withHttpMiddleware(httpMiddlewareOptions);
-// .withLoggerMiddleware()
+  .withHttpMiddleware(httpMiddlewareOptions)
+  // .withLoggerMiddleware()
+  .build();
 
-const getReadOnlyCtpClient = () => baseCtpClient.build();
-
-const getAnonCtpClient = () =>
-  baseCtpClient.withAnonymousSessionFlow(authMiddlewareOptions).build();
-
-const getAuthCtpClient = (user: UserAuthOptions) => {
-  const passOptions: PasswordAuthMiddlewareOptions = {
-    ...authMiddlewareOptions,
-    credentials: { ...authMiddlewareOptions.credentials, user },
-  };
-  return baseCtpClient.withPasswordFlow(passOptions).build();
-};
-
-export { getReadOnlyCtpClient, getAnonCtpClient, getAuthCtpClient };
+export default ctpClient;
