@@ -188,6 +188,25 @@ export default function FormRegistration(props: Props) {
       <fieldset className={styles.fieldset}>
         <legend>Address</legend>
         <div className={styles['input-group']}>
+          <SelectComponent
+            onChange={(value) => {
+              if (value) setSelectedCountry(value);
+            }}
+            options={COUNTRIES_OPTIONS_LIST}
+          />
+          <Input
+            onBlur={postalBlurHandler}
+            onChange={postalChangeHandler}
+            value={postalInputValue}
+            invalid={postalHasError}
+            id="postal"
+            label="Postal"
+            placeholder="Postal Code"
+            type="text"
+            errorText="Must follow the format for selected country"
+          />
+        </div>
+        <div className={styles['input-group']}>
           <Input
             onBlur={streetBlurHandler}
             onChange={streetChangeHandler}
@@ -209,25 +228,6 @@ export default function FormRegistration(props: Props) {
             placeholder="Your City"
             type="text"
             errorText="Must contain at least one character and no special characters or numbers"
-          />
-        </div>
-        <div className={styles['input-group']}>
-          <SelectComponent
-            onChange={(value) => {
-              if (value) setSelectedCountry(value);
-            }}
-            options={COUNTRIES_OPTIONS_LIST}
-          />
-          <Input
-            onBlur={postalBlurHandler}
-            onChange={postalChangeHandler}
-            value={postalInputValue}
-            invalid={postalHasError}
-            id="postal"
-            label="Postal"
-            placeholder="Postal Code"
-            type="text"
-            errorText="Must follow the format for selected country"
           />
         </div>
       </fieldset>
