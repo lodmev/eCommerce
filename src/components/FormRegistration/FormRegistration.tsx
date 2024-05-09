@@ -1,3 +1,4 @@
+import { MyCustomerDraft } from '@commercetools/platform-sdk';
 import { FormEvent, useState } from 'react';
 import useValidateInput from '../../hooks/useValidateInput';
 import {
@@ -15,7 +16,7 @@ import SelectComponent from '../SelectComponent/SelectComponent';
 import styles from './FormRegistration.module.css';
 
 type Props = {
-  onSumbit: () => void;
+  onSumbit: (customer: MyCustomerDraft) => void;
 };
 
 export default function FormRegistration(props: Props) {
@@ -106,22 +107,23 @@ export default function FormRegistration(props: Props) {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // const userData = {
-    //   email: emailInputValue,
-    //   password: passwordInputValue,
-    //   firstName: firstNameInputValue,
-    //   lastName: lastNameInputValue,
-    //   dateOfBirth: dateInputValue,
-    //   address: {
-    //     street: streetInputValue,
-    //     city: cityInputValue,
-    //     country: selectedCountry.value,
-    //     postalCode: postalInputValue,
-    //   },
-    // };
+    const customerData = {
+      email: emailInputValue,
+      password: passwordInputValue,
+      firstName: firstNameInputValue,
+      lastName: lastNameInputValue,
+      dateOfBirth: dateInputValue,
+      addresses: [
+        {
+          streetName: streetInputValue,
+          city: cityInputValue,
+          country: selectedCountry.value,
+          postalCode: postalInputValue,
+        },
+      ],
+    };
 
-    // onSumbit(userData);
-    onSumbit();
+    onSumbit(customerData);
   };
 
   return (
@@ -186,6 +188,25 @@ export default function FormRegistration(props: Props) {
       <fieldset className={styles.fieldset}>
         <legend>Address</legend>
         <div className={styles['input-group']}>
+          <SelectComponent
+            onChange={(value) => {
+              if (value) setSelectedCountry(value);
+            }}
+            options={COUNTRIES_OPTIONS_LIST}
+          />
+          <Input
+            onBlur={postalBlurHandler}
+            onChange={postalChangeHandler}
+            value={postalInputValue}
+            invalid={postalHasError}
+            id="postal"
+            label="Postal"
+            placeholder="Postal Code"
+            type="text"
+            errorText="Must follow the format for selected country"
+          />
+        </div>
+        <div className={styles['input-group']}>
           <Input
             onBlur={streetBlurHandler}
             onChange={streetChangeHandler}
@@ -207,25 +228,6 @@ export default function FormRegistration(props: Props) {
             placeholder="Your City"
             type="text"
             errorText="Must contain at least one character and no special characters or numbers"
-          />
-        </div>
-        <div className={styles['input-group']}>
-          <SelectComponent
-            onChange={(value) => {
-              if (value) setSelectedCountry(value);
-            }}
-            options={COUNTRIES_OPTIONS_LIST}
-          />
-          <Input
-            onBlur={postalBlurHandler}
-            onChange={postalChangeHandler}
-            value={postalInputValue}
-            invalid={postalHasError}
-            id="postal"
-            label="Postal"
-            placeholder="Postal Code"
-            type="text"
-            errorText="Must follow the format for selected country"
           />
         </div>
       </fieldset>
