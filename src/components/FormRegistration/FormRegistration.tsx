@@ -16,11 +16,11 @@ import SelectComponent from '../SelectComponent/SelectComponent';
 import styles from './FormRegistration.module.css';
 
 type Props = {
-  onSumbit: (customer: MyCustomerDraft) => void;
+  onSubmit: (customer: MyCustomerDraft) => void;
 };
 
 export default function FormRegistration(props: Props) {
-  const { onSumbit } = props;
+  const { onSubmit: onSumbit } = props;
 
   const [selectedCountry, setSelectedCountry] = useState({ value: '', label: '' });
 

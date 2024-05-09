@@ -20,5 +20,6 @@ module.exports = {
   rules: {
     'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
     'react/require-default-props': 'off',
+    'no-param-reassign': ['error', { props: false }],
   },
 };
