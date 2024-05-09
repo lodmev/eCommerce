@@ -1,6 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 import AboutUs from '../pages/AboutUs/AboutUs';
-// import NotFoundPage from '../pages/NotFoundPage/NotFoundPage';
+import NotFound from '../pages/NotFound/NotFound';
 import AppLayout from '../pages/AppLayout';
 import Basket from '../pages/Basket/Basket';
 import CatalogProduct from '../pages/CatalogProduct/CatalogProduct';
@@ -14,7 +14,7 @@ import { ROUTE_PATH } from '../utils/globalVariables';
 const router = createBrowserRouter([
   {
     element: <AppLayout />,
-    // errorElement: <NotFoundPage />,
+    errorElement: <NotFound />,
     children: [
       {
         element: <Main />,

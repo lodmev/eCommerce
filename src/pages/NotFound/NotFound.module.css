@@ -1,0 +1,63 @@
+.container {
+  text-align: center;
+  background-image: url('../../assets/broken-chair.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  height: 100%;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+
+  @media (width <= 600px) {
+    background-size: 300% 100%;
+  }
+}
+
+.header1,
+.header2 {
+  padding: 10px;
+  font-size: 2rem;
+  text-align: center;
+  font-weight: 600;
+  color: var(--main-links-color);
+
+  @media (width <= 600px) {
+    font-size: 1rem;
+  }
+}
+
+.center {
+  padding-top: 80px;
+
+  @media (width <= 600px) {
+    padding-top: 150px;
+  }
+}
+
+.title {
+  font-size: 4rem;
+}
+
+.button {
+  margin-top: 40px;
+  border-radius: 30px;
+  color: white;
+  width: 150px;
+  height: 50px;
+  transition: 0.2s linear;
+  border: none;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(179.1deg, rgb(43, 170, 96) 2.3%, rgb(129, 204, 104) 98.3%);
+
+  @media (width <= 600px) {
+    width: 100px;
+    height: 35px;
+  }
+}
+
+.button:hover {
+  box-shadow: darkgreen 0 0px 0px 40px inset;
+}
+
+.button:focus {
+  outline: none;
+}
