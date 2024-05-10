@@ -23,6 +23,8 @@ export default function FormRegistration(props: Props) {
   const { onSubmit: onSumbit } = props;
 
   const [selectedCountry, setSelectedCountry] = useState({ value: '', label: '' });
+  const [selectedShippingCountry, setSelectedShippingCountry] = useState({ value: '', label: '' });
+  const [isAddressDefaultShipping, setIsAddressDefaultShipping] = useState(true);
 
   const {
     value: emailInputValue,
@@ -90,6 +92,32 @@ export default function FormRegistration(props: Props) {
     selectedCountry.value ? validatePostalCode[selectedCountry.value] : () => false,
   );
 
+  const {
+    value: streetShippingInputValue,
+    isValid: streetShippingIsValid,
+    hasError: streetShippingHasError,
+    inputBlurHandler: streetShippingBlurHandler,
+    valueChangeHandler: streetShippingChangeHandler,
+  } = useValidateInput((value: string) => value.trim().length > 0);
+
+  const {
+    value: cityShippingInputValue,
+    isValid: cityShippingIsValid,
+    hasError: cityShippingHasError,
+    inputBlurHandler: cityShippingBlurHandler,
+    valueChangeHandler: cityShippingChangeHandler,
+  } = useValidateInput(validateCity);
+
+  const {
+    value: postalShippingInputValue,
+    isValid: postalShippingIsValid,
+    hasError: postalShippingHasError,
+    inputBlurHandler: postalShippingBlurHandler,
+    valueChangeHandler: postalShippingChangeHandler,
+  } = useValidateInput(
+    selectedCountry.value ? validatePostalCode[selectedShippingCountry.value] : () => false,
+  );
+
   const allInputs = [
     emailIsValid,
     passwordIsValid,
@@ -100,6 +128,9 @@ export default function FormRegistration(props: Props) {
     cityIsValid,
     selectedCountry.value !== '',
     postalIsValid,
+    streetShippingIsValid,
+    cityShippingIsValid,
+    postalShippingIsValid,
   ];
 
   const formIsValid = allInputs.every((value) => value);
@@ -107,7 +138,7 @@ export default function FormRegistration(props: Props) {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const customerData = {
+    const customerData: MyCustomerDraft = {
       email: emailInputValue,
       password: passwordInputValue,
       firstName: firstNameInputValue,
@@ -121,7 +152,18 @@ export default function FormRegistration(props: Props) {
           postalCode: postalInputValue,
         },
       ],
+      defaultBillingAddress: Number(!isAddressDefaultShipping),
+      defaultShippingAddress: Number(!isAddressDefaultShipping),
     };
+
+    if (!isAddressDefaultShipping) {
+      customerData!.addresses!.push({
+        streetName: streetShippingInputValue,
+        city: cityShippingInputValue,
+        country: selectedShippingCountry.value,
+        postalCode: postalShippingInputValue,
+      });
+    }
 
     onSumbit(customerData);
   };
@@ -231,6 +273,63 @@ export default function FormRegistration(props: Props) {
           />
         </div>
       </fieldset>
+      <div>
+        <span>Set as default shipping address</span>
+        <input
+          checked={isAddressDefaultShipping}
+          onChange={() => setIsAddressDefaultShipping((prev) => !prev)}
+          type="checkbox"
+          id="shipping-address"
+        />
+      </div>
+      {!isAddressDefaultShipping && (
+        <fieldset className={styles.fieldset}>
+          <legend>Address</legend>
+          <div className={styles['input-group']}>
+            <SelectComponent
+              onChange={(value) => {
+                if (value) setSelectedShippingCountry(value);
+              }}
+              options={COUNTRIES_OPTIONS_LIST}
+            />
+            <Input
+              onBlur={postalShippingBlurHandler}
+              onChange={postalShippingChangeHandler}
+              value={postalShippingInputValue}
+              invalid={postalShippingHasError}
+              id="postal"
+              label="Postal"
+              placeholder="Postal Code"
+              type="text"
+              errorText="Must follow the format for selected country"
+            />
+          </div>
+          <div className={styles['input-group']}>
+            <Input
+              onBlur={streetShippingBlurHandler}
+              onChange={streetShippingChangeHandler}
+              value={streetShippingInputValue}
+              invalid={streetShippingHasError}
+              id="street"
+              placeholder="Your Street"
+              label="Street"
+              type="text"
+              errorText="Must contain at least one character"
+            />
+            <Input
+              onBlur={cityShippingBlurHandler}
+              onChange={cityShippingChangeHandler}
+              value={cityShippingInputValue}
+              invalid={cityShippingHasError}
+              id="city"
+              label="City"
+              placeholder="Your City"
+              type="text"
+              errorText="Must contain at least one character and no special characters or numbers"
+            />
+          </div>
+        </fieldset>
+      )}
       <Button disabled={!formIsValid} type="submit" styleClass="green-filled">
         Register
       </Button>
