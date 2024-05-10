@@ -58,7 +58,9 @@ export default function Registration() {
       {hasOverlay && (
         <Overlay>
           {isLoading && <LoadingSpinner />}
-          {errorMessage && <ModalConfirm message={errorMessage} onConfirm={handleConfirmError} />}
+          {errorMessage && (
+            <ModalConfirm message={errorMessage} isError onConfirm={handleConfirmError} />
+          )}
           {successMessage && (
             <ModalConfirm message={successMessage} onConfirm={handleConfirmSuccess} />
           )}

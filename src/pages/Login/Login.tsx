@@ -12,7 +12,7 @@ import { setUserError } from '../../store/slices/userSlice';
 
 export default function Login() {
   const navigator = useNavigate();
-  const { isUserAuthorized, isLoading, error } = useUserSelector((state) => state.userData);
+  const { isUserAuthorized, isLoading, errorMsg } = useUserSelector((state) => state.userData);
   const dispatch = useUserDispatch();
   useEffect(() => {
     if (isUserAuthorized) navigator(ROUTE_PATH.main);
@@ -25,11 +25,11 @@ export default function Login() {
   return (
     <div>
       <FormLogin onSubmit={handleLogin} />
-      {(isLoading || error !== null) && (
+      {(isLoading || errorMsg !== '') && (
         <Overlay>
           {isLoading && <LoadingSpinner />}
-          {error && (
-            <ModalConfirm message={error.message} onConfirm={() => dispatch(setUserError(null))} />
+          {errorMsg && (
+            <ModalConfirm message={errorMsg} isError onConfirm={() => dispatch(setUserError(''))} />
           )}
         </Overlay>
       )}
