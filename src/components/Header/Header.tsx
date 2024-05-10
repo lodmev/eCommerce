@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { HashLink } from 'react-router-hash-link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRightToBracket, faCartShopping, faUser } from '@fortawesome/free-solid-svg-icons';
 import { ROUTE_PATH } from '../../utils/globalVariables';
@@ -44,27 +45,27 @@ export default function Header() {
         </Link>
 
         <div className={styles.navigation}>
-          <a className={styles.text} href="#about">
+          <HashLink className={styles.text} to="/#about">
             About
-          </a>
+          </HashLink>
         </div>
 
         <div className={styles.navigation}>
-          <a className={styles.text} href="#catalog">
+          <HashLink className={styles.text} to="/#catalog">
             Catalog
-          </a>
+          </HashLink>
         </div>
 
         <div className={styles.navigation}>
-          <a className={styles.text} href="#productOfTheMonth">
-            Best choice
-          </a>
+          <HashLink className={styles.text} to="/#productOfTheMonth">
+            Best Choice
+          </HashLink>
         </div>
 
         <div className={styles.navigation}>
-          <a className={styles.text} href="#contacts">
+          <HashLink className={styles.text} to="/#contacts">
             Contacts
-          </a>
+          </HashLink>
         </div>
 
         <div className={styles.links}>
