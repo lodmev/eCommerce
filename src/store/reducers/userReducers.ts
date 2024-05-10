@@ -9,7 +9,8 @@ export const loginReducer = (loginData: MyCustomerSignin) => async (dispatch: Us
     await loginUser(loginData);
     dispatch(setUserLogin());
   } catch (e) {
-    dispatch(setUserError(e as ErrorResponse));
+    const err = e as ErrorResponse;
+    dispatch(setUserError(err.message));
   } finally {
     dispatch(setUserIsLoading(false));
   }
@@ -21,7 +22,8 @@ export const registerReduser =
       await loginUser(registrationData);
       dispatch(setUserLogin());
     } catch (e) {
-      dispatch(setUserError(e as ErrorResponse));
+      const err = e as ErrorResponse;
+      dispatch(setUserError(err.message));
     } finally {
       dispatch(setUserIsLoading(false));
     }

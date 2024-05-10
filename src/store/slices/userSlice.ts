@@ -1,16 +1,15 @@
-import { ErrorResponse } from '@commercetools/platform-sdk';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 type UserState = {
   isUserAuthorized: boolean;
   isLoading: boolean;
-  error: ErrorResponse | null;
+  errorMsg: string;
 };
 
 const initialUserState: UserState = {
   isUserAuthorized: false,
   isLoading: false,
-  error: null,
+  errorMsg: '',
 };
 
 const userSlice = createSlice({
@@ -18,7 +17,7 @@ const userSlice = createSlice({
   initialState: initialUserState,
   reducers: {
     setUserLogin: (state) => {
-      state.error = null;
+      state.errorMsg = '';
       state.isUserAuthorized = true;
     },
     setUserLogout: (state) => {
@@ -27,8 +26,8 @@ const userSlice = createSlice({
     setUserIsLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
     },
-    setUserError: (state, action: PayloadAction<ErrorResponse | null>) => {
-      state.error = action.payload;
+    setUserError: (state, action: PayloadAction<string>) => {
+      state.errorMsg = action.payload;
     },
   },
 });
