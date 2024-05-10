@@ -69,11 +69,11 @@ export default function Header() {
         </div>
 
         <div className={styles.links}>
-          <div>
-            <Link to={ROUTE_PATH.registration}>
-              <FontAwesomeIcon icon={faUser} className={styles.icon} />
-            </Link>
-          </div>
+          {/*<div>*/}
+          {/*  <Link to={ROUTE_PATH.registration}>*/}
+          {/*    <FontAwesomeIcon icon={faUser} className={styles.icon} />*/}
+          {/*  </Link>*/}
+          {/*</div>*/}
           <div>
             <Link to={ROUTE_PATH.basket}>
               <FontAwesomeIcon icon={faCartShopping} className={styles.icon} />
