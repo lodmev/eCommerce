@@ -7,12 +7,15 @@ import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import ModalConfirm from '../../components/Modal/ModalConfirm';
 import Overlay from '../../components/Modal/Overlay';
 import { ROUTE_PATH } from '../../utils/globalVariables';
+import { setUserLogin } from '../../store/slices/userSlice';
+import { useUserDispatch } from '../../hooks/userRedux';
 
 export default function Registration() {
   const [hasOverlay, setHasOverlay] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const dispatch = useUserDispatch();
   const navigate = useNavigate();
 
   const hideOverlay = () => {
@@ -24,12 +27,13 @@ export default function Registration() {
   const handleRegister = async (customer: MyCustomerDraft) => {
     setHasOverlay(true);
     setIsLoading(true);
-
     try {
       const data = await signupUser(customer);
       /* eslint no-console: 0 */
       console.log(data);
       setSuccessMessage('Your account has been successfully created!');
+      dispatch(setUserLogin());
+
       // rou
     } catch (err) {
       const error = err as ErrorResponse;
@@ -50,7 +54,7 @@ export default function Registration() {
 
   return (
     <div>
-      <FormRegistration onSumbit={handleRegister} />
+      <FormRegistration onSubmit={handleRegister} />
       {hasOverlay && (
         <Overlay>
           {isLoading && <LoadingSpinner />}

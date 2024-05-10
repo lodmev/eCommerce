@@ -1,8 +1,25 @@
 import { createApiBuilderFromCtpClient } from '@commercetools/platform-sdk';
-import ctpClient from './clientBuilder';
+import { Client, UserAuthOptions } from '@commercetools/sdk-client-v2';
+import { getAnonCtpClient, getAuthCtpClient, getReadOnlyCtpClient } from './clientBuilder';
 
-const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
-  projectKey: import.meta.env.API_CTP_PROJECT_KEY,
-});
+const createApi = (client: Client) =>
+  createApiBuilderFromCtpClient(client).withProjectKey({
+    projectKey: import.meta.env.API_CTP_PROJECT_KEY,
+  });
 
-export default apiRoot;
+let currentApiClient = createApi(getReadOnlyCtpClient());
+
+const getCurrentApiClient = () => currentApiClient;
+
+const setDefaultApi = () => {
+  currentApiClient = createApi(getReadOnlyCtpClient());
+};
+
+const setAuthApi = (user: UserAuthOptions) => {
+  currentApiClient = createApi(getAuthCtpClient(user));
+};
+
+const setAnonApi = () => {
+  currentApiClient = createApi(getAnonCtpClient());
+};
+export { getCurrentApiClient, setDefaultApi, setAuthApi, setAnonApi };
