@@ -9,12 +9,14 @@ import Overlay from '../../components/Modal/Overlay';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import ModalConfirm from '../../components/Modal/ModalConfirm';
 import { setUserError } from '../../store/slices/userSlice';
+// import { getMe } from '../../api/products';
 
 export default function Login() {
   const navigator = useNavigate();
   const { isUserAuthorized, isLoading, errorMsg } = useUserSelector((state) => state.userData);
   const dispatch = useUserDispatch();
   useEffect(() => {
+    // console.log('login page');
     if (isUserAuthorized) navigator(ROUTE_PATH.main);
   }, [isUserAuthorized, navigator]);
 

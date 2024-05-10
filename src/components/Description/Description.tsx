@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import styles from './Description.module.css';
 import { ROUTE_PATH } from '../../utils/globalVariables';
+// import { loginUser } from '../api/customers';
 
 export default function Description() {
   return (

@@ -1,11 +1,25 @@
 import {
   ClientBuilder,
+  MiddlewareRequest,
+  MiddlewareResponse,
+  Next,
   PasswordAuthMiddlewareOptions,
   UserAuthOptions,
   type AuthMiddlewareOptions,
   type HttpMiddlewareOptions,
 } from '@commercetools/sdk-client-v2';
 
+function afterEx(/* options?: GenericOmit<AfterExecutionMiddlewareOptions, 'middleware'> */) {
+  return (next: Next): Next =>
+    (req: MiddlewareRequest, res: MiddlewareResponse) => {
+      const token = req.headers?.Authorization;
+      // console.log(token);
+      if (token !== 'Bearer *******') {
+        // console.log('yes');
+      }
+      next(req, res);
+    };
+}
 const authMiddlewareOptions: AuthMiddlewareOptions = {
   host: import.meta.env.API_CTP_AUTH_URL,
   projectKey: import.meta.env.API_CTP_PROJECT_KEY,
@@ -25,7 +39,11 @@ const httpMiddlewareOptions: HttpMiddlewareOptions = {
 const baseCtpClient = new ClientBuilder()
   .withProjectKey(import.meta.env.API_CTP_PROJECT_KEY)
   .withClientCredentialsFlow(authMiddlewareOptions)
-  .withHttpMiddleware(httpMiddlewareOptions);
+  .withHttpMiddleware(httpMiddlewareOptions)
+  .withAfterExecutionMiddleware({
+    name: 'after-middleware-fn',
+    middleware: afterEx,
+  });
 // .withLoggerMiddleware()
 
 const getReadOnlyCtpClient = () => baseCtpClient.build();

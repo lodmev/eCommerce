@@ -11,6 +11,8 @@ export const signupUser = async (registrationData: MyCustomerDraft): Promise<Cus
 };
 export const loginUser = async (loginData: MyCustomerSignin): Promise<Customer> => {
   const response = await getCurrentApiClient().me().login().post({ body: loginData }).execute();
+  // const q = await getCurrentApiClient().me().quotes().get().execute();
+  // console.log(q);
   return response.body.customer;
 };
 
