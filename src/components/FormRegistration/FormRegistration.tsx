@@ -24,7 +24,8 @@ export default function FormRegistration(props: Props) {
 
   const [selectedCountry, setSelectedCountry] = useState({ value: '', label: '' });
   const [selectedShippingCountry, setSelectedShippingCountry] = useState({ value: '', label: '' });
-  const [isAddressDefaultShipping, setIsAddressDefaultShipping] = useState(true);
+  // название переменных конечно на твое усмотрение
+  const [isShippingEqualBilling, setisShippingEqualBilling] = useState(true);
 
   const {
     value: emailInputValue,
@@ -152,11 +153,11 @@ export default function FormRegistration(props: Props) {
           postalCode: postalInputValue,
         },
       ],
-      defaultBillingAddress: Number(!isAddressDefaultShipping),
-      defaultShippingAddress: Number(!isAddressDefaultShipping),
+      defaultBillingAddress: Number(!isShippingEqualBilling),
+      defaultShippingAddress: Number(!isShippingEqualBilling),
     };
 
-    if (!isAddressDefaultShipping) {
+    if (!isShippingEqualBilling) {
       customerData!.addresses!.push({
         streetName: streetShippingInputValue,
         city: cityShippingInputValue,
@@ -228,7 +229,7 @@ export default function FormRegistration(props: Props) {
         errorText="Must be older than 13 years"
       />
       <fieldset className={styles.fieldset}>
-        <legend>Address</legend>
+        <legend>Address for shipping {isShippingEqualBilling && <span>and billing</span>}</legend>
         <div className={styles['input-group']}>
           <SelectComponent
             onChange={(value) => {
@@ -272,19 +273,20 @@ export default function FormRegistration(props: Props) {
             errorText="Must contain at least one character and no special characters or numbers"
           />
         </div>
+        {/* тут должен быть чекбокс set as default и если он выбран, то первый адрес становиться дефолтным для шипинг и для билинг. Или только для шипинг если снизу ещё один адрес будет */}
       </fieldset>
       <div>
-        <span>Set as default shipping address</span>
+        <span>Same address for shipping and billing</span>
         <input
-          checked={isAddressDefaultShipping}
-          onChange={() => setIsAddressDefaultShipping((prev) => !prev)}
+          checked={isShippingEqualBilling}
+          onChange={() => setisShippingEqualBilling((prev) => !prev)}
           type="checkbox"
           id="shipping-address"
         />
       </div>
-      {!isAddressDefaultShipping && (
+      {!isShippingEqualBilling && ( // ну тут ты понял что is NOT shipping === billing, тогда отрисовываем
         <fieldset className={styles.fieldset}>
-          <legend>Address</legend>
+          <legend>Address for billing</legend>
           <div className={styles['input-group']}>
             <SelectComponent
               onChange={(value) => {
@@ -328,6 +330,7 @@ export default function FormRegistration(props: Props) {
               errorText="Must contain at least one character and no special characters or numbers"
             />
           </div>
+          {/* и тут должен быть чекбокс set ad default и если он выбран,то адрес становиться дефолтным для ТОЛЬКО для билинг */}
         </fieldset>
       )}
       <Button disabled={!formIsValid} type="submit" styleClass="green-filled">
