@@ -1,4 +1,5 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { logoutUser } from '../../api/customers';
 
 type UserState = {
   isUserAuthorized: boolean;
@@ -7,7 +8,7 @@ type UserState = {
 };
 
 const initialUserState: UserState = {
-  isUserAuthorized: false,
+  isUserAuthorized: Boolean(window.sessionStorage.getItem('token')),
   isLoading: false,
   errorMsg: '',
 };
@@ -21,6 +22,7 @@ const userSlice = createSlice({
       state.isUserAuthorized = true;
     },
     setUserLogout: (state) => {
+      logoutUser();
       state.isUserAuthorized = false;
     },
     setUserIsLoading: (state, action: PayloadAction<boolean>) => {
