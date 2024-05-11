@@ -1,5 +1,6 @@
 import {
   ClientBuilder,
+  ExistingTokenMiddlewareOptions,
   MiddlewareRequest,
   MiddlewareResponse,
   Next,
@@ -8,15 +9,13 @@ import {
   type AuthMiddlewareOptions,
   type HttpMiddlewareOptions,
 } from '@commercetools/sdk-client-v2';
+import { saveTokenIfProvided } from '../utils/token';
 
 function afterEx(/* options?: GenericOmit<AfterExecutionMiddlewareOptions, 'middleware'> */) {
   return (next: Next): Next =>
     (req: MiddlewareRequest, res: MiddlewareResponse) => {
       const token = req.headers?.Authorization;
-      // console.log(token);
-      if (token !== 'Bearer *******') {
-        // console.log('yes');
-      }
+      saveTokenIfProvided(token);
       next(req, res);
     };
 }
@@ -39,11 +38,7 @@ const httpMiddlewareOptions: HttpMiddlewareOptions = {
 const baseCtpClient = new ClientBuilder()
   .withProjectKey(import.meta.env.API_CTP_PROJECT_KEY)
   .withClientCredentialsFlow(authMiddlewareOptions)
-  .withHttpMiddleware(httpMiddlewareOptions)
-  .withAfterExecutionMiddleware({
-    name: 'after-middleware-fn',
-    middleware: afterEx,
-  });
+  .withHttpMiddleware(httpMiddlewareOptions);
 // .withLoggerMiddleware()
 
 const getReadOnlyCtpClient = () => baseCtpClient.build();
@@ -51,12 +46,25 @@ const getReadOnlyCtpClient = () => baseCtpClient.build();
 const getAnonCtpClient = () =>
   baseCtpClient.withAnonymousSessionFlow(authMiddlewareOptions).build();
 
+const getExistingTokenCtpClient = (token: string) => {
+  const options: ExistingTokenMiddlewareOptions = {
+    force: true,
+  };
+  return baseCtpClient.withExistingTokenFlow(token, options).build();
+};
+
 const getAuthCtpClient = (user: UserAuthOptions) => {
   const passOptions: PasswordAuthMiddlewareOptions = {
     ...authMiddlewareOptions,
     credentials: { ...authMiddlewareOptions.credentials, user },
   };
-  return baseCtpClient.withPasswordFlow(passOptions).build();
+  return baseCtpClient
+    .withAfterExecutionMiddleware({
+      name: 'after-middleware-fn',
+      middleware: afterEx,
+    })
+    .withPasswordFlow(passOptions)
+    .build();
 };
 
-export { getReadOnlyCtpClient, getAnonCtpClient, getAuthCtpClient };
+export { getReadOnlyCtpClient, getAnonCtpClient, getAuthCtpClient, getExistingTokenCtpClient };
