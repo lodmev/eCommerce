@@ -8,9 +8,9 @@ export default function Footer() {
   return (
     <footer>
       <div className={styles.container} id="contacts">
-        <div className={styles['github-contacts']}>
-          <p className={styles.text}>Contacts</p>
+        <p className={styles.text}>Contacts</p>
 
+        <div className={styles.info}>
           <div className={styles.github}>
             <img className={styles.image} src={github} alt="github" />
             <p>
@@ -19,7 +19,15 @@ export default function Footer() {
               </a>
             </p>
           </div>
+          <div className={styles.telephone}>
+            <a className={styles.link} href="tel:+16035550123">
+              +1(603)555-0123
+            </a>
+            <FontAwesomeIcon className={styles.image} icon={faMobileScreenButton} />
+          </div>
+        </div>
 
+        <div className={styles.info}>
           <div className={styles.github}>
             <img className={styles.image} src={github} alt="github" />
             <p>
@@ -29,26 +37,7 @@ export default function Footer() {
             </p>
           </div>
 
-          <div className={styles.github}>
-            <img className={styles.image} src={github} alt="github" />
-            <p>
-              <a className={styles.link} href="https://github.com/VictoriaGorobets">
-                VictoriaGorobets
-              </a>
-            </p>
-          </div>
-        </div>
-
-        <div className={styles.info}>
-          <p className={styles.text}>Info</p>
           <div className={styles.telephone}>
-            <FontAwesomeIcon icon={faMobileScreenButton} />
-            <a className={styles.link} href="tel:+16035550123">
-              +1(603)555-0123
-            </a>
-          </div>
-          <div className={styles.telephone}>
-            <FontAwesomeIcon icon={faLocationDot} />
             <a
               className={styles.link}
               href="https://maps.app.goo.gl/CedoyPirLy5drTNJ7"
@@ -57,17 +46,30 @@ export default function Footer() {
             >
               Our address on map
             </a>
+            <FontAwesomeIcon className={styles.image} icon={faLocationDot} />
           </div>
+        </div>
+
+        <div className={styles.info}>
+          <div className={styles.github}>
+            <img className={styles.image} src={github} alt="github" />
+            <p>
+              <a className={styles.link} href="https://github.com/VictoriaGorobets">
+                VictoriaGorobets
+              </a>
+            </p>
+          </div>
+
           <div className={styles.telephone}>
-            <img className={styles.image} src={rsschool} alt="rsschool" />
             <a
               className={styles.link}
-              href="https://https://github.com/rolling-scopes-school/tasks/tree/master/tasks/eCommerce-Application"
+              href="https://github.com/rolling-scopes-school/tasks/tree/master/tasks/eCommerce-Application"
               target="_blank"
               rel="noreferrer"
             >
               RSSchool
             </a>
+            <img className={styles.image} src={rsschool} alt="rsschool" />
           </div>
         </div>
       </div>

@@ -3,27 +3,24 @@ footer {
   padding: 10px;
   position: sticky;
   margin-top: 20px;
+  text-align: -webkit-center;
   background-color: var(--main-bg-color);
 }
 
 .container {
   display: flex;
-  justify-content: space-between;
-}
-
-.github-contacts {
-  margin-left: 25px;
+  flex-direction: column;
 }
 
 .info {
-  margin-right: 25px;
+  display: flex;
+  justify-content: space-between;
 }
 
 .github {
   justify-content: start;
   display: flex;
   align-items: center;
-  margin-bottom: 25px;
 }
 
 .image {
@@ -42,13 +39,25 @@ footer {
 }
 
 .text {
-  font-size: 20px;
+  font-size: 36px;
+
+  @media (width <= 1000px) {
+    font-size: 20px;
+  }
+
+  @media (width <= 600px) {
+    font-size: 16px;
+  }
 }
 
 .link {
   font-size: 16px;
+  @media (width <= 450px) {
+    font-size: 10px;
+  }
 }
 
 .telephone {
-  margin-bottom: 25px;
+  display: flex;
+  align-items: center;
 }
