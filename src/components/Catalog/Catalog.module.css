@@ -9,6 +9,14 @@
   font-weight: 500;
   font-style: normal;
   color: var(--main-icon-color);
+
+  @media (width <= 1000px) {
+    font-size: 24px;
+  }
+
+  @media (width <= 800px) {
+    font-size: 20px;
+  }
 }
 
 .text {
