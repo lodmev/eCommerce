@@ -18,7 +18,7 @@ export default function SelectComponent(props: Props) {
   const { options, onChange } = props;
   return (
     <div className={styles.wrapper}>
-      <span className={styles.label}>Your Country</span>
+      <span className={styles.label}>Country</span>
       <Select
         styles={{
           control: (baseStyles, state) => ({

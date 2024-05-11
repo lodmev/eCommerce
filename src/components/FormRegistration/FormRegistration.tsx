@@ -1,6 +1,7 @@
 import { MyCustomerDraft } from '@commercetools/platform-sdk';
 import { FormEvent, useState } from 'react';
 import useValidateInput from '../../hooks/useValidateInput';
+import { ICustomerRegisterData } from '../../types/interfaces';
 import {
   validateAge,
   validateCity,
@@ -23,9 +24,11 @@ export default function FormRegistration(props: Props) {
   const { onSubmit: onSumbit } = props;
 
   const [selectedCountry, setSelectedCountry] = useState({ value: '', label: '' });
-  const [selectedShippingCountry, setSelectedShippingCountry] = useState({ value: '', label: '' });
+  const [selectedBillingCountry, setSelectedBillingCountry] = useState({ value: '', label: '' });
   // название переменных конечно на твое усмотрение
   const [isShippingEqualBilling, setisShippingEqualBilling] = useState(true);
+  const [isDefaultShippingAndBilling, setisDefaultShippingAndBilling] = useState(false);
+  const [isDefaultBilling, setisDefaultBilling] = useState(false);
 
   const {
     value: emailInputValue,
@@ -94,29 +97,29 @@ export default function FormRegistration(props: Props) {
   );
 
   const {
-    value: streetShippingInputValue,
-    isValid: streetShippingIsValid,
-    hasError: streetShippingHasError,
-    inputBlurHandler: streetShippingBlurHandler,
-    valueChangeHandler: streetShippingChangeHandler,
+    value: streetBillingInputValue,
+    isValid: streetBillingIsValid,
+    hasError: streetBillingHasError,
+    inputBlurHandler: streetBillingBlurHandler,
+    valueChangeHandler: streetBillingChangeHandler,
   } = useValidateInput((value: string) => value.trim().length > 0);
 
   const {
-    value: cityShippingInputValue,
-    isValid: cityShippingIsValid,
-    hasError: cityShippingHasError,
-    inputBlurHandler: cityShippingBlurHandler,
-    valueChangeHandler: cityShippingChangeHandler,
+    value: cityBillingInputValue,
+    isValid: cityBillingIsValid,
+    hasError: cityBillingHasError,
+    inputBlurHandler: cityBillingBlurHandler,
+    valueChangeHandler: cityBillingChangeHandler,
   } = useValidateInput(validateCity);
 
   const {
-    value: postalShippingInputValue,
-    isValid: postalShippingIsValid,
-    hasError: postalShippingHasError,
-    inputBlurHandler: postalShippingBlurHandler,
-    valueChangeHandler: postalShippingChangeHandler,
+    value: postalBillingInputValue,
+    isValid: postalBillingIsValid,
+    hasError: postalBillingHasError,
+    inputBlurHandler: postalBillingBlurHandler,
+    valueChangeHandler: postalBillingChangeHandler,
   } = useValidateInput(
-    selectedCountry.value ? validatePostalCode[selectedShippingCountry.value] : () => false,
+    selectedBillingCountry.value ? validatePostalCode[selectedBillingCountry.value] : () => false,
   );
 
   const allInputs = [
@@ -129,17 +132,39 @@ export default function FormRegistration(props: Props) {
     cityIsValid,
     selectedCountry.value !== '',
     postalIsValid,
-    streetShippingIsValid,
-    cityShippingIsValid,
-    postalShippingIsValid,
   ];
 
-  const formIsValid = allInputs.every((value) => value);
+  const billingAddressInputs = [
+    streetBillingIsValid,
+    cityBillingIsValid,
+    postalBillingIsValid,
+    selectedBillingCountry.value !== '',
+  ];
+
+  const formIsValid = isShippingEqualBilling
+    ? allInputs.every((value) => value)
+    : [...allInputs, ...billingAddressInputs].every((value) => value);
+
+  // console.log({ formIsValid });
+  // console.log([...allInputs, ...billingAddressInputs]);
+  // console.log({
+  //   emailIsValid,
+  //   passwordIsValid,
+  //   firstNameIsValid,
+  //   lastNameIsValid,
+  //   dateIsValid,
+  //   streetIsValid,
+  //   cityIsValid,
+  //   postalIsValid,
+  // });
+  // console.log("selectedCountry.value !== '',", selectedCountry.value !== '');
+  // console.log({ streetBillingIsValid, cityBillingIsValid, postalBillingIsValid });
+  // console.log('selectedBillingCountry.value !== ', selectedBillingCountry.value !== '');
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const customerData: MyCustomerDraft = {
+    const customerData: ICustomerRegisterData = {
       email: emailInputValue,
       password: passwordInputValue,
       firstName: firstNameInputValue,
@@ -153,17 +178,28 @@ export default function FormRegistration(props: Props) {
           postalCode: postalInputValue,
         },
       ],
-      defaultBillingAddress: Number(!isShippingEqualBilling),
-      defaultShippingAddress: Number(!isShippingEqualBilling),
     };
 
     if (!isShippingEqualBilling) {
-      customerData!.addresses!.push({
-        streetName: streetShippingInputValue,
-        city: cityShippingInputValue,
-        country: selectedShippingCountry.value,
-        postalCode: postalShippingInputValue,
+      customerData.addresses.push({
+        streetName: streetBillingInputValue,
+        city: cityBillingInputValue,
+        country: selectedBillingCountry.value,
+        postalCode: postalBillingInputValue,
       });
+    }
+
+    if (isDefaultShippingAndBilling && isShippingEqualBilling) {
+      customerData.defaultBillingAddress = 0;
+      customerData.defaultShippingAddress = 0;
+    }
+
+    if (isDefaultShippingAndBilling && !isShippingEqualBilling) {
+      customerData.defaultShippingAddress = 0;
+    }
+
+    if (isDefaultBilling && !isShippingEqualBilling) {
+      customerData.defaultBillingAddress = 1;
     }
 
     onSumbit(customerData);
@@ -242,7 +278,7 @@ export default function FormRegistration(props: Props) {
             onChange={postalChangeHandler}
             value={postalInputValue}
             invalid={postalHasError}
-            id="postal"
+            id="postal1"
             label="Postal"
             placeholder="Postal Code"
             type="text"
@@ -255,7 +291,7 @@ export default function FormRegistration(props: Props) {
             onChange={streetChangeHandler}
             value={streetInputValue}
             invalid={streetHasError}
-            id="street"
+            id="street1"
             placeholder="Your Street"
             label="Street"
             type="text"
@@ -266,23 +302,34 @@ export default function FormRegistration(props: Props) {
             onChange={cityChangeHandler}
             value={cityInputValue}
             invalid={cityHasError}
-            id="city"
+            id="city1"
             label="City"
             placeholder="Your City"
             type="text"
             errorText="Must contain at least one character and no special characters or numbers"
           />
         </div>
+        <label htmlFor="default-shiping-billing">
+          Set as default
+          <input
+            type="checkbox"
+            id="default-shiping-billing"
+            checked={isDefaultShippingAndBilling}
+            onChange={() => setisDefaultShippingAndBilling((prev) => !prev)}
+          />
+        </label>
         {/* тут должен быть чекбокс set as default и если он выбран, то первый адрес становиться дефолтным для шипинг и для билинг. Или только для шипинг если снизу ещё один адрес будет */}
       </fieldset>
       <div>
-        <span>Same address for shipping and billing</span>
-        <input
-          checked={isShippingEqualBilling}
-          onChange={() => setisShippingEqualBilling((prev) => !prev)}
-          type="checkbox"
-          id="shipping-address"
-        />
+        <label htmlFor="shiping-billing-address">
+          Same address for shipping and billing
+          <input
+            checked={isShippingEqualBilling}
+            onChange={() => setisShippingEqualBilling((prev) => !prev)}
+            type="checkbox"
+            id="shiping-billing-address"
+          />
+        </label>
       </div>
       {!isShippingEqualBilling && ( // ну тут ты понял что is NOT shipping === billing, тогда отрисовываем
         <fieldset className={styles.fieldset}>
@@ -290,16 +337,16 @@ export default function FormRegistration(props: Props) {
           <div className={styles['input-group']}>
             <SelectComponent
               onChange={(value) => {
-                if (value) setSelectedShippingCountry(value);
+                if (value) setSelectedBillingCountry(value);
               }}
               options={COUNTRIES_OPTIONS_LIST}
             />
             <Input
-              onBlur={postalShippingBlurHandler}
-              onChange={postalShippingChangeHandler}
-              value={postalShippingInputValue}
-              invalid={postalShippingHasError}
-              id="postal"
+              onBlur={postalBillingBlurHandler}
+              onChange={postalBillingChangeHandler}
+              value={postalBillingInputValue}
+              invalid={postalBillingHasError}
+              id="postal2"
               label="Postal"
               placeholder="Postal Code"
               type="text"
@@ -308,29 +355,37 @@ export default function FormRegistration(props: Props) {
           </div>
           <div className={styles['input-group']}>
             <Input
-              onBlur={streetShippingBlurHandler}
-              onChange={streetShippingChangeHandler}
-              value={streetShippingInputValue}
-              invalid={streetShippingHasError}
-              id="street"
+              onBlur={streetBillingBlurHandler}
+              onChange={streetBillingChangeHandler}
+              value={streetBillingInputValue}
+              invalid={streetBillingHasError}
+              id="street2"
               placeholder="Your Street"
               label="Street"
               type="text"
               errorText="Must contain at least one character"
             />
             <Input
-              onBlur={cityShippingBlurHandler}
-              onChange={cityShippingChangeHandler}
-              value={cityShippingInputValue}
-              invalid={cityShippingHasError}
-              id="city"
+              onBlur={cityBillingBlurHandler}
+              onChange={cityBillingChangeHandler}
+              value={cityBillingInputValue}
+              invalid={cityBillingHasError}
+              id="city2"
               label="City"
               placeholder="Your City"
               type="text"
               errorText="Must contain at least one character and no special characters or numbers"
             />
           </div>
-          {/* и тут должен быть чекбокс set ad default и если он выбран,то адрес становиться дефолтным для ТОЛЬКО для билинг */}
+          <label htmlFor="default-billing">
+            Set as default
+            <input
+              type="checkbox"
+              id="default-billing"
+              checked={isDefaultBilling}
+              onChange={() => setisDefaultBilling((prev) => !prev)}
+            />
+          </label>
         </fieldset>
       )}
       <Button disabled={!formIsValid} type="submit" styleClass="green-filled">
