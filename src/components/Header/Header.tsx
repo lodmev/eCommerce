@@ -78,16 +78,20 @@ export default function Header() {
               </Link>
             </div>
           )}
-          <div>
-            <Link to={ROUTE_PATH.basket}>
-              <FontAwesomeIcon icon={faCartShopping} className={styles.icon} />
-            </Link>
-          </div>
-          <div>
-            <Link to={ROUTE_PATH.login}>
-              <FontAwesomeIcon icon={faArrowRightToBracket} className={styles.icon} />
-            </Link>
-          </div>
+          {isUserAuthorized && (
+            <div>
+              <Link to={ROUTE_PATH.basket}>
+                <FontAwesomeIcon icon={faCartShopping} className={styles.icon} />
+              </Link>
+            </div>
+          )}
+          {!isUserAuthorized && (
+            <div>
+              <Link to={ROUTE_PATH.login}>
+                <FontAwesomeIcon icon={faArrowRightToBracket} className={styles.icon} />
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </header>

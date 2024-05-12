@@ -18,6 +18,11 @@ export default function Registration() {
   const dispatch = useUserDispatch();
   const navigate = useNavigate();
 
+  // const { isUserAuthorized } = useUserSelector((state) => state.userData);
+  // useEffect(() => {
+  //   if (isUserAuthorized) navigate(ROUTE_PATH.main);
+  // }, [isUserAuthorized, navigator]);
+
   const hideOverlay = () => {
     setHasOverlay(false);
     setIsLoading(false);
