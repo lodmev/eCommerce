@@ -1,9 +1,8 @@
 import { Link } from 'react-router-dom';
-import { HashLink } from 'react-router-hash-link';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRightToBracket, faCartShopping, faUser } from '@fortawesome/free-solid-svg-icons';
-import { ROUTE_PATH } from '../../utils/globalVariables';
 import styles from './Header.module.css';
+
+import BurgerMenu from './BurgerMenu/BurgerMenu';
+import { ROUTE_PATH } from '../../utils/globalVariables';
 
 export default function Header() {
   return (
@@ -44,47 +43,7 @@ export default function Header() {
           </svg>
         </Link>
 
-        <div className={styles.navigation}>
-          <HashLink className={styles.text} to="/#about">
-            About
-          </HashLink>
-        </div>
-
-        <div className={styles.navigation}>
-          <HashLink className={styles.text} to="/#catalog">
-            Catalog
-          </HashLink>
-        </div>
-
-        <div className={styles.navigation}>
-          <HashLink className={styles.text} to="/#productOfTheMonth">
-            Best Choice
-          </HashLink>
-        </div>
-
-        <div className={styles.navigation}>
-          <HashLink className={styles.text} to="/#contacts">
-            Contacts
-          </HashLink>
-        </div>
-
-        <div className={styles.links}>
-          <div>
-            <Link to={ROUTE_PATH.registration}>
-              <FontAwesomeIcon icon={faUser} className={styles.icon} />
-            </Link>
-          </div>
-          <div>
-            <Link to={ROUTE_PATH.basket}>
-              <FontAwesomeIcon icon={faCartShopping} className={styles.icon} />
-            </Link>
-          </div>
-          <div>
-            <Link to={ROUTE_PATH.login}>
-              <FontAwesomeIcon icon={faArrowRightToBracket} className={styles.icon} />
-            </Link>
-          </div>
-        </div>
+        <BurgerMenu />
       </div>
     </header>
   );
