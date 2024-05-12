@@ -18,6 +18,7 @@ export default function Registration() {
   const dispatch = useUserDispatch();
   const navigate = useNavigate();
 
+  // не пускать юзера на эту страницу если он не залогинен
   // const { isUserAuthorized } = useUserSelector((state) => state.userData);
   // useEffect(() => {
   //   if (isUserAuthorized) navigate(ROUTE_PATH.main);
@@ -33,9 +34,7 @@ export default function Registration() {
     setHasOverlay(true);
     setIsLoading(true);
     try {
-      const data = await signupUser(customer);
-      /* eslint no-console: 0 */
-      console.log(data);
+      await signupUser(customer);
       setSuccessMessage('Your account has been successfully created!');
       dispatch(setUserLogin());
 
