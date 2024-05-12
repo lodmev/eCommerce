@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { HashLink } from 'react-router-hash-link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -15,9 +15,11 @@ import { setUserLogout } from '../../store/slices/userSlice';
 export default function Header() {
   const { isUserAuthorized } = useUserSelector((state) => state.userData);
   const dispatch = useUserDispatch();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     dispatch(setUserLogout());
+    navigate(ROUTE_PATH.login);
   };
 
   return (
