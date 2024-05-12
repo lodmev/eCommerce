@@ -1,6 +1,11 @@
 import { createApiBuilderFromCtpClient } from '@commercetools/platform-sdk';
 import { Client, UserAuthOptions } from '@commercetools/sdk-client-v2';
-import { getAnonCtpClient, getAuthCtpClient, getReadOnlyCtpClient } from './clientBuilder';
+import {
+  getAnonCtpClient,
+  getAuthCtpClient,
+  getExistingTokenCtpClient,
+  getReadOnlyCtpClient,
+} from './clientBuilder';
 
 const createApi = (client: Client) =>
   createApiBuilderFromCtpClient(client).withProjectKey({
@@ -9,8 +14,6 @@ const createApi = (client: Client) =>
 
 let currentApiClient = createApi(getReadOnlyCtpClient());
 
-const getCurrentApiClient = () => currentApiClient;
-
 const setDefaultApi = () => {
   currentApiClient = createApi(getReadOnlyCtpClient());
 };
@@ -18,8 +21,18 @@ const setDefaultApi = () => {
 const setAuthApi = (user: UserAuthOptions) => {
   currentApiClient = createApi(getAuthCtpClient(user));
 };
-
+const setExistingTokenApi = (token: string) => {
+  currentApiClient = createApi(getExistingTokenCtpClient(token));
+};
 const setAnonApi = () => {
   currentApiClient = createApi(getAnonCtpClient());
 };
-export { getCurrentApiClient, setDefaultApi, setAuthApi, setAnonApi };
+
+const getCurrentApiClient = () => {
+  const savedToken = window.sessionStorage.getItem('token');
+  if (savedToken) {
+    setExistingTokenApi(savedToken);
+  }
+  return currentApiClient;
+};
+export { getCurrentApiClient, setDefaultApi, setAuthApi, setAnonApi, setExistingTokenApi };

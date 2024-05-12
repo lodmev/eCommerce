@@ -1,17 +1,19 @@
+import { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
-// import { useEffect } from 'react';
+import { getCurrentCustomer } from '../api/customers';
 import Footer from '../components/Footer/Footer';
 import Header from '../components/Header/Header';
-
-// import { loginUser } from '../api/customers';
-// import { getAllProducts, getProductById } from '../api/products';
+import debug from '../utils/debug';
+import { getToken } from '../utils/token';
 
 export default function AppLayout() {
-  // useEffect(() => {
-  //   loginUser({ email: 'some@example.com', password: 'password@1' }).then(console.log).catch(console.error);
-  //   getAllProducts().then(console.log).catch(console.error);
-  //   getProductById('e679b176-7421-4f41-8a33-b79b705298a8').then(console.log).catch(console.error);
-  // });
+  useEffect(() => {
+    if (!getToken()) return;
+
+    getCurrentCustomer()
+      .then((customer) => debug.log('customer: ', customer))
+      .catch(debug.error);
+  }, []);
   return (
     <div className="container">
       <Header />

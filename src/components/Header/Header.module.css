@@ -33,7 +33,7 @@ header {
 .header1 {
   font-size: 15px;
   margin: unset;
-  font-style: Roboto;
+  font-family: 'Roboto', sans-serif;
 }
 
 .text {
