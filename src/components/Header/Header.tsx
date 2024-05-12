@@ -1,11 +1,27 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { HashLink } from 'react-router-hash-link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRightToBracket, faCartShopping, faUser } from '@fortawesome/free-solid-svg-icons';
+import {
+  faArrowRightToBracket,
+  faCartShopping,
+  faDoorOpen,
+  faUser,
+} from '@fortawesome/free-solid-svg-icons';
 import { ROUTE_PATH } from '../../utils/globalVariables';
 import styles from './Header.module.css';
+import { useUserDispatch, useUserSelector } from '../../hooks/userRedux';
+import { setUserLogout } from '../../store/slices/userSlice';
 
 export default function Header() {
+  const { isUserAuthorized } = useUserSelector((state) => state.userData);
+  const dispatch = useUserDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    dispatch(setUserLogout());
+    navigate(ROUTE_PATH.login);
+  };
+
   return (
     <header>
       <div className={styles.container}>
@@ -69,21 +85,34 @@ export default function Header() {
         </div>
 
         <div className={styles.links}>
-          <div>
-            <Link to={ROUTE_PATH.registration}>
-              <FontAwesomeIcon icon={faUser} className={styles.icon} />
-            </Link>
-          </div>
-          <div>
-            <Link to={ROUTE_PATH.basket}>
-              <FontAwesomeIcon icon={faCartShopping} className={styles.icon} />
-            </Link>
-          </div>
-          <div>
-            <Link to={ROUTE_PATH.login}>
-              <FontAwesomeIcon icon={faArrowRightToBracket} className={styles.icon} />
-            </Link>
-          </div>
+          {!isUserAuthorized && (
+            <div>
+              <Link to={ROUTE_PATH.registration}>
+                <FontAwesomeIcon icon={faUser} className={styles.icon} />
+              </Link>
+            </div>
+          )}
+          {!isUserAuthorized && (
+            <div>
+              <Link to={ROUTE_PATH.login}>
+                <FontAwesomeIcon icon={faArrowRightToBracket} className={styles.icon} />
+              </Link>
+            </div>
+          )}
+          {isUserAuthorized && (
+            <div>
+              <Link to={ROUTE_PATH.basket}>
+                <FontAwesomeIcon icon={faCartShopping} className={styles.icon} />
+              </Link>
+            </div>
+          )}
+          {isUserAuthorized && (
+            <div>
+              <button type="button" aria-label="Logout" onKeyDown={() => {}} onClick={handleLogout}>
+                <FontAwesomeIcon icon={faDoorOpen} className={styles.icon} />
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </header>

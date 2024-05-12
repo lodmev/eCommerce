@@ -145,22 +145,6 @@ export default function FormRegistration(props: Props) {
     ? allInputs.every((value) => value)
     : [...allInputs, ...billingAddressInputs].every((value) => value);
 
-  // console.log({ formIsValid });
-  // console.log([...allInputs, ...billingAddressInputs]);
-  // console.log({
-  //   emailIsValid,
-  //   passwordIsValid,
-  //   firstNameIsValid,
-  //   lastNameIsValid,
-  //   dateIsValid,
-  //   streetIsValid,
-  //   cityIsValid,
-  //   postalIsValid,
-  // });
-  // console.log("selectedCountry.value !== '',", selectedCountry.value !== '');
-  // console.log({ streetBillingIsValid, cityBillingIsValid, postalBillingIsValid });
-  // console.log('selectedBillingCountry.value !== ', selectedBillingCountry.value !== '');
-
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -310,25 +294,25 @@ export default function FormRegistration(props: Props) {
           />
         </div>
         <label htmlFor="default-shiping-billing">
-          Set as default
           <input
             type="checkbox"
             id="default-shiping-billing"
             checked={isDefaultShippingAndBilling}
             onChange={() => setisDefaultShippingAndBilling((prev) => !prev)}
           />
+          Set as default
         </label>
         {/* тут должен быть чекбокс set as default и если он выбран, то первый адрес становиться дефолтным для шипинг и для билинг. Или только для шипинг если снизу ещё один адрес будет */}
       </fieldset>
       <div>
         <label htmlFor="shiping-billing-address">
-          Same address for shipping and billing
           <input
             checked={isShippingEqualBilling}
             onChange={() => setisShippingEqualBilling((prev) => !prev)}
             type="checkbox"
             id="shiping-billing-address"
           />
+          Same address for shipping and billing
         </label>
       </div>
       {!isShippingEqualBilling && ( // ну тут ты понял что is NOT shipping === billing, тогда отрисовываем
@@ -378,13 +362,13 @@ export default function FormRegistration(props: Props) {
             />
           </div>
           <label htmlFor="default-billing">
-            Set as default
             <input
               type="checkbox"
               id="default-billing"
               checked={isDefaultBilling}
               onChange={() => setisDefaultBilling((prev) => !prev)}
             />
+            Set as default
           </label>
         </fieldset>
       )}
