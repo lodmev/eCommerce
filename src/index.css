@@ -26,6 +26,9 @@ ul {
 
 button {
   cursor: pointer;
+  background-color: transparent;
+  border: none;
+  outline: none;
 }
 
 .container {
