@@ -1,16 +1,8 @@
 import { Link } from 'react-router-dom';
-import { useEffect } from 'react';
 import styles from './Description.module.css';
 import { ROUTE_PATH } from '../../utils/globalVariables';
-import { getCurrentCustomer } from '../../api/customers';
-import debug from '../../utils/debug';
 
 export default function Description() {
-  useEffect(() => {
-    getCurrentCustomer()
-      .then((customer) => debug.log('customer: ', customer))
-      .catch(debug.error);
-  });
   return (
     <div className={styles.container} id="about">
       <div className={styles.description}>

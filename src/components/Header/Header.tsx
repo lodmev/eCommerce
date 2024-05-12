@@ -4,8 +4,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRightToBracket, faCartShopping, faUser } from '@fortawesome/free-solid-svg-icons';
 import { ROUTE_PATH } from '../../utils/globalVariables';
 import styles from './Header.module.css';
+import { useUserSelector } from '../../hooks/userRedux';
 
 export default function Header() {
+  const { isUserAuthorized } = useUserSelector((state) => state.userData);
   return (
     <header>
       <div className={styles.container}>
@@ -69,11 +71,13 @@ export default function Header() {
         </div>
 
         <div className={styles.links}>
-          <div>
-            <Link to={ROUTE_PATH.registration}>
-              <FontAwesomeIcon icon={faUser} className={styles.icon} />
-            </Link>
-          </div>
+          {!isUserAuthorized && (
+            <div>
+              <Link to={ROUTE_PATH.registration}>
+                <FontAwesomeIcon icon={faUser} className={styles.icon} />
+              </Link>
+            </div>
+          )}
           <div>
             <Link to={ROUTE_PATH.basket}>
               <FontAwesomeIcon icon={faCartShopping} className={styles.icon} />
