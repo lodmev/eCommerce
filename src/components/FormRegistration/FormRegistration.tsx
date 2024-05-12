@@ -145,22 +145,6 @@ export default function FormRegistration(props: Props) {
     ? allInputs.every((value) => value)
     : [...allInputs, ...billingAddressInputs].every((value) => value);
 
-  // console.log({ formIsValid });
-  // console.log([...allInputs, ...billingAddressInputs]);
-  // console.log({
-  //   emailIsValid,
-  //   passwordIsValid,
-  //   firstNameIsValid,
-  //   lastNameIsValid,
-  //   dateIsValid,
-  //   streetIsValid,
-  //   cityIsValid,
-  //   postalIsValid,
-  // });
-  // console.log("selectedCountry.value !== '',", selectedCountry.value !== '');
-  // console.log({ streetBillingIsValid, cityBillingIsValid, postalBillingIsValid });
-  // console.log('selectedBillingCountry.value !== ', selectedBillingCountry.value !== '');
-
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
