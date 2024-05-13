@@ -1,27 +1,10 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { HashLink } from 'react-router-hash-link';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faArrowRightToBracket,
-  faCartShopping,
-  faDoorOpen,
-  faUser,
-} from '@fortawesome/free-solid-svg-icons';
-import { ROUTE_PATH } from '../../utils/globalVariables';
+import { Link } from 'react-router-dom';
 import styles from './Header.module.css';
-import { useUserDispatch, useUserSelector } from '../../hooks/userRedux';
-import { setUserLogout } from '../../store/slices/userSlice';
+
+import BurgerMenu from './BurgerMenu/BurgerMenu';
+import { ROUTE_PATH } from '../../utils/globalVariables';
 
 export default function Header() {
-  const { isUserAuthorized } = useUserSelector((state) => state.userData);
-  const dispatch = useUserDispatch();
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    dispatch(setUserLogout());
-    navigate(ROUTE_PATH.login);
-  };
-
   return (
     <header>
       <div className={styles.container}>
@@ -60,60 +43,7 @@ export default function Header() {
           </svg>
         </Link>
 
-        <div className={styles.navigation}>
-          <HashLink className={styles.text} to="/#about">
-            About
-          </HashLink>
-        </div>
-
-        <div className={styles.navigation}>
-          <HashLink className={styles.text} to="/#catalog">
-            Catalog
-          </HashLink>
-        </div>
-
-        <div className={styles.navigation}>
-          <HashLink className={styles.text} to="/#productOfTheMonth">
-            Best Choice
-          </HashLink>
-        </div>
-
-        <div className={styles.navigation}>
-          <HashLink className={styles.text} to="/#contacts">
-            Contacts
-          </HashLink>
-        </div>
-
-        <div className={styles.links}>
-          {!isUserAuthorized && (
-            <div>
-              <Link to={ROUTE_PATH.registration}>
-                <FontAwesomeIcon icon={faUser} className={styles.icon} />
-              </Link>
-            </div>
-          )}
-          {!isUserAuthorized && (
-            <div>
-              <Link to={ROUTE_PATH.login}>
-                <FontAwesomeIcon icon={faArrowRightToBracket} className={styles.icon} />
-              </Link>
-            </div>
-          )}
-          {isUserAuthorized && (
-            <div>
-              <Link to={ROUTE_PATH.basket}>
-                <FontAwesomeIcon icon={faCartShopping} className={styles.icon} />
-              </Link>
-            </div>
-          )}
-          {isUserAuthorized && (
-            <div>
-              <button type="button" aria-label="Logout" onKeyDown={() => {}} onClick={handleLogout}>
-                <FontAwesomeIcon icon={faDoorOpen} className={styles.icon} />
-              </button>
-            </div>
-          )}
-        </div>
+        <BurgerMenu />
       </div>
     </header>
   );

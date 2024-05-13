@@ -46,3 +46,7 @@ export const validatePostalCode: IValidatePostalCode = {
     return regex.test(code);
   },
 };
+
+export function enumToArray(enumObject: { [key: string]: string }): string[] {
+  return Object.keys(enumObject).map((key) => enumObject[key]);
+}
