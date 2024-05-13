@@ -4,4 +4,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  h2 {
+    margin-bottom: 0.5rem;
+  }
 }
