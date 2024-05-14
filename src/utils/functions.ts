@@ -7,7 +7,7 @@ export function validateEmail(email: string) {
 
 export function validatePassword(password: string) {
   if (password.trim() !== password) return false;
-  const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+  const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z0-9$!#$%^&*()_+\-=[\]{};':"\\|,.<>/?]{8,}$/;
   return regex.test(password);
 }
 
@@ -27,7 +27,7 @@ export function validateAge(dateOfBirth: string) {
 }
 
 export function validateCity(city: string) {
-  const regex = /^[a-zA-Z]+$/;
+  const regex = /^[a-zA-Z]+(?: [a-zA-Z]+){0,1}$/;
 
   return regex.test(city);
 }
