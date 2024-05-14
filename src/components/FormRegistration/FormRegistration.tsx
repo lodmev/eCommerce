@@ -21,14 +21,13 @@ type Props = {
 };
 
 export default function FormRegistration(props: Props) {
-  const { onSubmit: onSumbit } = props;
+  const { onSubmit } = props;
 
   const [selectedCountry, setSelectedCountry] = useState({ value: '', label: '' });
   const [selectedBillingCountry, setSelectedBillingCountry] = useState({ value: '', label: '' });
-  // название переменных конечно на твое усмотрение
-  const [isShippingEqualBilling, setisShippingEqualBilling] = useState(true);
-  const [isDefaultShippingAndBilling, setisDefaultShippingAndBilling] = useState(false);
-  const [isDefaultBilling, setisDefaultBilling] = useState(false);
+  const [isShippingEqualBilling, setIsShippingEqualBilling] = useState(true);
+  const [isDefaultShippingAndBilling, setIsDefaultShippingAndBilling] = useState(false);
+  const [isDefaultBilling, setIsDefaultBilling] = useState(false);
 
   const {
     value: emailInputValue,
@@ -145,6 +144,22 @@ export default function FormRegistration(props: Props) {
     ? allInputs.every((value) => value)
     : [...allInputs, ...billingAddressInputs].every((value) => value);
 
+  const copyShippingAddressValues = () => {
+    cityBillingChangeHandler({
+      target: { value: cityInputValue },
+    });
+    streetBillingChangeHandler({
+      target: { value: streetInputValue },
+    });
+    postalBillingChangeHandler({
+      target: { value: postalInputValue },
+    });
+    setSelectedBillingCountry(selectedCountry);
+    cityBillingBlurHandler();
+    streetBillingBlurHandler();
+    postalBillingBlurHandler();
+  };
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -186,7 +201,7 @@ export default function FormRegistration(props: Props) {
       customerData.defaultBillingAddress = 1;
     }
 
-    onSumbit(customerData);
+    onSubmit(customerData);
   };
 
   return (
@@ -298,7 +313,7 @@ export default function FormRegistration(props: Props) {
             type="checkbox"
             id="default-shiping-billing"
             checked={isDefaultShippingAndBilling}
-            onChange={() => setisDefaultShippingAndBilling((prev) => !prev)}
+            onChange={() => setIsDefaultShippingAndBilling((prev) => !prev)}
           />
           Set as default
         </label>
@@ -308,7 +323,14 @@ export default function FormRegistration(props: Props) {
         <label htmlFor="shiping-billing-address">
           <input
             checked={isShippingEqualBilling}
-            onChange={() => setisShippingEqualBilling((prev) => !prev)}
+            onChange={() =>
+              setIsShippingEqualBilling((prev) => {
+                if (prev) {
+                  copyShippingAddressValues();
+                }
+                return !prev;
+              })
+            }
             type="checkbox"
             id="shiping-billing-address"
           />
@@ -324,6 +346,7 @@ export default function FormRegistration(props: Props) {
                 if (value) setSelectedBillingCountry(value);
               }}
               options={COUNTRIES_OPTIONS_LIST}
+              value={selectedBillingCountry}
             />
             <Input
               onBlur={postalBillingBlurHandler}
@@ -366,7 +389,7 @@ export default function FormRegistration(props: Props) {
               type="checkbox"
               id="default-billing"
               checked={isDefaultBilling}
-              onChange={() => setisDefaultBilling((prev) => !prev)}
+              onChange={() => setIsDefaultBilling((prev) => !prev)}
             />
             Set as default
           </label>

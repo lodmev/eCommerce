@@ -1,4 +1,4 @@
-import Select, { ActionMeta } from 'react-select';
+import Select, { ActionMeta, PropsValue } from 'react-select';
 import styles from './SelectComponent.module.css';
 
 type Option = {
@@ -12,10 +12,11 @@ type Props = {
     value: string;
     label: string;
   }[];
+  value?: PropsValue<Option>;
 };
 
 export default function SelectComponent(props: Props) {
-  const { options, onChange } = props;
+  const { options, onChange, value } = props;
   return (
     <div className={styles.wrapper}>
       <span className={styles.label}>Country</span>
@@ -29,6 +30,7 @@ export default function SelectComponent(props: Props) {
         }}
         onChange={onChange}
         options={options}
+        value={value}
       />
     </div>
   );
