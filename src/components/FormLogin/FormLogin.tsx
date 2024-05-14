@@ -4,6 +4,8 @@ import { validateEmail, validatePassword } from '../../utils/functions';
 import Button from '../Button/Button';
 import Input from '../Input/Input';
 import styles from './FormLogin.module.css';
+import { ROUTE_PATH } from '../../utils/globalVariables.ts';
+import { Link } from 'react-router-dom';
 
 type Props = {
   onSubmit: (loginData: MyCustomerSignin) => void;
@@ -48,33 +50,44 @@ export default function FormLogin(props: Props) {
     onSubmit(userData);
   };
   return (
-    <form className={styles['form-login']} onSubmit={handleSubmit}>
-      <h1 className={styles.heading}>Login</h1>
-      <Input
-        onChange={(e: ChangeEvent<HTMLInputElement>) => handleChangeEmail(e.target.value)}
-        value={emailValue}
-        onBlur={() => setEmailIsTouched(true)}
-        invalid={!emailIsValid}
-        id="email"
-        label="Your Email"
-        type="text"
-        placeholder="Email"
-        errorText="Invalid email address. Must not contain leading or trailing whitespace."
-      />
-      <Input
-        onChange={(e: ChangeEvent<HTMLInputElement>) => handleChangePassword(e.target.value)}
-        value={passwordValue}
-        onBlur={() => setPasswordIsTouched(true)}
-        invalid={!passwordIsValid}
-        id="password"
-        label="Your password"
-        type="password"
-        placeholder="Password"
-        errorText="Minimum 8 characters, at least 1 uppercase letter, 1 lowercase letter, 1 number and must not contain leading or trailing whitespace."
-      />
-      <Button disabled={!formIsValid} type="submit" styleClass="green-filled">
-        Login
-      </Button>
-    </form>
+    <div className={styles.wrapper}>
+      <form className={styles['form-login']} onSubmit={handleSubmit}>
+        <h1 className={styles.heading}>Login</h1>
+        <Input
+          onChange={(e: ChangeEvent<HTMLInputElement>) => handleChangeEmail(e.target.value)}
+          value={emailValue}
+          onBlur={() => setEmailIsTouched(true)}
+          invalid={!emailIsValid}
+          id="email"
+          label="Your Email"
+          type="text"
+          placeholder="Email"
+          errorText="Invalid email address. Must not contain leading or trailing whitespace."
+        />
+        <Input
+          onChange={(e: ChangeEvent<HTMLInputElement>) => handleChangePassword(e.target.value)}
+          value={passwordValue}
+          onBlur={() => setPasswordIsTouched(true)}
+          invalid={!passwordIsValid}
+          id="password"
+          label="Your password"
+          type="password"
+          placeholder="Password"
+          errorText="Minimum 8 characters, at least 1 uppercase letter, 1 lowercase letter, 1 number and must not contain leading or trailing whitespace."
+        />
+        <Button disabled={!formIsValid} type="submit" styleClass="green-filled">
+          Login
+        </Button>
+      </form>
+
+      <div className={styles.navigate}>
+        <p className={styles.text}>Don't have an account?</p>
+        <Link className={styles.link} to={ROUTE_PATH.registration}>
+            <p className={styles.link}>Register</p>
+        </Link>
+      </div>
+
+    </div>
+
   );
 }
