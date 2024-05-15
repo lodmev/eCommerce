@@ -1,4 +1,4 @@
-import { ChangeEvent, useReducer } from 'react';
+import { useReducer } from 'react';
 
 type ValidateFunctionType = (val: string) => boolean;
 
@@ -49,7 +49,7 @@ const useValidateInput = (validateValue: ValidateFunctionType, initialValue?: st
   const valueIsValid = validateValue(inputState.value);
   const hasError = !valueIsValid && inputState.isTouched;
 
-  const valueChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
+  const valueChangeHandler = <T extends { target: { value: string } }>(e: T) => {
     dispatch({ type: InputActionType.INPUT, payload: e.target.value });
   };
 
