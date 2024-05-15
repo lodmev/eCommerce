@@ -145,19 +145,25 @@ export default function FormRegistration(props: Props) {
     : [...allInputs, ...billingAddressInputs].every((value) => value);
 
   const copyShippingAddressValues = () => {
-    cityBillingChangeHandler({
-      target: { value: cityInputValue },
-    });
-    streetBillingChangeHandler({
-      target: { value: streetInputValue },
-    });
-    postalBillingChangeHandler({
-      target: { value: postalInputValue },
-    });
+    if (cityInputValue !== '') {
+      cityBillingChangeHandler({
+        target: { value: cityInputValue },
+      });
+      cityBillingBlurHandler();
+    }
+    if (streetInputValue !== '') {
+      streetBillingChangeHandler({
+        target: { value: streetInputValue },
+      });
+      streetBillingBlurHandler();
+    }
+    if (postalInputValue !== '') {
+      postalBillingChangeHandler({
+        target: { value: postalInputValue },
+      });
+      postalBillingBlurHandler();
+    }
     setSelectedBillingCountry(selectedCountry);
-    cityBillingBlurHandler();
-    streetBillingBlurHandler();
-    postalBillingBlurHandler();
   };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -177,6 +183,7 @@ export default function FormRegistration(props: Props) {
           postalCode: postalInputValue,
         },
       ],
+      shippingAddressIds: ['0'],
     };
 
     if (!isShippingEqualBilling) {
