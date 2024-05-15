@@ -183,7 +183,6 @@ export default function FormRegistration(props: Props) {
           postalCode: postalInputValue,
         },
       ],
-      shippingAddressIds: ['0'],
     };
 
     if (!isShippingEqualBilling) {
