@@ -25,7 +25,7 @@
 }
 
 .navigate {
-  text-align: -webkit-center;
+  text-align: center;
   margin-top: 30px;
   font-size: 20px;
 }
@@ -59,7 +59,6 @@
   bottom: -3px;
   width: 0;
   height: 2px;
-  background-color: black;
   transition: width 0.5s;
 }
 
