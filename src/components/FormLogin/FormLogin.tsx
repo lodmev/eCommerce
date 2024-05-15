@@ -83,7 +83,7 @@ export default function FormLogin(props: Props) {
       <div className={styles.navigate}>
         <p className={styles.text}>Do not have an account?</p>
         <Link className={styles.link} to={ROUTE_PATH.registration}>
-          <p className={styles.link}>Register</p>
+          <p className={styles.text}>Register</p>
         </Link>
       </div>
     </div>

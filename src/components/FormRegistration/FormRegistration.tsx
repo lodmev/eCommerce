@@ -404,7 +404,7 @@ export default function FormRegistration(props: Props) {
       <div className={styles.navigate}>
         <p className={styles.text}>Already have an account?</p>
         <Link className={styles.link} to={ROUTE_PATH.login}>
-          <p className={styles.link}>Login</p>
+          <p className={styles.text}>Login</p>
         </Link>
       </div>
     </>
