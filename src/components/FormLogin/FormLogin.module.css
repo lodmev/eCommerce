@@ -1,7 +1,6 @@
 .wrapper {
   height: 55vh;
   align-content: center;
-
 }
 
 .form-login {
@@ -15,8 +14,6 @@
   border-radius: 4px;
   background-color: #f9f9f9;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-
-
 
   & button {
     align-self: center;
@@ -33,7 +30,8 @@
   font-size: 20px;
 }
 
-.link, .text {
+.link,
+.text {
   font-size: 16px;
   font-family: 'Roboto', sans-serif;
   font-weight: 500;
@@ -54,7 +52,7 @@
 }
 
 .link:after {
-  content: "";
+  content: '';
   display: block;
   position: absolute;
   right: 0;
@@ -66,7 +64,7 @@
 }
 
 .link:hover:after {
-  content: "";
+  content: '';
   width: 10%;
   display: block;
   position: absolute;

@@ -1,11 +1,11 @@
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { MyCustomerSignin } from '@commercetools/platform-sdk';
+import { Link } from 'react-router-dom';
 import { validateEmail, validatePassword } from '../../utils/functions';
 import Button from '../Button/Button';
 import Input from '../Input/Input';
 import styles from './FormLogin.module.css';
-import { ROUTE_PATH } from '../../utils/globalVariables.ts';
-import { Link } from 'react-router-dom';
+import { ROUTE_PATH } from '../../utils/globalVariables';
 
 type Props = {
   onSubmit: (loginData: MyCustomerSignin) => void;
@@ -81,13 +81,11 @@ export default function FormLogin(props: Props) {
       </form>
 
       <div className={styles.navigate}>
-        <p className={styles.text}>Don't have an account?</p>
+        <p className={styles.text}>Do not have an account?</p>
         <Link className={styles.link} to={ROUTE_PATH.registration}>
-            <p className={styles.link}>Register</p>
+          <p className={styles.link}>Register</p>
         </Link>
       </div>
-
     </div>
-
   );
 }

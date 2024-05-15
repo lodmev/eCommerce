@@ -1,5 +1,6 @@
 import { MyCustomerDraft } from '@commercetools/platform-sdk';
 import { FormEvent, useState } from 'react';
+import { Link } from 'react-router-dom';
 import useValidateInput from '../../hooks/useValidateInput';
 import { ICustomerRegisterData } from '../../types/interfaces';
 import {
@@ -15,7 +16,6 @@ import Button from '../Button/Button';
 import Input from '../Input/Input';
 import SelectComponent from '../SelectComponent/SelectComponent';
 import styles from './FormRegistration.module.css';
-import { Link } from 'react-router-dom';
 
 type Props = {
   onSubmit: (customer: MyCustomerDraft) => void;
@@ -385,7 +385,6 @@ export default function FormRegistration(props: Props) {
           <p className={styles.link}>Login</p>
         </Link>
       </div>
-
     </div>
   );
 }
