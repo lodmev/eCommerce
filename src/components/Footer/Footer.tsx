@@ -8,8 +8,6 @@ export default function Footer() {
   return (
     <footer>
       <div className={styles.container} id="contacts">
-        <p className={styles.text}>Contacts</p>
-
         <div className={styles.info}>
           <div className={styles.github}>
             <img className={styles.image} src={github} alt="github" />
