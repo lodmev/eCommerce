@@ -36,3 +36,54 @@
 .heading {
   text-align: center;
 }
+
+.navigate {
+  text-align: center;
+  margin-top: 30px;
+  font-size: 20px;
+  position: relative;
+}
+
+.link,
+.text {
+  font-size: 16px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
+  font-style: normal;
+  margin-bottom: 5px;
+}
+
+.link {
+  font-size: 24px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
+  font-style: normal;
+  color: var(--main-text-color);
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+.link:after {
+  content: '';
+  display: block;
+  position: absolute;
+  right: 0;
+  bottom: -3px;
+  width: 0;
+  height: 2px;
+  transition: width 0.5s;
+}
+
+.link:hover:after {
+  content: '';
+  width: 10%;
+  display: block;
+  position: absolute;
+  left: 45%;
+  bottom: -3px;
+  height: 2px;
+  background-color: mintcream;
+  transition: width 0.5s;
+}
