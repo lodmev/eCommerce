@@ -1,11 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit';
 import userSlice from './slices/userSlice';
+import productListSlice from './slices/productListSlice.ts';
 
 const store = configureStore({
   reducer: {
     userData: userSlice.reducer,
+    productList: productListSlice.reducer,
   },
 });
 export default store;
-export type UserDispatch = typeof store.dispatch;
-export type UserState = ReturnType<typeof store.getState>;
+export type StoreDispatch = typeof store.dispatch;
+export type StoreState = ReturnType<typeof store.getState>;
