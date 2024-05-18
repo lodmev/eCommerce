@@ -3,6 +3,7 @@ import { Client, UserAuthOptions } from '@commercetools/sdk-client-v2';
 import {
   getAnonCtpClient,
   getAuthCtpClient,
+  getCustomersCtpClient,
   getExistingTokenCtpClient,
   getReadOnlyCtpClient,
 } from './clientBuilder';
@@ -13,6 +14,8 @@ const createApi = (client: Client) =>
   });
 
 let currentApiClient = createApi(getReadOnlyCtpClient());
+
+const manageCustomersApiClient = createApi(getCustomersCtpClient());
 
 const setDefaultApi = () => {
   currentApiClient = createApi(getReadOnlyCtpClient());
@@ -35,4 +38,11 @@ const getCurrentApiClient = () => {
   }
   return currentApiClient;
 };
-export { getCurrentApiClient, setDefaultApi, setAuthApi, setAnonApi, setExistingTokenApi };
+export {
+  getCurrentApiClient,
+  setDefaultApi,
+  setAuthApi,
+  setAnonApi,
+  setExistingTokenApi,
+  manageCustomersApiClient,
+};

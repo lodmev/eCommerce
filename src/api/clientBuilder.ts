@@ -30,6 +30,17 @@ const authMiddlewareOptions: AuthMiddlewareOptions = {
   fetch,
 };
 
+const manageCustomersMiddlewareOptions: AuthMiddlewareOptions = {
+  host: import.meta.env.API_CTP_AUTH_URL,
+  projectKey: import.meta.env.API_CTP_PROJECT_KEY,
+  credentials: {
+    clientId: import.meta.env.API_CUSTOMERS_CTP_CLIENT_ID,
+    clientSecret: import.meta.env.API_CUSTOMERS_CTP_CLIENT_SECRET,
+  },
+  scopes: import.meta.env.API_CUSTOMERS_CTP_SCOPES.split(' '),
+  fetch,
+};
+
 const httpMiddlewareOptions: HttpMiddlewareOptions = {
   host: import.meta.env.API_CTP_API_URL,
   fetch,
@@ -39,7 +50,7 @@ const baseCtpClient = new ClientBuilder()
   .withProjectKey(import.meta.env.API_CTP_PROJECT_KEY)
   .withClientCredentialsFlow(authMiddlewareOptions)
   .withHttpMiddleware(httpMiddlewareOptions);
-// .withLoggerMiddleware()
+// .withLoggerMiddleware();
 
 const getReadOnlyCtpClient = () => baseCtpClient.build();
 
@@ -67,4 +78,18 @@ const getAuthCtpClient = (user: UserAuthOptions) => {
     .build();
 };
 
-export { getReadOnlyCtpClient, getAnonCtpClient, getAuthCtpClient, getExistingTokenCtpClient };
+const getCustomersCtpClient = () =>
+  new ClientBuilder()
+    .withProjectKey(import.meta.env.API_CTP_PROJECT_KEY)
+    .withClientCredentialsFlow(manageCustomersMiddlewareOptions)
+    .withHttpMiddleware(httpMiddlewareOptions)
+    // .withLoggerMiddleware()
+    .build();
+
+export {
+  getReadOnlyCtpClient,
+  getAnonCtpClient,
+  getAuthCtpClient,
+  getExistingTokenCtpClient,
+  getCustomersCtpClient,
+};
