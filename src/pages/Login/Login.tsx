@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { MyCustomerSignin } from '@commercetools/platform-sdk';
 import FormLogin from '../../components/FormLogin/FormLogin';
-import { useUserDispatch, useUserSelector } from '../../hooks/userRedux';
+import { useStoreDispatch, useStoreSelector } from '../../hooks/userRedux';
 import { ROUTE_PATH } from '../../utils/globalVariables';
 import { loginReducer } from '../../store/reducers/userReducers';
 import Overlay from '../../components/Modal/Overlay';
@@ -12,8 +12,8 @@ import { setUserError } from '../../store/slices/userSlice';
 
 export default function Login() {
   const navigator = useNavigate();
-  const { isUserAuthorized, isLoading, errorMsg } = useUserSelector((state) => state.userData);
-  const dispatch = useUserDispatch();
+  const { isUserAuthorized, isLoading, errorMsg } = useStoreSelector((state) => state.userData);
+  const dispatch = useStoreDispatch();
   useEffect(() => {
     if (isUserAuthorized) navigator(ROUTE_PATH.main);
   }, [isUserAuthorized, navigator]);

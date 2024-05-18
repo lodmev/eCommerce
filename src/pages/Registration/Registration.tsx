@@ -8,7 +8,7 @@ import ModalConfirm from '../../components/Modal/ModalConfirm';
 import Overlay from '../../components/Modal/Overlay';
 import { ROUTE_PATH } from '../../utils/globalVariables';
 import { setUserLogin } from '../../store/slices/userSlice';
-import { useUserDispatch } from '../../hooks/userRedux';
+import { useStoreDispatch } from '../../hooks/userRedux';
 import { RegisterCustomerDraft } from '../../types/types';
 
 export default function Registration() {
@@ -16,7 +16,7 @@ export default function Registration() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const dispatch = useUserDispatch();
+  const dispatch = useStoreDispatch();
   const navigate = useNavigate();
 
   // не пускать юзера на эту страницу если он не залогинен

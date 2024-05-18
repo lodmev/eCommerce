@@ -4,12 +4,8 @@ import { Link } from 'react-router-dom';
 import styles from './Product.module.css';
 
 const lang = 'en-US';
-export default function ProductCard({
-  productProjection,
-}: {
-  productProjection: ProductProjection;
-}) {
-  const { name, masterVariant } = productProjection;
+export default function ProductCard({ product }: { product: ProductProjection }) {
+  const { name, masterVariant } = product;
   const price: Price | undefined = masterVariant.prices?.[0];
   const amount = (price && price.value.centAmount / 100) || 0;
   const image = masterVariant.images?.[0];
@@ -18,7 +14,7 @@ export default function ProductCard({
     <Link className={styles['product-card']} to="products/8">
       <img className={styles['product-card__image']} src={imageUrl} alt="product" />
       <p className={styles['product-card__brand']}>{name[lang]}</p>
-      <p className={styles['product-card__price']}>{amount}</p>
+      <p className={styles['product-card__price']}>Price: {amount} euro</p>
       <button
         type="button"
         className={styles['product-card__btn-wishlist']}
