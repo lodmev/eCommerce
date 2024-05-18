@@ -15,7 +15,7 @@ import { HashLink } from 'react-router-hash-link';
 import styles from './BurgerMenu.module.css';
 import { ROUTE_PATH } from '../../../utils/globalVariables';
 import { enumToArray } from '../../../utils/functions';
-import { useUserDispatch, useUserSelector } from '../../../hooks/userRedux';
+import { useStoreDispatch, useStoreSelector } from '../../../hooks/userRedux';
 import { setUserLogout } from '../../../store/slices/userSlice';
 
 enum NavigationPath {
@@ -66,8 +66,8 @@ const NavigationPathToAction = new Map([[NavigationPath.Logout, setUserLogout()]
 
 export default function BurgerMenu() {
   const [isOpen, setIsOpen] = useState(false);
-  const { isUserAuthorized } = useUserSelector((state) => state.userData);
-  const dispatch = useUserDispatch();
+  const { isUserAuthorized } = useStoreSelector((state) => state.userData);
+  const dispatch = useStoreDispatch();
   const navigationPaths = enumToArray(NavigationPath).filter((title: string) => {
     if ([NavigationPath.Login, NavigationPath.Registration].includes(title as NavigationPath)) {
       return !isUserAuthorized;

@@ -1,9 +1,9 @@
 import { ErrorResponse, MyCustomerDraft, MyCustomerSignin } from '@commercetools/platform-sdk';
 import { setUserError, setUserIsLoading, setUserLogin } from '../slices/userSlice';
-import { UserDispatch } from '../store';
+import { StoreDispatch } from '../store';
 import { loginUser } from '../../api/customers';
 
-export const loginReducer = (loginData: MyCustomerSignin) => async (dispatch: UserDispatch) => {
+export const loginReducer = (loginData: MyCustomerSignin) => async (dispatch: StoreDispatch) => {
   try {
     dispatch(setUserIsLoading(true));
     await loginUser(loginData);
@@ -16,7 +16,7 @@ export const loginReducer = (loginData: MyCustomerSignin) => async (dispatch: Us
   }
 };
 export const registerReduser =
-  async (registrationData: MyCustomerDraft) => async (dispatch: UserDispatch) => {
+  async (registrationData: MyCustomerDraft) => async (dispatch: StoreDispatch) => {
     try {
       dispatch(setUserIsLoading(true));
       await loginUser(registrationData);
