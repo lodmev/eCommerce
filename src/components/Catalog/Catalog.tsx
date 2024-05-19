@@ -26,7 +26,7 @@ export default function Catalog() {
         <p className={styles['catalog-header']}>Catalog</p>
         <div className={styles.furniture}>
           {allProducts.slice(0, productsOnMainPage).map((product: ProductProjection) => (
-            <ProductCard product={product} />
+            <ProductCard key={product.id} product={product} />
           ))}
           {(isLoading || errorMsg !== '') && (
             <Overlay>
