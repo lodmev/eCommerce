@@ -4,11 +4,7 @@ import { Link } from 'react-router-dom';
 import styles from './Product.module.css';
 
 const lang = 'en-US';
-export default function ProductCard({
-  product,
-}: {
-  product: ProductProjection;
-}) {
+export default function ProductCard({ product }: { product: ProductProjection }) {
   const { name, masterVariant } = product;
   const price: Price | undefined = masterVariant.prices?.[0];
   const amount = (price && price.value.centAmount / 100) || 0;
