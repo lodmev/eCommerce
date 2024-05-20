@@ -10,6 +10,7 @@ type Props = {
   value?: string;
   label?: string;
   id?: string;
+  disabled?: boolean;
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
   onBlur?: () => void;
 };
@@ -17,7 +18,8 @@ type Props = {
 export default function Input(props: Props) {
   const [isVisiblePassword, setIsVisiblePassword] = useState(false);
 
-  const { id, onChange, label, value, onBlur, errorText, placeholder, type, invalid } = props;
+  const { id, onChange, label, value, onBlur, errorText, placeholder, type, invalid, disabled } =
+    props;
 
   if (type === 'password') {
     return (
@@ -28,6 +30,7 @@ export default function Input(props: Props) {
         <div className={styles.wrapper}>
           <input
             value={value}
+            disabled={disabled}
             id={id}
             className={`${styles.input} ${invalid ? styles.invalid : ''}`}
             onChange={onChange}
@@ -54,9 +57,10 @@ export default function Input(props: Props) {
       <label className={styles.label} htmlFor={id}>
         {label}
       </label>
-      <div className={styles.wrapper}>
+      <div className={`${styles.wrapper} ${disabled && styles.disabled}`}>
         <input
           value={value}
+          disabled={disabled}
           id={id}
           className={`${styles.input} ${invalid ? styles.invalid : ''}`}
           onChange={onChange}
