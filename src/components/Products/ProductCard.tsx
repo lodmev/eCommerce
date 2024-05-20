@@ -2,16 +2,19 @@ import { ProductProjection } from '@commercetools/platform-sdk';
 import { Price } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/common';
 import { Link } from 'react-router-dom';
 import styles from './Product.module.css';
+import { ROUTE_PATH } from '../../utils/globalVariables';
 
 const lang = 'en-US';
 export default function ProductCard({ product }: { product: ProductProjection }) {
-  const { name, masterVariant } = product;
+  const { name, masterVariant, id } = product;
   const price: Price | undefined = masterVariant.prices?.[0];
   const amount = (price && price.value.centAmount / 100) || 0;
   const image = masterVariant.images?.[0];
   const imageUrl = image && image.url;
+  const navigationToDetailedProduct = `${ROUTE_PATH.detailedProduct}/${id}`;
+
   return (
-    <Link className={styles['product-card']} to="products/8">
+    <Link className={styles['product-card']} to={navigationToDetailedProduct}>
       <img className={styles['product-card__image']} src={imageUrl} alt="product" />
       <p className={styles['product-card__brand']}>{name[lang]}</p>
       <p className={styles['product-card__price']}>Price: {amount} euro</p>
