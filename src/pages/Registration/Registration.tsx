@@ -1,4 +1,4 @@
-import { ErrorResponse, MyCustomerDraft } from '@commercetools/platform-sdk';
+import { ErrorResponse } from '@commercetools/platform-sdk';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { signupUser } from '../../api/customers';
@@ -9,6 +9,7 @@ import Overlay from '../../components/Modal/Overlay';
 import { ROUTE_PATH } from '../../utils/globalVariables';
 import { setUserLogin } from '../../store/slices/userSlice';
 import { useUserDispatch } from '../../hooks/userRedux';
+import { RegisterCustomerDraft } from '../../types/types';
 
 export default function Registration() {
   const [hasOverlay, setHasOverlay] = useState(false);
@@ -30,7 +31,7 @@ export default function Registration() {
     setErrorMessage(null);
   };
 
-  const handleRegister = async (customer: MyCustomerDraft) => {
+  const handleRegister = async (customer: RegisterCustomerDraft) => {
     setHasOverlay(true);
     setIsLoading(true);
     try {

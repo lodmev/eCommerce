@@ -1,9 +1,15 @@
-import { Customer, type MyCustomerDraft, type MyCustomerSignin } from '@commercetools/platform-sdk';
+import { Customer, MyCustomerSignin } from '@commercetools/platform-sdk';
 import { UserAuthOptions } from '@commercetools/sdk-client-v2';
-import { getCurrentApiClient, setAuthApi, setDefaultApi } from './apiRoot';
+import {
+  getCurrentApiClient,
+  manageCustomersApiClient,
+  setAuthApi,
+  setDefaultApi,
+} from './apiRoot';
 import { removeToken } from '../utils/token';
+import { RegisterCustomerDraft } from '../types/types';
 
-const getUserAuth = (user: { email: string; password: string }): UserAuthOptions => ({
+const getUserAuth = (user: Pick<RegisterCustomerDraft, 'email' | 'password'>): UserAuthOptions => ({
   username: user.email,
   password: user.password,
 });
@@ -17,9 +23,9 @@ export const loginUser = async (loginData: MyCustomerSignin): Promise<Customer> 
   return getCurrentCustomer();
 };
 
-export const signupUser = async (registrationData: MyCustomerDraft): Promise<Customer> => {
+export const signupUser = async (registrationData: RegisterCustomerDraft): Promise<Customer> => {
   setDefaultApi();
-  await getCurrentApiClient().me().signup().post({ body: registrationData }).execute();
+  await manageCustomersApiClient.customers().post({ body: registrationData }).execute();
   return loginUser(registrationData);
 };
 
