@@ -1,46 +1,54 @@
 import { Customer } from '@commercetools/platform-sdk';
-import { FormEvent, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { getCurrentCustomer } from '../../api/customers';
+import { FormEvent, useState } from 'react';
+import { useLoaderData, useNavigate } from 'react-router-dom';
 import Button from '../../components/Button/Button';
 import Input from '../../components/Input/Input';
-import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
-import Overlay from '../../components/Modal/Overlay';
 import { useStoreSelector } from '../../hooks/userRedux';
+import useValidateInput from '../../hooks/useValidateInput';
+import { validateAge, validateName } from '../../utils/functions';
 import { ROUTE_PATH } from '../../utils/globalVariables';
 import styles from './UserProfile.module.css';
 
 export default function UserProfile() {
+  const customer = useLoaderData() as Customer;
   const navigate = useNavigate();
   const { isUserAuthorized } = useStoreSelector((state) => state.userData);
-  const [isLoading, setIsLoading] = useState(true);
-  const [customer, setCustomer] = useState<null | Customer>(null);
   const [isEditUserInfo, setIsEditUserInfo] = useState(false);
 
-  useEffect(() => {
-    if (!isUserAuthorized) {
-      setIsLoading(false);
-      navigate(ROUTE_PATH.main);
-      return;
-    }
+  if (!isUserAuthorized) navigate(ROUTE_PATH.main);
 
-    async function getUser() {
-      const user = await getCurrentCustomer();
-      setIsLoading(false);
-      setCustomer(user);
-    }
+  // console.log('user profile customer', customer);
 
-    getUser();
-  }, [isUserAuthorized, navigate]);
+  const {
+    value: firstNameInputValue,
+    // isValid: firstNameIsValid,
+    hasError: firstNameHasError,
+    inputBlurHandler: firstNameBlurHandler,
+    valueChangeHandler: firstNameChangeHandler,
+  } = useValidateInput(validateName, customer.firstName);
 
-  if (isLoading)
-    return (
-      <Overlay>
-        <LoadingSpinner />
-      </Overlay>
-    );
+  const {
+    value: lastNameInputValue,
+    // isValid: lastNameIsValid,
+    hasError: lastNameHasError,
+    inputBlurHandler: lastNameBlurHandler,
+    valueChangeHandler: lastNameChangeHandler,
+  } = useValidateInput(validateName, customer.lastName);
 
-  if (!customer) return null;
+  const {
+    value: dateInputValue,
+    // isValid: dateIsValid,
+    hasError: dateHasError,
+    inputBlurHandler: dateBlurHandler,
+    valueChangeHandler: dateChangeHandler,
+  } = useValidateInput(validateAge, customer.dateOfBirth);
+
+  // if (isLoading)
+  //   return (
+  //     <Overlay>
+  //       <LoadingSpinner />
+  //     </Overlay>
+  //   );
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -55,21 +63,35 @@ export default function UserProfile() {
             label="First Name"
             id="first-name"
             type="text"
-            value={customer.firstName}
+            onBlur={firstNameBlurHandler}
+            onChange={firstNameChangeHandler}
+            value={firstNameInputValue}
+            invalid={firstNameHasError}
+            placeholder="First Name"
+            errorText="Must contain at least one character and no special characters or numbers"
             disabled={!isEditUserInfo}
           />
           <Input
             label="Last Name"
             id="last-name"
             type="text"
-            value={customer.lastName}
+            onBlur={lastNameBlurHandler}
+            onChange={lastNameChangeHandler}
+            value={lastNameInputValue}
+            invalid={lastNameHasError}
+            placeholder="Last Name"
+            errorText="Must contain at least one character and no special characters or numbers"
             disabled={!isEditUserInfo}
           />
         </div>
         <Input
           type="date"
           label="Date of birth"
-          value={customer.dateOfBirth}
+          onBlur={dateBlurHandler}
+          onChange={dateChangeHandler}
+          value={dateInputValue}
+          invalid={dateHasError}
+          errorText="Must be older than 13 years"
           disabled={!isEditUserInfo}
         />
         <Input
@@ -81,7 +103,7 @@ export default function UserProfile() {
         <Button
           onClick={() => setIsEditUserInfo((prev) => !prev)}
           type="button"
-          styleClass="green-filled"
+          styleClass="green-outlined"
         >
           Edit Personal Data
         </Button>
