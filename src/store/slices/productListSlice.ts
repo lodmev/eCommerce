@@ -1,7 +1,6 @@
 import { ProductProjection } from '@commercetools/platform-sdk';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-
 type ProductListState = {
   allProducts: ProductProjection[];
   isLoading: boolean;
@@ -32,4 +31,5 @@ const productListSlice = createSlice({
   },
 });
 export default productListSlice;
-export const { loadAllProductsSuccess, setAllProductsIsLoading, loadAllProductsError } = productListSlice.actions;
+export const { loadAllProductsSuccess, setAllProductsIsLoading, loadAllProductsError } =
+  productListSlice.actions;
