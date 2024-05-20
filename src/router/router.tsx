@@ -31,6 +31,8 @@ const router = createBrowserRouter([
       {
         element: <CatalogProduct />,
         path: ROUTE_PATH.catalogProduct,
+        // loader: async () => getProductCategories(),
+        handle: {},
       },
       {
         element: <DetailedProduct />,
