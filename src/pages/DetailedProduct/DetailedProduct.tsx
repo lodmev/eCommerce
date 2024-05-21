@@ -8,6 +8,7 @@ import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import styles from './DetailedProduct.module.css';
 import { priceConverter } from '../../utils/functions';
 import { useStoreSelector } from '../../hooks/userRedux';
+import ImageCarousel from '../../components/ImageCarousel/ImageCarousel';
 
 export default function DetailedProduct() {
   const { userLanguage } = useStoreSelector((state) => state.userData);
@@ -18,6 +19,7 @@ export default function DetailedProduct() {
   }, []);
   const price = productProjection?.masterVariant?.prices?.[0];
   const amount = priceConverter(price?.value?.centAmount);
+  const images = productProjection?.masterVariant?.images;
 
   return (
     <div className={styles.wrapper}>
@@ -26,11 +28,7 @@ export default function DetailedProduct() {
       ) : (
         <>
           <div className={styles.description}>
-            <img
-              className={styles.image}
-              src={productProjection?.masterVariant?.images?.[0].url}
-              alt="Product"
-            />
+            {images && <ImageCarousel images={images!} />}
             <p className={styles.text}>
               All handmade from natural wood, HHFurniture is crafted for your comfort and enjoyment.
             </p>
