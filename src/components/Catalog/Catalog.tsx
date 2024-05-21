@@ -1,15 +1,15 @@
 import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
 import { ProductProjection } from '@commercetools/platform-sdk';
 import styles from './Catalog.module.css';
 import ProductCard from '../Products/Product';
 import { ROUTE_PATH } from '../../utils/globalVariables';
-import { useEffect } from 'react';
-import { loadAllProducts } from '../../store/reducers/productListReducers.ts';
-import { useStoreDispatch, useStoreSelector } from '../../hooks/userRedux.ts';
-import Overlay from '../Modal/Overlay.tsx';
-import LoadingSpinner from '../LoadingSpinner/LoadingSpinner.tsx';
-import ModalConfirm from '../Modal/ModalConfirm.tsx';
-import { setUserError } from '../../store/slices/userSlice.ts';
+import { loadAllProducts } from '../../store/reducers/productListReducers';
+import { useStoreDispatch, useStoreSelector } from '../../hooks/userRedux';
+import Overlay from '../Modal/Overlay';
+import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
+import ModalConfirm from '../Modal/ModalConfirm';
+import { setUserError } from '../../store/slices/userSlice';
 
 const productsOnMainPage: number = 8;
 
@@ -17,7 +17,7 @@ export default function Catalog() {
   const dispatch = useStoreDispatch();
   useEffect(() => {
     dispatch(loadAllProducts());
-  }, []);
+  }, [dispatch]);
 
   const { allProducts, isLoading, errorMsg } = useStoreSelector((state) => state.productList);
   return (
@@ -25,16 +25,18 @@ export default function Catalog() {
       <div className={styles.wrapper}>
         <p className={styles['catalog-header']}>Catalog</p>
         <div className={styles.furniture}>
-          {
-            allProducts.slice(0, productsOnMainPage).map((product: ProductProjection) => {
-              return (<ProductCard product={product} />)
-            })
-          }
+          {allProducts.slice(0, productsOnMainPage).map((product: ProductProjection) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
           {(isLoading || errorMsg !== '') && (
             <Overlay>
               {isLoading && <LoadingSpinner />}
               {errorMsg && (
-                <ModalConfirm message={errorMsg} isError onConfirm={() => dispatch(setUserError(''))} />
+                <ModalConfirm
+                  message={errorMsg}
+                  isError
+                  onConfirm={() => dispatch(setUserError(''))}
+                />
               )}
             </Overlay>
           )}

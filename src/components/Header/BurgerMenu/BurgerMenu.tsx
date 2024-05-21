@@ -69,9 +69,9 @@ export default function BurgerMenu() {
   const { isUserAuthorized } = useStoreSelector((state) => state.userData);
   const dispatch = useStoreDispatch();
   const navigationPaths = enumToArray(NavigationPath).filter((title: string) => {
-    if ([NavigationPath.Login, NavigationPath.Registration].includes(title as NavigationPath)) {
-      return !isUserAuthorized;
-    }
+    // if ([NavigationPath.Login, NavigationPath.Registration].includes(title as NavigationPath)) {
+    //   return !isUserAuthorized;
+    // }
     if ([NavigationPath.Logout, NavigationPath.Basket].includes(title as NavigationPath)) {
       return isUserAuthorized;
     }

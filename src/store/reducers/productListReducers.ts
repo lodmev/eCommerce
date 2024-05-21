@@ -1,10 +1,14 @@
-import { StoreDispatch } from '../store.ts';
 import { ErrorResponse, ProductProjection } from '@commercetools/platform-sdk';
-import { getAllProducts } from '../../api/products.ts';
-import { loadAllProductsError, loadAllProductsSuccess, setAllProductsIsLoading } from '../slices/productListSlice.ts';
+import { StoreDispatch } from '../store';
+import { getAllProducts } from '../../api/products';
+import {
+  loadAllProductsError,
+  loadAllProductsSuccess,
+  setAllProductsIsLoading,
+} from '../slices/productListSlice';
 
-export const loadAllProducts = () => async (dispatch: StoreDispatch)=> {
-  dispatch(setAllProductsIsLoading(true))
+export const loadAllProducts = () => async (dispatch: StoreDispatch) => {
+  dispatch(setAllProductsIsLoading(true));
   try {
     const allProductsList: ProductProjection[] = await getAllProducts();
     dispatch(loadAllProductsSuccess(allProductsList));
@@ -12,4 +16,6 @@ export const loadAllProducts = () => async (dispatch: StoreDispatch)=> {
     const err = error as ErrorResponse;
     dispatch(loadAllProductsError(err.message));
   }
-}
+};
+
+export const loadProductById = (/* ID: string */) => async (/* dispatch: StoreDispatch */) => {};
