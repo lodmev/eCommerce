@@ -1,15 +1,16 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { Link, createBrowserRouter } from 'react-router-dom';
 import AboutUs from '../pages/AboutUs/AboutUs';
 import NotFound from '../pages/NotFound/NotFound';
 import AppLayout from '../pages/AppLayout';
 import Basket from '../pages/Basket/Basket';
-import CatalogProduct from '../pages/CatalogProduct/CatalogProduct';
 import DetailedProduct from '../pages/DetailedProduct/DetailedProduct';
 import Login from '../pages/Login/Login';
 import Main from '../pages/Main/Main';
 import Registration from '../pages/Registration/Registration';
 import UserProfile from '../pages/UserProfile/UserProfile';
 import { ROUTE_PATH } from '../utils/globalVariables';
+import Breadcrumbs from '../components/Breadcrumbs/Breadcrumbs';
+import Categories from '../components/Breadcrumbs/Categories';
 
 const router = createBrowserRouter([
   {
@@ -29,10 +30,21 @@ const router = createBrowserRouter([
         path: ROUTE_PATH.basket,
       },
       {
-        element: <CatalogProduct />,
+        element: <Breadcrumbs />,
         path: ROUTE_PATH.catalogProduct,
-        // loader: async () => getProductCategories(),
-        handle: {},
+        handle: {
+          crumb: () => <Link to="./categories/:id">Categories</Link>,
+        },
+        children: [
+          {
+            path: `${ROUTE_PATH.catalogProduct}/categories`,
+            // loader: async () => getProductCategories(),
+            element: <Categories />,
+            handle: {
+              crumb: () => <Link to="./subcategory">Subcategory</Link>,
+            },
+          },
+        ],
       },
       {
         element: <DetailedProduct />,
