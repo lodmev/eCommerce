@@ -2,12 +2,14 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { logoutUser } from '../../api/customers';
 
 type UserState = {
+  userLanguage: string;
   isUserAuthorized: boolean;
   isLoading: boolean;
   errorMsg: string;
 };
 
 const initialUserState: UserState = {
+  userLanguage: 'en-US',
   isUserAuthorized: Boolean(window.sessionStorage.getItem('token')),
   isLoading: false,
   errorMsg: '',

@@ -23,5 +23,8 @@ module.exports = {
     'no-param-reassign': ['error', { props: false }],
     'jsx-a11y/click-events-have-key-events': 'off',
     'react-hooks/exhaustive-deps': 'off',
-  },
+    'react/no-array-index-key': 'off',
+
+
+},
 };

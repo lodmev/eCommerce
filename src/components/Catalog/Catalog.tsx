@@ -25,9 +25,11 @@ export default function Catalog() {
       <div className={styles.wrapper}>
         <p className={styles['catalog-header']}>Catalog</p>
         <div className={styles.furniture}>
-          {allProducts.slice(0, productsOnMainPage).map((product: ProductProjection) => (
-            <ProductCard product={product} />
-          ))}
+          {allProducts
+            .slice(0, productsOnMainPage)
+            .map((product: ProductProjection, index: number) => (
+              <ProductCard key={index} product={product} />
+            ))}
           {(isLoading || errorMsg !== '') && (
             <Overlay>
               {isLoading && <LoadingSpinner />}

@@ -6,14 +6,18 @@ import { ProductProjection } from '@commercetools/platform-sdk';
 import { getProductById } from '../../api/products';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import styles from './DetailedProduct.module.css';
+import { priceConverter } from '../../utils/functions';
+import { useStoreSelector } from '../../hooks/userRedux';
 
 export default function DetailedProduct() {
-  const lang = 'en-US';
+  const { userLanguage } = useStoreSelector((state) => state.userData);
   const { id } = useParams();
   const [productProjection, setProductProjection] = useState({} as ProductProjection);
   useEffect(() => {
     getProductById(id!).then((product) => setProductProjection(product));
   }, []);
+  const price = productProjection?.masterVariant?.prices?.[0];
+  const amount = priceConverter(price?.value?.centAmount);
 
   return (
     <div className={styles.wrapper}>
@@ -24,7 +28,7 @@ export default function DetailedProduct() {
           <div className={styles.description}>
             <img
               className={styles.image}
-              src={productProjection.masterVariant.images}
+              src={productProjection?.masterVariant?.images?.[0].url}
               alt="Product"
             />
             <p className={styles.text}>
@@ -37,10 +41,12 @@ export default function DetailedProduct() {
           </div>
 
           <div className={styles.info}>
-            <p className={styles.name}>{productProjection.name[lang]}</p>
-            <p className={styles.price}>Price</p>
+            <p className={styles.name}>{productProjection?.name?.[userLanguage]}</p>
+            <p className={styles.price}>Price: {amount} euro</p>
             <p className={styles.sale}>Sale: 20%</p>
-            <p className={styles['product-description']}>{productProjection.description[lang]}</p>
+            <p className={styles['product-description']}>
+              {productProjection?.description?.[userLanguage]}
+            </p>
           </div>
         </>
       )}

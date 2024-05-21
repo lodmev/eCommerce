@@ -3,12 +3,13 @@ import { Price } from '@commercetools/platform-sdk/dist/declarations/src/generat
 import { Link } from 'react-router-dom';
 import styles from './Product.module.css';
 import { ROUTE_PATH } from '../../utils/globalVariables';
+import { priceConverter } from '../../utils/functions';
 
 const lang = 'en-US';
 export default function ProductCard({ product }: { product: ProductProjection }) {
   const { name, masterVariant, id } = product;
   const price: Price | undefined = masterVariant.prices?.[0];
-  const amount = (price && price.value.centAmount / 100) || 0;
+  const amount = priceConverter(price?.value.centAmount);
   const image = masterVariant.images?.[0];
   const imageUrl = image && image.url;
   const navigationToDetailedProduct = `${ROUTE_PATH.detailedProduct}/${id}`;
