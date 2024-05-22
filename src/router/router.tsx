@@ -32,8 +32,9 @@ const router = createBrowserRouter([
       {
         element: <Breadcrumbs />,
         path: ROUTE_PATH.catalogProduct,
+
         handle: {
-          crumb: () => <Link to="./categories/:id">Categories</Link>,
+          crumb: () => <Link to="./categories">Categories</Link>,
         },
         children: [
           {
