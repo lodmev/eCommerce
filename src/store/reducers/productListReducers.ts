@@ -7,7 +7,7 @@ import {
   setAllProductsIsLoading,
 } from '../slices/productListSlice';
 
-const loadAllProducts = () => async (dispatch: StoreDispatch) => {
+export const loadAllProducts = () => async (dispatch: StoreDispatch) => {
   dispatch(setAllProductsIsLoading(true));
   try {
     const allProductsList: ProductProjection[] = await getAllProducts();
@@ -18,4 +18,4 @@ const loadAllProducts = () => async (dispatch: StoreDispatch) => {
   }
 };
 
-export default loadAllProducts;
+export const loadProductById = (/* ID: string */) => async (/* dispatch: StoreDispatch */) => {};

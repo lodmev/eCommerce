@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom';
-import { ProductProjection } from '@commercetools/platform-sdk';
 import { useEffect } from 'react';
+import { ProductProjection } from '@commercetools/platform-sdk';
 import styles from './Catalog.module.css';
 import ProductCard from '../Products/ProductCard';
 import { ROUTE_PATH } from '../../utils/globalVariables';
-import loadAllProducts from '../../store/reducers/productListReducers';
+import { loadAllProducts } from '../../store/reducers/productListReducers';
 import { useStoreDispatch, useStoreSelector } from '../../hooks/userRedux';
 import Overlay from '../Modal/Overlay';
 import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
@@ -17,7 +17,7 @@ export default function Catalog() {
   const dispatch = useStoreDispatch();
   useEffect(() => {
     dispatch(loadAllProducts());
-  }, []);
+  }, [dispatch]);
 
   const { allProducts, isLoading, errorMsg } = useStoreSelector((state) => state.productList);
   return (
@@ -25,11 +25,9 @@ export default function Catalog() {
       <div className={styles.wrapper}>
         <p className={styles['catalog-header']}>Catalog</p>
         <div className={styles.furniture}>
-          {allProducts
-            .slice(0, productsOnMainPage)
-            .map((product: ProductProjection, index: number) => (
-              <ProductCard key={index} product={product} />
-            ))}
+          {allProducts.slice(0, productsOnMainPage).map((product: ProductProjection) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
           {(isLoading || errorMsg !== '') && (
             <Overlay>
               {isLoading && <LoadingSpinner />}
