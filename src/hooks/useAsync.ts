@@ -13,6 +13,7 @@ const useAsync = (callback: () => void) => {
         setError(e);
       }
     } finally {
+      setPending(false);
       setDone(true);
     }
   };

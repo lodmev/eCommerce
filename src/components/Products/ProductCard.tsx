@@ -12,7 +12,7 @@ export default function ProductCard({ product }: { product: ProductProjection })
   const amount = priceConverter(price?.value.centAmount);
   const image = masterVariant.images?.[0];
   const imageUrl = image && image.url;
-  const navigationToDetailedProduct = `${ROUTE_PATH.detailedProduct}/${id}`;
+  const navigationToDetailedProduct = `${ROUTE_PATH.products}/${id}`;
 
   return (
     <Link className={styles['product-card']} to={navigationToDetailedProduct}>

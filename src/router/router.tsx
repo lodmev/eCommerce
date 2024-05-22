@@ -1,16 +1,15 @@
-import { Link, createBrowserRouter } from 'react-router-dom';
+import { Link, Outlet, createBrowserRouter } from 'react-router-dom';
 import AboutUs from '../pages/AboutUs/AboutUs';
 import NotFound from '../pages/NotFound/NotFound';
 import AppLayout from '../pages/AppLayout';
 import Basket from '../pages/Basket/Basket';
-import DetailedProduct from '../pages/DetailedProduct/DetailedProduct';
 import Login from '../pages/Login/Login';
 import Main from '../pages/Main/Main';
 import Registration from '../pages/Registration/Registration';
 import UserProfile from '../pages/UserProfile/UserProfile';
 import { ROUTE_PATH } from '../utils/globalVariables';
 import Breadcrumbs from '../components/Breadcrumbs/Breadcrumbs';
-import Categories from '../components/Breadcrumbs/Categories';
+import DetailedProduct from '../pages/DetailedProduct/DetailedProduct';
 
 const router = createBrowserRouter([
   {
@@ -31,25 +30,32 @@ const router = createBrowserRouter([
       },
       {
         element: <Breadcrumbs />,
-        path: ROUTE_PATH.catalogProduct,
-
+        path: ROUTE_PATH.products,
         handle: {
-          crumb: () => <Link to="./categories">Categories</Link>,
+          crumb: () => <Link to={ROUTE_PATH.products}>All products</Link>,
         },
         children: [
           {
-            path: `${ROUTE_PATH.catalogProduct}/categories`,
-            // loader: async () => getProductCategories(),
-            element: <Categories />,
+            path: `${ROUTE_PATH.products}/category/:id`,
+            element: <Outlet />,
             handle: {
-              crumb: () => <Link to="./subcategory">Subcategory</Link>,
+              crumb: (id?: string) => <Link to={`.subcategory/${id}`}>Subcategory</Link>,
             },
+            children: [
+              {
+                path: `${ROUTE_PATH.products}/category/:id/subcategory/:id`,
+                element: <Outlet />,
+                handle: {
+                  crumb: () => <Link to="./subcategory/">Subcategory</Link>,
+                },
+              },
+            ],
           },
         ],
       },
       {
         element: <DetailedProduct />,
-        path: `${ROUTE_PATH.detailedProduct}/:id`,
+        path: `${ROUTE_PATH.products}/:id`,
       },
       {
         element: <Login />,
