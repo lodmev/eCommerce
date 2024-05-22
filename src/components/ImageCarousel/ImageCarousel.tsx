@@ -16,7 +16,7 @@ export default function ImageCarousel({ images }: Props) {
   };
   return (
     <Carousel
-      swipeable
+      swipeable={false}
       draggable={false}
       showDots
       keyBoardControl
@@ -25,6 +25,10 @@ export default function ImageCarousel({ images }: Props) {
       dotListClass="custom-dot-list-style"
       itemClass="carousel-item-padding-40-px"
       responsive={responsive}
+      autoPlay
+      autoPlaySpeed={3000}
+      customTransition="all .5"
+      transitionDuration={500}
     >
       {images.map(({ url }: Image, index) => (
         <img key={index} className={styles.image} src={url} alt="Product" />
