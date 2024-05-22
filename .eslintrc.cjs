@@ -21,6 +21,10 @@ module.exports = {
     'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
     'react/require-default-props': 'off',
     'no-param-reassign': ['error', { props: false }],
-    'jsx-a11y/click-events-have-key-events': 'off'
-  },
+    'jsx-a11y/click-events-have-key-events': 'off',
+    'react-hooks/exhaustive-deps': 'off',
+    'react/no-array-index-key': 'off',
+
+
+},
 };

@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useEffect } from 'react';
 import { ProductProjection } from '@commercetools/platform-sdk';
 import styles from './Catalog.module.css';
-import ProductCard from '../Products/Product';
+import ProductCard from '../Products/ProductCard';
 import { ROUTE_PATH } from '../../utils/globalVariables';
 import { loadAllProducts } from '../../store/reducers/productListReducers';
 import { useStoreDispatch, useStoreSelector } from '../../hooks/userRedux';
