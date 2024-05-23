@@ -1,11 +1,16 @@
-import { ErrorResponse, ProductProjection } from '@commercetools/platform-sdk';
+import {
+  Category,
+  CategoryPagedQueryResponse,
+  ErrorResponse,
+  ProductProjection,
+} from '@commercetools/platform-sdk';
 import { StoreDispatch } from '../store';
 import { getAllProducts, getProductsCategories } from '../../api/products';
 import {
   setLoadProductsError,
   loadAllProductsSuccess,
   setProductsIsLoading,
-  setProductsCategory,
+  setProductCategories,
 } from '../slices/productSlice';
 
 export const loadAllProducts = () => async (dispatch: StoreDispatch) => {
@@ -22,8 +27,13 @@ export const loadAllProducts = () => async (dispatch: StoreDispatch) => {
 export const loadCategories = () => async (dispatch: StoreDispatch) => {
   dispatch(setProductsIsLoading(true));
   try {
-    const categories = await getProductsCategories();
-    dispatch(setProductsCategory(categories));
+    const categoriesQuery: CategoryPagedQueryResponse = await getProductsCategories();
+    const categoriesArray = categoriesQuery.results;
+    const categories = new Map<string, Category>();
+    categoriesArray.forEach((category) => {
+      categories.set(category.id, category);
+    });
+    dispatch(setProductCategories(categoriesArray));
   } catch (error) {
     const err = error as ErrorResponse;
     dispatch(setLoadProductsError(err.message));

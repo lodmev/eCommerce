@@ -1,23 +1,23 @@
-import { ProductProjection, type CategoryPagedQueryResponse } from '@commercetools/platform-sdk';
+import { Category, ProductProjection } from '@commercetools/platform-sdk';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 type ProductListState = {
   allProducts: ProductProjection[];
   isLoading: boolean;
   errorMsg: string;
-  productCategories: CategoryPagedQueryResponse | null;
+  productCategories: Category[];
 };
 
-const initialProductListState: ProductListState = {
+const initialProductState: ProductListState = {
   allProducts: [],
   isLoading: false,
   errorMsg: '',
-  productCategories: null,
+  productCategories: [],
 };
 
 const productSlice = createSlice({
-  name: 'productListData',
-  initialState: initialProductListState,
+  name: 'productData',
+  initialState: initialProductState,
   reducers: {
     loadAllProductsSuccess: (state, action: PayloadAction<ProductProjection[]>) => {
       state.allProducts = action.payload;
@@ -26,9 +26,10 @@ const productSlice = createSlice({
     setProductsIsLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
     },
-    setProductsCategory: (state, action: PayloadAction<CategoryPagedQueryResponse>) => {
+    setProductCategories: (state, action: PayloadAction<Category[]>) => {
       state.productCategories = action.payload;
     },
+
     setLoadProductsError: (state, action: PayloadAction<string>) => {
       state.errorMsg = action.payload;
       state.isLoading = false;
@@ -40,5 +41,5 @@ export const {
   loadAllProductsSuccess,
   setProductsIsLoading,
   setLoadProductsError,
-  setProductsCategory,
+  setProductCategories,
 } = productSlice.actions;

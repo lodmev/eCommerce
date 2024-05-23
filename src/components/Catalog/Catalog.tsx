@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import { ProductProjection } from '@commercetools/platform-sdk';
 import styles from './Catalog.module.css';
@@ -16,11 +16,11 @@ const productsOnMainPage: number = 8;
 
 export default function Catalog() {
   const dispatch = useStoreDispatch();
-  const location = useLocation();
+  const params = useParams();
   useEffect(() => {
     dispatch(loadAllProducts());
-    debug.log(location.pathname.split('/')[2]);
-  }, [dispatch, location]);
+    debug.log(params);
+  }, [dispatch]);
   const { allProducts, isLoading, errorMsg } = useStoreSelector((state) => state.productData);
   return (
     <div className={styles.catalog} id="catalog">

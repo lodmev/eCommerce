@@ -1,4 +1,4 @@
-import { Link, Outlet, createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter } from 'react-router-dom';
 import AboutUs from '../pages/AboutUs/AboutUs';
 import NotFound from '../pages/NotFound/NotFound';
 import AppLayout from '../pages/AppLayout';
@@ -8,8 +8,9 @@ import Main from '../pages/Main/Main';
 import Registration from '../pages/Registration/Registration';
 import UserProfile from '../pages/UserProfile/UserProfile';
 import { ROUTE_PATH } from '../utils/globalVariables';
-import Breadcrumbs from '../components/Breadcrumbs/Breadcrumbs';
+import Breadcrumbs, { CrumbTypes } from '../components/Breadcrumbs/Breadcrumbs';
 import DetailedProduct from '../pages/DetailedProduct/DetailedProduct';
+import Catalog from '../components/Catalog/Catalog';
 
 const router = createBrowserRouter([
   {
@@ -32,21 +33,24 @@ const router = createBrowserRouter([
         element: <Breadcrumbs />,
         path: ROUTE_PATH.products,
         handle: {
-          crumb: () => <Link to={ROUTE_PATH.products}>All products</Link>,
+          crumb: (match: { id?: string }, type: CrumbTypes = 'mainList') => ({ match, type }),
         },
         children: [
           {
             path: `${ROUTE_PATH.products}/category/:id`,
-            element: <Outlet />,
+            element: <Catalog />,
             handle: {
-              crumb: (id?: string) => <Link to={`.subcategory/${id}`}>Subcategory</Link>,
+              crumb: (match: { id?: string }, type: CrumbTypes = 'category') => ({ match, type }),
             },
             children: [
               {
-                path: `${ROUTE_PATH.products}/category/:id/subcategory/:id`,
-                element: <Outlet />,
+                path: `${ROUTE_PATH.products}/category/:id/subcategory/:subId`,
+                element: <Catalog />,
                 handle: {
-                  crumb: () => <Link to="./subcategory/">Subcategory</Link>,
+                  crumb: (match: { id?: string }, type: CrumbTypes = 'subcategory') => ({
+                    match,
+                    type,
+                  }),
                 },
               },
             ],
