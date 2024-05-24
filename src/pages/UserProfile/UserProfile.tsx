@@ -223,6 +223,7 @@ export default function UserProfile() {
                     type="button"
                     onClick={() => {
                       setIsChangePassword(false);
+                      setIsNewPasswordFieldsCorrect(true);
                       currentPasswordReset();
                       newPasswordReset();
                       confirmNewPasswordReset();
