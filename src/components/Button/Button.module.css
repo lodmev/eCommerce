@@ -34,3 +34,9 @@
   color: #56b280;
   border: 1px solid #56b280;
 }
+
+.red-outlined {
+  background-color: white;
+  color: #b25656;
+  border: 1px solid #b25656;
+}

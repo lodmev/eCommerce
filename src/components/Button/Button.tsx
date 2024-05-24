@@ -5,7 +5,7 @@ type Props = {
   type?: 'submit' | 'button';
   children?: React.ReactNode;
   disabled?: boolean;
-  styleClass: 'green-filled' | 'green-outlined';
+  styleClass: 'green-filled' | 'green-outlined' | 'red-outlined';
 };
 
 export default function Button(props: Props) {

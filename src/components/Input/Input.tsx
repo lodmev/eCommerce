@@ -27,7 +27,7 @@ export default function Input(props: Props) {
         <label className={styles.label} htmlFor={id}>
           {label}
         </label>
-        <div className={styles.wrapper}>
+        <div className={`${styles.wrapper} ${disabled && styles.disabled}`}>
           <input
             value={value}
             disabled={disabled}

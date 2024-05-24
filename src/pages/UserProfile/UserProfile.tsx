@@ -3,9 +3,10 @@ import { FormEvent, useState } from 'react';
 import { useLoaderData, useNavigate } from 'react-router-dom';
 import Button from '../../components/Button/Button';
 import Input from '../../components/Input/Input';
+import Overlay from '../../components/Modal/Overlay';
 import { useStoreSelector } from '../../hooks/userRedux';
 import useValidateInput from '../../hooks/useValidateInput';
-import { validateAge, validateName } from '../../utils/functions';
+import { validateAge, validateEmail, validateName, validatePassword } from '../../utils/functions';
 import { ROUTE_PATH } from '../../utils/globalVariables';
 import styles from './UserProfile.module.css';
 
@@ -14,6 +15,7 @@ export default function UserProfile() {
   const navigate = useNavigate();
   const { isUserAuthorized } = useStoreSelector((state) => state.userData);
   const [isEditUserInfo, setIsEditUserInfo] = useState(false);
+  const [isChangePassword, setIsChangePassword] = useState(false);
 
   if (!isUserAuthorized) navigate(ROUTE_PATH.main);
 
@@ -43,15 +45,36 @@ export default function UserProfile() {
     valueChangeHandler: dateChangeHandler,
   } = useValidateInput(validateAge, customer.dateOfBirth);
 
-  // if (isLoading)
-  //   return (
-  //     <Overlay>
-  //       <LoadingSpinner />
-  //     </Overlay>
-  //   );
+  const {
+    value: emailInputValue,
+    // isValid: emailIsValid,
+    hasError: emailHasError,
+    inputBlurHandler: emailBlurHandler,
+    valueChangeHandler: emailChangeHandler,
+  } = useValidateInput(validateEmail, customer.email);
+
+  const {
+    value: passwordInputValue,
+    // isValid: passwordIsValid,
+    hasError: passwordHasError,
+    inputBlurHandler: passwordBlurHandler,
+    valueChangeHandler: passwordChangeHandler,
+  } = useValidateInput(validatePassword);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+  };
+
+  const handleChangePassword = () => {
+    // if (passwordHasError) return;
+    // console.log('password is valid');
+    // console.log(passwordInputValue);
+    // TODO:
+    // 1) send new password to API
+    // 2) show loading
+    // 3) after password has been changed
+    //    show either success or error modal message
+    // 4) clear password input field
   };
 
   return (
@@ -66,7 +89,7 @@ export default function UserProfile() {
             onBlur={firstNameBlurHandler}
             onChange={firstNameChangeHandler}
             value={firstNameInputValue}
-            invalid={firstNameHasError}
+            invalid={isEditUserInfo && firstNameHasError}
             placeholder="First Name"
             errorText="Must contain at least one character and no special characters or numbers"
             disabled={!isEditUserInfo}
@@ -78,7 +101,7 @@ export default function UserProfile() {
             onBlur={lastNameBlurHandler}
             onChange={lastNameChangeHandler}
             value={lastNameInputValue}
-            invalid={lastNameHasError}
+            invalid={isEditUserInfo && lastNameHasError}
             placeholder="Last Name"
             errorText="Must contain at least one character and no special characters or numbers"
             disabled={!isEditUserInfo}
@@ -90,14 +113,19 @@ export default function UserProfile() {
           onBlur={dateBlurHandler}
           onChange={dateChangeHandler}
           value={dateInputValue}
-          invalid={dateHasError}
+          invalid={isEditUserInfo && dateHasError}
           errorText="Must be older than 13 years"
           disabled={!isEditUserInfo}
         />
         <Input
           type="email"
           label="Current Email"
-          value={customer.email}
+          onBlur={emailBlurHandler}
+          onChange={emailChangeHandler}
+          invalid={isEditUserInfo && emailHasError}
+          value={emailInputValue}
+          placeholder="Email"
+          errorText="Invalid email address"
           disabled={!isEditUserInfo}
         />
         <Button
@@ -107,6 +135,47 @@ export default function UserProfile() {
         >
           Edit Personal Data
         </Button>
+      </div>
+      <div>
+        <div className={styles['input-group']}>
+          <Button
+            type="button"
+            onClick={() => setIsChangePassword((prev) => !prev)}
+            styleClass="green-outlined"
+          >
+            Change Password
+          </Button>
+          {isChangePassword && (
+            <Overlay>
+              <div className={styles['modal-password']}>
+                <h2>Enter New Password</h2>
+                <Input
+                  onBlur={passwordBlurHandler}
+                  onChange={passwordChangeHandler}
+                  value={passwordInputValue}
+                  invalid={passwordHasError}
+                  id="password"
+                  label="Your password"
+                  type="password"
+                  placeholder="Password"
+                  errorText="Minimum 8 characters, at least 1 uppercase letter, 1 lowercase letter, 1 number and must not contain leading or trailing whitespace."
+                />
+                <div className={styles['modal-buttons']}>
+                  <Button
+                    type="button"
+                    onClick={() => setIsChangePassword(false)}
+                    styleClass="red-outlined"
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="button" onClick={handleChangePassword} styleClass="green-outlined">
+                    Confirm
+                  </Button>
+                </div>
+              </div>
+            </Overlay>
+          )}
+        </div>
       </div>
       <ul>
         Addresses:
