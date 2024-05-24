@@ -1,8 +1,10 @@
 import { Customer } from '@commercetools/platform-sdk';
 import { FormEvent, useState } from 'react';
 import { useLoaderData, useNavigate } from 'react-router-dom';
+import AddressCard from '../../components/AddressCard/AddressCard';
 import Button from '../../components/Button/Button';
 import Input from '../../components/Input/Input';
+import ModalConfirm from '../../components/Modal/ModalConfirm';
 import Overlay from '../../components/Modal/Overlay';
 import { useStoreSelector } from '../../hooks/userRedux';
 import useValidateInput from '../../hooks/useValidateInput';
@@ -17,6 +19,8 @@ export default function UserProfile() {
   const [isEditUserInfo, setIsEditUserInfo] = useState(false);
   const [isChangePassword, setIsChangePassword] = useState(false);
   const [isNewPasswordFieldsCorrect, setIsNewPasswordFieldsCorrect] = useState(true);
+  const [isAddressModal, setIsAddressModal] = useState(false);
+  const [isConfirmDeleteAddress, setIsConfirmDeleteAddress] = useState(false);
 
   if (!isUserAuthorized) navigate(ROUTE_PATH.main);
 
@@ -106,6 +110,13 @@ export default function UserProfile() {
     // 4) reset password input fields
     // 5) setIsCurrentPasswordCorrect(false)
   };
+
+  function handleDeleteAddress() {
+    // 1) send request to API
+    // 2) show loading spinner
+    setIsConfirmDeleteAddress(false);
+    // or show modal with error
+  }
 
   return (
     <form onSubmit={handleSubmit}>
@@ -241,29 +252,43 @@ export default function UserProfile() {
           )}
         </div>
       </div>
-      <ul>
-        Addresses:
+      <h2>Addresses:</h2>
+      <ul className={styles['address-cards']}>
         {customer.addresses.map((address) => (
-          <li key={address.id}>
-            {address.id &&
-              customer.shippingAddressIds?.includes(address.id) &&
-              'Shipping Address: '}
-            {address.id && customer.billingAddressIds?.includes(address.id) && 'Billing Address: '}
-            <br />
-            Country: {address.country}
-            <br />
-            City: {address.city}
-            <br />
-            Street Name: {address.streetName}
-            <br />
-            Postal Code: {address.postalCode}
-            <br />
-            {address.id === customer.defaultShippingAddressId && 'This is Default Shipping Address'}
-            {address.id === customer.defaultBillingAddressId && 'This is Default Billing Address'}
-            <hr />
-          </li>
+          <AddressCard
+            key={address.id}
+            id={address.id}
+            country={address.country}
+            city={address.city}
+            streetName={address.streetName}
+            postalCode={address.postalCode}
+            shippingAddressIds={customer.shippingAddressIds}
+            billingAddressIds={customer.billingAddressIds}
+            defaultShippingAddressId={customer.defaultShippingAddressId}
+            defaultBillingAddressId={customer.defaultBillingAddressId}
+            onClickDelete={() => {
+              setIsConfirmDeleteAddress(true);
+            }}
+            onClickEdit={() => {
+              setIsAddressModal(true);
+            }}
+          />
         ))}
       </ul>
+      {isAddressModal && (
+        <Overlay>
+          <form />
+        </Overlay>
+      )}
+      {isConfirmDeleteAddress && (
+        <Overlay>
+          <ModalConfirm
+            onCancel={() => setIsConfirmDeleteAddress(false)}
+            onConfirm={() => handleDeleteAddress()}
+            message="Are you sure want to delete this address?"
+          />
+        </Overlay>
+      )}
     </form>
   );
 }
