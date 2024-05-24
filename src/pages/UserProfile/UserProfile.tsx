@@ -16,6 +16,7 @@ export default function UserProfile() {
   const { isUserAuthorized } = useStoreSelector((state) => state.userData);
   const [isEditUserInfo, setIsEditUserInfo] = useState(false);
   const [isChangePassword, setIsChangePassword] = useState(false);
+  // const [isNewPasswordFieldsCorrect, setIsNewPasswordFieldsCorrect] = useState(true);
 
   if (!isUserAuthorized) navigate(ROUTE_PATH.main);
 
@@ -54,11 +55,30 @@ export default function UserProfile() {
   } = useValidateInput(validateEmail, customer.email);
 
   const {
-    value: passwordInputValue,
-    // isValid: passwordIsValid,
-    hasError: passwordHasError,
-    inputBlurHandler: passwordBlurHandler,
-    valueChangeHandler: passwordChangeHandler,
+    value: currentPasswordInputValue,
+    // isValid: currentPasswordIsValid,
+    hasError: currentPasswordHasError,
+    inputBlurHandler: currentPasswordBlurHandler,
+    valueChangeHandler: currentPasswordChangeHandler,
+    reset: currentPasswordReset,
+  } = useValidateInput(validatePassword);
+
+  const {
+    value: newPasswordInputValue,
+    // isValid: newPasswordIsValid,
+    hasError: newPasswordHasError,
+    inputBlurHandler: newPasswordBlurHandler,
+    valueChangeHandler: newPasswordChangeHandler,
+    reset: newPasswordReset,
+  } = useValidateInput(validatePassword);
+
+  const {
+    value: confirmNewPasswordInputValue,
+    // isValid: confirmNewPasswordIsValid,
+    hasError: confirmNewPasswordHasError,
+    inputBlurHandler: confirmNewPasswordBlurHandler,
+    valueChangeHandler: confirmNewPasswordChangeHandler,
+    reset: confirmNewPasswordReset,
   } = useValidateInput(validatePassword);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -74,7 +94,8 @@ export default function UserProfile() {
     // 2) show loading
     // 3) after password has been changed
     //    show either success or error modal message
-    // 4) clear password input field
+    // 4) reset password input fields
+    // 5) setIsCurrentPasswordCorrect(false)
   };
 
   return (
@@ -148,22 +169,49 @@ export default function UserProfile() {
           {isChangePassword && (
             <Overlay>
               <div className={styles['modal-password']}>
-                <h2>Enter New Password</h2>
+                <h2>Change password</h2>
                 <Input
-                  onBlur={passwordBlurHandler}
-                  onChange={passwordChangeHandler}
-                  value={passwordInputValue}
-                  invalid={passwordHasError}
-                  id="password"
-                  label="Your password"
+                  onBlur={currentPasswordBlurHandler}
+                  onChange={currentPasswordChangeHandler}
+                  value={currentPasswordInputValue}
+                  invalid={currentPasswordHasError}
+                  id="currentPassword"
+                  label="Your current password"
                   type="password"
-                  placeholder="Password"
+                  placeholder="Current Password"
+                  errorText="Minimum 8 characters, at least 1 uppercase letter, 1 lowercase letter, 1 number and must not contain leading or trailing whitespace."
+                />
+                <Input
+                  onBlur={newPasswordBlurHandler}
+                  onChange={newPasswordChangeHandler}
+                  value={newPasswordInputValue}
+                  invalid={newPasswordHasError}
+                  id="newPassword"
+                  label="Your new password"
+                  type="password"
+                  placeholder="New Password"
+                  errorText="Minimum 8 characters, at least 1 uppercase letter, 1 lowercase letter, 1 number and must not contain leading or trailing whitespace."
+                />
+                <Input
+                  onBlur={confirmNewPasswordBlurHandler}
+                  onChange={confirmNewPasswordChangeHandler}
+                  value={confirmNewPasswordInputValue}
+                  invalid={confirmNewPasswordHasError}
+                  id="confirmNewPassword"
+                  label="Confirm your new password"
+                  type="password"
+                  placeholder="Confirm New Password"
                   errorText="Minimum 8 characters, at least 1 uppercase letter, 1 lowercase letter, 1 number and must not contain leading or trailing whitespace."
                 />
                 <div className={styles['modal-buttons']}>
                   <Button
                     type="button"
-                    onClick={() => setIsChangePassword(false)}
+                    onClick={() => {
+                      setIsChangePassword(false);
+                      currentPasswordReset();
+                      newPasswordReset();
+                      confirmNewPasswordReset();
+                    }}
                     styleClass="red-outlined"
                   >
                     Cancel
