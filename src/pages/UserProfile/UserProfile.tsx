@@ -16,7 +16,7 @@ export default function UserProfile() {
   const { isUserAuthorized } = useStoreSelector((state) => state.userData);
   const [isEditUserInfo, setIsEditUserInfo] = useState(false);
   const [isChangePassword, setIsChangePassword] = useState(false);
-  // const [isNewPasswordFieldsCorrect, setIsNewPasswordFieldsCorrect] = useState(true);
+  const [isNewPasswordFieldsCorrect, setIsNewPasswordFieldsCorrect] = useState(true);
 
   if (!isUserAuthorized) navigate(ROUTE_PATH.main);
 
@@ -86,9 +86,18 @@ export default function UserProfile() {
   };
 
   const handleChangePassword = () => {
-    // if (passwordHasError) return;
-    // console.log('password is valid');
-    // console.log(passwordInputValue);
+    const isNewPasswordConfirmed = newPasswordInputValue === confirmNewPasswordInputValue;
+    // const isAllInputsCorrect = [
+    //   isNewPasswordConfirmed,
+    //   !newPasswordHasError,
+    //   !confirmNewPasswordHasError,
+    // ].every((val) => val);
+
+    setIsNewPasswordFieldsCorrect(isNewPasswordConfirmed);
+
+    // if (!isAllInputsCorrect) return;
+    // console.log(isNewPasswordConfirmed);
+    // console.log({ newPasswordInputValue, confirmNewPasswordInputValue });
     // TODO:
     // 1) send new password to API
     // 2) show loading
@@ -181,28 +190,34 @@ export default function UserProfile() {
                   placeholder="Current Password"
                   errorText="Minimum 8 characters, at least 1 uppercase letter, 1 lowercase letter, 1 number and must not contain leading or trailing whitespace."
                 />
-                <Input
-                  onBlur={newPasswordBlurHandler}
-                  onChange={newPasswordChangeHandler}
-                  value={newPasswordInputValue}
-                  invalid={newPasswordHasError}
-                  id="newPassword"
-                  label="Your new password"
-                  type="password"
-                  placeholder="New Password"
-                  errorText="Minimum 8 characters, at least 1 uppercase letter, 1 lowercase letter, 1 number and must not contain leading or trailing whitespace."
-                />
-                <Input
-                  onBlur={confirmNewPasswordBlurHandler}
-                  onChange={confirmNewPasswordChangeHandler}
-                  value={confirmNewPasswordInputValue}
-                  invalid={confirmNewPasswordHasError}
-                  id="confirmNewPassword"
-                  label="Confirm your new password"
-                  type="password"
-                  placeholder="Confirm New Password"
-                  errorText="Minimum 8 characters, at least 1 uppercase letter, 1 lowercase letter, 1 number and must not contain leading or trailing whitespace."
-                />
+                <fieldset className={styles['new-password-fieldset']}>
+                  <legend>New Password</legend>
+                  <Input
+                    onBlur={newPasswordBlurHandler}
+                    onChange={newPasswordChangeHandler}
+                    value={newPasswordInputValue}
+                    invalid={newPasswordHasError}
+                    id="newPassword"
+                    label="Your new password"
+                    type="password"
+                    placeholder="New Password"
+                    errorText="Minimum 8 characters, at least 1 uppercase letter, 1 lowercase letter, 1 number and must not contain leading or trailing whitespace."
+                  />
+                  <Input
+                    onBlur={confirmNewPasswordBlurHandler}
+                    onChange={confirmNewPasswordChangeHandler}
+                    value={confirmNewPasswordInputValue}
+                    invalid={confirmNewPasswordHasError}
+                    id="confirmNewPassword"
+                    label="Confirm your new password"
+                    type="password"
+                    placeholder="Confirm New Password"
+                    errorText="Minimum 8 characters, at least 1 uppercase letter, 1 lowercase letter, 1 number and must not contain leading or trailing whitespace."
+                  />
+                  {!isNewPasswordFieldsCorrect && (
+                    <p className={styles['error-msg']}>Passwords does not match</p>
+                  )}
+                </fieldset>
                 <div className={styles['modal-buttons']}>
                   <Button
                     type="button"

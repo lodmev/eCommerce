@@ -17,3 +17,13 @@
   justify-content: space-evenly;
   margin-top: 1em;
 }
+
+.new-password-fieldset {
+  padding: 1em;
+  margin-top: 0.5em;
+  border-radius: 5px;
+}
+
+.error-msg {
+  color: #ea5555;
+}
