@@ -2,8 +2,8 @@ export const ROUTE_PATH = {
   main: '/',
   aboutUs: '/about-us',
   basket: '/basket',
-  catalogProduct: '/catalog-product',
-  detailedProduct: '/detailed-product',
+  products: '/products',
+
   login: '/login',
   registration: '/registration',
   userProfile: '/user-profile',
