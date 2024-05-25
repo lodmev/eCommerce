@@ -22,6 +22,7 @@ export default function UserProfile() {
   const [isNewPasswordFieldsCorrect, setIsNewPasswordFieldsCorrect] = useState(true);
   const [isAddressModal, setIsAddressModal] = useState(false);
   const [isConfirmDeleteAddress, setIsConfirmDeleteAddress] = useState(false);
+  const [editingAddress, setEditingAddress] = useState({});
 
   if (!isUserAuthorized) navigate(ROUTE_PATH.main);
 
@@ -277,6 +278,22 @@ export default function UserProfile() {
               setIsConfirmDeleteAddress(true);
             }}
             onClickEdit={() => {
+              const isDefaultShipping = customer.shippingAddressIds?.includes(
+                customer.defaultShippingAddressId!,
+              );
+              const isDefaultBilling = customer.billingAddressIds?.includes(
+                customer.defaultBillingAddressId!,
+              );
+
+              setEditingAddress({
+                id: address.id,
+                country: address.country,
+                city: address.city,
+                streetName: address.streetName,
+                postalCode: address.postalCode,
+                isDefaultBilling,
+                isDefaultShipping,
+              });
               setIsAddressModal(true);
             }}
           />
@@ -287,6 +304,7 @@ export default function UserProfile() {
           <ModalAddress
             onCancel={() => setIsAddressModal(false)}
             onConfirm={() => handleEditAddress()}
+            editingAddress={editingAddress}
           />
         </Overlay>
       )}

@@ -10,19 +10,37 @@ import styles from './ModalAddress.module.css';
 type Props = {
   onCancel: () => void;
   onConfirm: () => void;
+  editingAddress: {
+    id?: string;
+    country?: string;
+    city?: string;
+    streetName?: string;
+    postalCode?: string;
+    isDefaultBilling?: boolean;
+    isDefaultShipping?: boolean;
+  };
 };
 
 export default function ModalAddress(props: Props) {
-  const { onCancel, onConfirm } = props;
+  const { onCancel, onConfirm, editingAddress } = props;
 
-  const [selectedCountry, setSelectedCountry] = useState({ value: '', label: '' });
+  const [selectedCountry, setSelectedCountry] = useState(
+    COUNTRIES_OPTIONS_LIST.filter((country) => country.value === editingAddress.country)[0] || {
+      value: '',
+      label: '',
+    },
+  );
+
+  const [isDefaultBilling, setIsDefaultBilling] = useState(!!editingAddress.isDefaultBilling);
+  const [isDefaultShipping, setIsDefaultShipping] = useState(!!editingAddress.isDefaultShipping);
+
   const {
     value: streetInputValue,
     isValid: streetIsValid,
     hasError: streetHasError,
     inputBlurHandler: streetBlurHandler,
     valueChangeHandler: streetChangeHandler,
-  } = useValidateInput((value: string) => value.trim().length > 0);
+  } = useValidateInput((value: string) => value.trim().length > 0, editingAddress.country);
 
   const {
     value: cityInputValue,
@@ -30,7 +48,7 @@ export default function ModalAddress(props: Props) {
     hasError: cityHasError,
     inputBlurHandler: cityBlurHandler,
     valueChangeHandler: cityChangeHandler,
-  } = useValidateInput(validateCity);
+  } = useValidateInput(validateCity, editingAddress.city);
 
   const {
     value: postalInputValue,
@@ -40,6 +58,7 @@ export default function ModalAddress(props: Props) {
     valueChangeHandler: postalChangeHandler,
   } = useValidateInput(
     selectedCountry.value ? validatePostalCode[selectedCountry.value] : () => false,
+    editingAddress.postalCode,
   );
 
   function handleConfirmChangeAddress() {
@@ -61,6 +80,7 @@ export default function ModalAddress(props: Props) {
       <fieldset className={styles.fieldset}>
         <legend>Edit address</legend>
         <SelectComponent
+          value={selectedCountry}
           onChange={(value) => {
             if (value) setSelectedCountry(value);
           }}
@@ -99,16 +119,28 @@ export default function ModalAddress(props: Props) {
           type="text"
           errorText="Must contain at least one character and no special characters or numbers"
         />
-        <label htmlFor="default-shipping-billing">
-          <input
-            className={styles.checkbox}
-            type="checkbox"
-            id="default-shipping-billing"
-            // checked={isDefaultShippingAndBilling}
-            // onChange={() => setIsDefaultShippingAndBilling((prev) => !prev)}
-          />
-          Set as default
-        </label>
+        <div className={styles.checkboxes}>
+          <label htmlFor="default-shipping-billing">
+            <input
+              className={styles.checkbox}
+              type="checkbox"
+              id="default-shipping-billing"
+              checked={isDefaultShipping}
+              onChange={() => setIsDefaultShipping((prev) => !prev)}
+            />
+            Set as default shipping
+          </label>
+          <label htmlFor="default-shipping-billing">
+            <input
+              className={styles.checkbox}
+              type="checkbox"
+              id="default-shipping-billing"
+              checked={isDefaultBilling}
+              onChange={() => setIsDefaultBilling((prev) => !prev)}
+            />
+            Set as default billing
+          </label>
+        </div>
       </fieldset>
       <div className={styles.controls}>
         <Button type="button" onClick={onCancel} styleClass="red-outlined">
