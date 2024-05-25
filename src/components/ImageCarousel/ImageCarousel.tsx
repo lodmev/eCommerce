@@ -27,6 +27,15 @@ export default function ImageCarousel({ images }: Props) {
       items: 1,
     },
   };
+
+  const [modalCarouselImages, setModalCarouselImages] = useState<Image[]>([]);
+  function onImageClick(index: number) {
+    const rest = images.slice(0, index);
+    const imagesForModal = images.slice(index, images.length).concat(rest);
+    setModalCarouselImages(imagesForModal);
+    setModal(true);
+  }
+
   return (
     <>
       <Carousel
@@ -46,7 +55,7 @@ export default function ImageCarousel({ images }: Props) {
       >
         {images.map(({ url }: Image, index) => (
           <img
-            onClick={() => setModal(true)}
+            onClick={() => onImageClick(index)}
             key={index}
             className={styles.image}
             src={url}
@@ -68,7 +77,27 @@ export default function ImageCarousel({ images }: Props) {
           return true;
         }}
       >
-        <img className={styles.image} src={images[0].url} alt="Product" />
+        <Carousel
+          swipeable={false}
+          draggable={false}
+          showDots
+          keyBoardControl
+          infinite
+          containerClass="carousel-container"
+          dotListClass="custom-dot-list-style"
+          itemClass="carousel-item-padding-40-px"
+          responsive={responsive}
+        >
+          {modalCarouselImages.map(({ url }: Image, index) => (
+            <img
+              onClick={() => onImageClick(index)}
+              key={index}
+              className={styles.image}
+              src={url}
+              alt="Product"
+            />
+          ))}
+        </Carousel>
       </PureModal>
       ;
     </>
