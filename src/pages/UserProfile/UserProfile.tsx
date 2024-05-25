@@ -90,6 +90,17 @@ export default function UserProfile() {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // if (!isEditUserInfo) return;
+    // const userInfo = {
+    //   email: emailInputValue,
+    //   firstName: firstNameInputValue,
+    //   lastName: lastNameInputValue,
+    //   dateOfBirth: dateInputValue,
+    // };
+
+    // console.log('submit');
+    // console.log(userInfo);
   };
 
   const handleChangePassword = () => {
@@ -191,6 +202,9 @@ export default function UserProfile() {
             styleClass="green-outlined"
           >
             Edit Personal Data
+          </Button>
+          <Button disabled={!isEditUserInfo} type="submit" styleClass="green-outlined">
+            Save Changes
           </Button>
           <Button
             type="button"
