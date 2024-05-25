@@ -20,7 +20,8 @@ export default function UserProfile() {
   const [isEditUserInfo, setIsEditUserInfo] = useState(false);
   const [isChangePassword, setIsChangePassword] = useState(false);
   const [isNewPasswordFieldsCorrect, setIsNewPasswordFieldsCorrect] = useState(true);
-  const [isAddressModal, setIsAddressModal] = useState(false);
+  const [isEditAddressModal, setIsEditAddressModal] = useState(false);
+  const [isAddAddressModal, setIsAddAddressModal] = useState(false);
   const [isConfirmDeleteAddress, setIsConfirmDeleteAddress] = useState(false);
   const [editingAddress, setEditingAddress] = useState({});
 
@@ -123,7 +124,13 @@ export default function UserProfile() {
   function handleEditAddress() {
     // 1) send request to API
     // 2) show loading spinner
-    setIsAddressModal(false);
+    setIsEditAddressModal(false);
+  }
+
+  function handleAddAddress() {
+    // 1) send request to API
+    // 2) show loading spinner
+    setIsAddAddressModal(false);
   }
 
   return (
@@ -294,17 +301,29 @@ export default function UserProfile() {
                 isDefaultBilling,
                 isDefaultShipping,
               });
-              setIsAddressModal(true);
+              setIsEditAddressModal(true);
             }}
           />
         ))}
       </ul>
-      {isAddressModal && (
+      <Button onClick={() => setIsAddAddressModal(true)} type="button" styleClass="green-outlined">
+        Add New Address
+      </Button>
+      {isEditAddressModal && (
         <Overlay>
           <ModalAddress
-            onCancel={() => setIsAddressModal(false)}
+            onCancel={() => setIsEditAddressModal(false)}
             onConfirm={() => handleEditAddress()}
             editingAddress={editingAddress}
+          />
+        </Overlay>
+      )}
+      {isAddAddressModal && (
+        <Overlay>
+          <ModalAddress
+            onCancel={() => setIsAddAddressModal(false)}
+            onConfirm={() => handleAddAddress()}
+            editingAddress={{}}
           />
         </Overlay>
       )}

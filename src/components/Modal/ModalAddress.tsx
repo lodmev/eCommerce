@@ -61,7 +61,7 @@ export default function ModalAddress(props: Props) {
     editingAddress.postalCode,
   );
 
-  function handleConfirmChangeAddress() {
+  function handleConfirmAddress() {
     const isAllValid = [
       streetIsValid,
       cityIsValid,
@@ -72,6 +72,10 @@ export default function ModalAddress(props: Props) {
     if (isAllValid) {
       // console.log('all fields are valid');
       onConfirm();
+    } else {
+      postalBlurHandler();
+      cityBlurHandler();
+      streetBlurHandler();
     }
   }
 
@@ -146,11 +150,7 @@ export default function ModalAddress(props: Props) {
         <Button type="button" onClick={onCancel} styleClass="red-outlined">
           Cancel
         </Button>
-        <Button
-          type="button"
-          onClick={() => handleConfirmChangeAddress()}
-          styleClass="green-outlined"
-        >
+        <Button type="button" onClick={() => handleConfirmAddress()} styleClass="green-outlined">
           Confirm
         </Button>
       </div>
