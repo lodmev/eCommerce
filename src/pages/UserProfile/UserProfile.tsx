@@ -134,7 +134,7 @@ export default function UserProfile() {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className={styles.form} onSubmit={handleSubmit}>
       <h1>User Profile</h1>
       <div>
         <div className={styles['input-group']}>
@@ -184,16 +184,14 @@ export default function UserProfile() {
           errorText="Invalid email address"
           disabled={!isEditUserInfo}
         />
-        <Button
-          onClick={() => setIsEditUserInfo((prev) => !prev)}
-          type="button"
-          styleClass="green-outlined"
-        >
-          Edit Personal Data
-        </Button>
-      </div>
-      <div>
         <div className={styles['input-group']}>
+          <Button
+            onClick={() => setIsEditUserInfo((prev) => !prev)}
+            type="button"
+            styleClass="green-outlined"
+          >
+            Edit Personal Data
+          </Button>
           <Button
             type="button"
             onClick={() => setIsChangePassword((prev) => !prev)}
@@ -201,6 +199,17 @@ export default function UserProfile() {
           >
             Change Password
           </Button>
+        </div>
+      </div>
+      <div>
+        <div className={styles['input-group']}>
+          {/* <Button
+            type="button"
+            onClick={() => setIsChangePassword((prev) => !prev)}
+            styleClass="green-outlined"
+          >
+            Change Password
+          </Button> */}
           {isChangePassword && (
             <Overlay>
               <div className={styles['modal-password']}>
@@ -307,7 +316,7 @@ export default function UserProfile() {
         ))}
       </ul>
       <Button onClick={() => setIsAddAddressModal(true)} type="button" styleClass="green-outlined">
-        Add New Address
+        + Add New Address
       </Button>
       {isEditAddressModal && (
         <Overlay>
