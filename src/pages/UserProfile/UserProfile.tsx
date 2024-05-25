@@ -4,6 +4,7 @@ import { useLoaderData, useNavigate } from 'react-router-dom';
 import AddressCard from '../../components/AddressCard/AddressCard';
 import Button from '../../components/Button/Button';
 import Input from '../../components/Input/Input';
+import ModalAddress from '../../components/Modal/ModalAddress';
 import ModalConfirm from '../../components/Modal/ModalConfirm';
 import Overlay from '../../components/Modal/Overlay';
 import { useStoreSelector } from '../../hooks/userRedux';
@@ -116,6 +117,12 @@ export default function UserProfile() {
     // 2) show loading spinner
     setIsConfirmDeleteAddress(false);
     // or show modal with error
+  }
+
+  function handleEditAddress() {
+    // 1) send request to API
+    // 2) show loading spinner
+    setIsAddressModal(false);
   }
 
   return (
@@ -277,7 +284,10 @@ export default function UserProfile() {
       </ul>
       {isAddressModal && (
         <Overlay>
-          <form />
+          <ModalAddress
+            onCancel={() => setIsAddressModal(false)}
+            onConfirm={() => handleEditAddress()}
+          />
         </Overlay>
       )}
       {isConfirmDeleteAddress && (
