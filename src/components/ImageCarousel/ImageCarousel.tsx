@@ -29,6 +29,7 @@ export default function ImageCarousel({ images }: Props) {
   };
 
   const [modalCarouselImages, setModalCarouselImages] = useState<Image[]>([]);
+
   function onImageClick(index: number) {
     const rest = images.slice(0, index);
     const imagesForModal = images.slice(index, images.length).concat(rest);
@@ -39,6 +40,7 @@ export default function ImageCarousel({ images }: Props) {
   return (
     <>
       <Carousel
+        className={styles.carousel}
         swipeable={false}
         draggable={false}
         showDots
@@ -64,12 +66,9 @@ export default function ImageCarousel({ images }: Props) {
         ))}
       </Carousel>
       <PureModal
+        className={styles.modal}
+        width="70%"
         header={productProjection?.name?.[userLanguage]}
-        footer={
-          <div className={styles['modal-button']}>
-            {productProjection?.description?.[userLanguage]}
-          </div>
-        }
         isOpen={modal}
         closeButtonPosition="bottom"
         onClose={() => {
@@ -78,6 +77,7 @@ export default function ImageCarousel({ images }: Props) {
         }}
       >
         <Carousel
+          className={styles['modal-carousel']}
           swipeable={false}
           draggable={false}
           showDots
