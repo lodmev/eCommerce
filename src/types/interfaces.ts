@@ -17,3 +17,10 @@ export interface ICustomerRegisterData {
   defaultBillingAddress?: number;
   defaultShippingAddress?: number;
 }
+
+export interface IUpdateUserInfo {
+  email: string;
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+}

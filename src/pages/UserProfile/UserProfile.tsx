@@ -1,6 +1,7 @@
 import { Customer } from '@commercetools/platform-sdk';
 import { FormEvent, useState } from 'react';
 import { useLoaderData, useNavigate } from 'react-router-dom';
+import { updateCustomerPersonalData } from '../../api/profile';
 import AddressCard from '../../components/AddressCard/AddressCard';
 import Button from '../../components/Button/Button';
 import Input from '../../components/Input/Input';
@@ -9,6 +10,7 @@ import ModalConfirm from '../../components/Modal/ModalConfirm';
 import Overlay from '../../components/Modal/Overlay';
 import { useStoreSelector } from '../../hooks/userRedux';
 import useValidateInput from '../../hooks/useValidateInput';
+import { IUpdateUserInfo } from '../../types/interfaces';
 import { validateAge, validateEmail, validateName, validatePassword } from '../../utils/functions';
 import { ROUTE_PATH } from '../../utils/globalVariables';
 import styles from './UserProfile.module.css';
@@ -91,13 +93,18 @@ export default function UserProfile() {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // if (!isEditUserInfo) return;
-    // const userInfo = {
-    //   email: emailInputValue,
-    //   firstName: firstNameInputValue,
-    //   lastName: lastNameInputValue,
-    //   dateOfBirth: dateInputValue,
-    // };
+    if (!isEditUserInfo) return;
+
+    const userInfo: IUpdateUserInfo = {
+      email: emailInputValue,
+      firstName: firstNameInputValue,
+      lastName: lastNameInputValue,
+      dateOfBirth: dateInputValue,
+    };
+
+    // console.log(userInfo);
+
+    updateCustomerPersonalData(userInfo);
 
     // console.log('submit');
     // console.log(userInfo);
