@@ -1,3 +1,5 @@
+export const DEFAULT_LANGUAGE_KEY = 'en-US';
+
 export const ROUTE_PATH = {
   main: '/',
   aboutUs: '/about-us',

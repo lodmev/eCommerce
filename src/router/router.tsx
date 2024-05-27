@@ -37,14 +37,14 @@ const router = createBrowserRouter([
         },
         children: [
           {
-            path: `${ROUTE_PATH.products}/category/:id`,
+            path: `${ROUTE_PATH.products}/category/:catID`,
             element: <Catalog />,
             handle: {
               crumb: (match: { id?: string }, type: CrumbTypes = 'category') => ({ match, type }),
             },
             children: [
               {
-                path: `${ROUTE_PATH.products}/category/:id/subcategory/:subId`,
+                path: `${ROUTE_PATH.products}/category/:catID/subcategory/:subCatID`,
                 element: <Catalog />,
                 handle: {
                   crumb: (match: { id?: string }, type: CrumbTypes = 'subcategory') => ({

@@ -1,18 +1,17 @@
-import { Category, ProductProjection } from '@commercetools/platform-sdk';
+import { ProductProjection } from '@commercetools/platform-sdk';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+// import debug from '../../utils/debug';
 
-type ProductListState = {
+type ProductState = {
   allProducts: ProductProjection[];
   isLoading: boolean;
   errorMsg: string;
-  productCategories: Category[];
 };
 
-const initialProductState: ProductListState = {
+const initialProductState: ProductState = {
   allProducts: [],
   isLoading: false,
   errorMsg: '',
-  productCategories: [],
 };
 
 const productSlice = createSlice({
@@ -26,10 +25,6 @@ const productSlice = createSlice({
     setProductsIsLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
     },
-    setProductCategories: (state, action: PayloadAction<Category[]>) => {
-      state.productCategories = action.payload;
-    },
-
     setLoadProductsError: (state, action: PayloadAction<string>) => {
       state.errorMsg = action.payload;
       state.isLoading = false;
@@ -37,9 +32,5 @@ const productSlice = createSlice({
   },
 });
 export default productSlice;
-export const {
-  loadAllProductsSuccess,
-  setProductsIsLoading,
-  setLoadProductsError,
-  setProductCategories,
-} = productSlice.actions;
+export const { loadAllProductsSuccess, setProductsIsLoading, setLoadProductsError } =
+  productSlice.actions;
