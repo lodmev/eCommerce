@@ -33,7 +33,7 @@ export default function Catalog() {
       <div className={styles.wrapper}>
         <p className={styles['catalog-header']}>{currentCategory}</p>
         <div className={styles.furniture}>
-          {(isLoading || err) && (
+          {isLoading || err ? (
             <Overlay>
               {isLoading && <LoadingSpinner />}
               {err && (
@@ -44,13 +44,14 @@ export default function Catalog() {
                 />
               )}
             </Overlay>
-          )}
-          {allProducts &&
+          ) : (
+            allProducts &&
             allProducts
               .slice(0, productsOnMainPage)
               .map((product: ProductProjection) => (
                 <ProductCard key={product.id} product={product} />
-              ))}
+              ))
+          )}
         </div>
         <Link className={styles.center} to={ROUTE_PATH.products}>
           <div className={styles.link}>
