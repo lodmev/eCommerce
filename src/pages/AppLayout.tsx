@@ -6,7 +6,7 @@ import Footer from '../components/Footer/Footer';
 import Header from '../components/Header/Header';
 import LoadingSpinner from '../components/LoadingSpinner/LoadingSpinner';
 import Overlay from '../components/Modal/Overlay';
-import { setUserVersion } from '../store/slices/userSlice';
+import { setUserId, setUserVersion } from '../store/slices/userSlice';
 import debug from '../utils/debug';
 import { getToken } from '../utils/token';
 
@@ -22,6 +22,7 @@ export default function AppLayout() {
       .then((customer) => {
         debug.log('customer: ', customer);
         dispatch(setUserVersion(customer.version));
+        dispatch(setUserId(customer.id));
       })
       .catch(debug.error);
   }, [dispatch]);

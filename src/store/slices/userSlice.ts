@@ -6,6 +6,7 @@ type UserState = {
   isLoading: boolean;
   errorMsg: string;
   userVersion: number;
+  userId: string;
 };
 
 const initialUserState: UserState = {
@@ -13,6 +14,7 @@ const initialUserState: UserState = {
   isLoading: false,
   errorMsg: '',
   userVersion: 1,
+  userId: '',
 };
 
 const userSlice = createSlice({
@@ -36,8 +38,17 @@ const userSlice = createSlice({
     setUserVersion: (state, action: PayloadAction<number>) => {
       state.userVersion = action.payload;
     },
+    setUserId: (state, action: PayloadAction<string>) => {
+      state.userId = action.payload;
+    },
   },
 });
 export default userSlice;
-export const { setUserLogin, setUserVersion, setUserLogout, setUserIsLoading, setUserError } =
-  userSlice.actions;
+export const {
+  setUserLogin,
+  setUserVersion,
+  setUserId,
+  setUserLogout,
+  setUserIsLoading,
+  setUserError,
+} = userSlice.actions;
