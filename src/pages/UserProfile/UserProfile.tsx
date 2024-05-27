@@ -18,6 +18,8 @@ import styles from './UserProfile.module.css';
 export default function UserProfile() {
   const customer = useLoaderData() as Customer;
   const navigate = useNavigate();
+  // const dispatch = useDispatch();
+  const userVersion = useStoreSelector((state) => state.userData.userVersion);
   const { isUserAuthorized } = useStoreSelector((state) => state.userData);
   const [isEditUserInfo, setIsEditUserInfo] = useState(false);
   const [isChangePassword, setIsChangePassword] = useState(false);
@@ -95,6 +97,8 @@ export default function UserProfile() {
 
     if (!isEditUserInfo) return;
 
+    // const userVersion = dispatch(ge)
+
     const userInfo: IUpdateUserInfo = {
       email: emailInputValue,
       firstName: firstNameInputValue,
@@ -104,7 +108,7 @@ export default function UserProfile() {
 
     // console.log(userInfo);
 
-    updateCustomerPersonalData(userInfo);
+    updateCustomerPersonalData(userVersion, userInfo);
 
     // console.log('submit');
     // console.log(userInfo);
