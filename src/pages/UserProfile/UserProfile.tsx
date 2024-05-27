@@ -2,7 +2,8 @@ import { Customer } from '@commercetools/platform-sdk';
 import { FormEvent, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useLoaderData, useNavigate } from 'react-router-dom';
-import { updateCustomerPersonalData } from '../../api/profile';
+import { loginUser, logoutUser } from '../../api/customers';
+import { changeUserPassword, updateCustomerPersonalData } from '../../api/profile';
 import AddressCard from '../../components/AddressCard/AddressCard';
 import Button from '../../components/Button/Button';
 import Input from '../../components/Input/Input';
@@ -117,26 +118,42 @@ export default function UserProfile() {
     }
   };
 
-  const handleChangePassword = () => {
+  const handleChangePassword = async () => {
     const isNewPasswordConfirmed = newPasswordInputValue === confirmNewPasswordInputValue;
-    // const isAllInputsCorrect = [
-    //   isNewPasswordConfirmed,
-    //   !newPasswordHasError,
-    //   !confirmNewPasswordHasError,
-    // ].every((val) => val);
+    const isAllInputsCorrect = [
+      isNewPasswordConfirmed,
+      !newPasswordHasError,
+      !confirmNewPasswordHasError,
+    ].every((val) => val);
 
     setIsNewPasswordFieldsCorrect(isNewPasswordConfirmed);
 
-    // if (!isAllInputsCorrect) return;
-    // console.log(isNewPasswordConfirmed);
-    // console.log({ newPasswordInputValue, confirmNewPasswordInputValue });
+    if (!isAllInputsCorrect) return;
+
+    try {
+      const res = await changeUserPassword(
+        userVersion,
+        currentPasswordInputValue,
+        newPasswordInputValue,
+      );
+      dispatch(setUserVersion(res.body.version));
+      // TODO:
+      // 1) Update auth token
+      logoutUser();
+      loginUser({ email: emailInputValue, password: newPasswordInputValue });
+    } catch (error) {
+      // TODO:
+      // 2) show loading
+      // 3) after password has been changed
+      //    show either success or error modal message
+      // 4) reset password input fields
+      // 5) setIsCurrentPasswordCorrect(false)
+    }
+
+    /*
     // TODO:
-    // 1) send new password to API
-    // 2) show loading
-    // 3) after password has been changed
-    //    show either success or error modal message
-    // 4) reset password input fields
-    // 5) setIsCurrentPasswordCorrect(false)
+    // handle invalid token error
+    */
   };
 
   function handleDeleteAddress() {

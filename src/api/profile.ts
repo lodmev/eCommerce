@@ -36,4 +36,22 @@ export const updateCustomerPersonalData = async (
   return res;
 };
 
-export const changePassword = () => {};
+export const changeUserPassword = async (
+  userVersion: number,
+  currentPassword: string,
+  newPassword: string,
+) => {
+  const res = await getCurrentApiClient()
+    .me()
+    .password()
+    .post({
+      body: {
+        version: userVersion,
+        currentPassword,
+        newPassword,
+      },
+    })
+    .execute();
+
+  return res;
+};
