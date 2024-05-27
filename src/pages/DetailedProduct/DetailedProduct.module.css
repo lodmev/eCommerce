@@ -125,6 +125,7 @@
 .carousel {
   cursor: pointer;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  z-index: 0;
 
   &:hover {
     transform: scale(1.02);
