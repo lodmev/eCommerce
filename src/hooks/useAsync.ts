@@ -1,23 +1,28 @@
-import { useState } from 'react';
+import { DependencyList, useEffect, useState } from 'react';
 
-const useAsync = (callback: () => void) => {
+const useAsync = <T, P, D extends DependencyList>(
+  callback: (params?: P) => Promise<T>,
+  deps: D,
+): [T | undefined, boolean, Error | undefined] => {
   const [isPending, setPending] = useState(false);
-  const [error, setError] = useState<Error | undefined>(undefined);
-  const [done, setDone] = useState(false);
+  const [err, setError] = useState<Error | undefined>(undefined);
+  const [result, setResult] = useState<T | undefined>();
   const doJob = async () => {
     try {
       setPending(true);
-      callback();
+      const res = await callback();
+      setResult(res);
     } catch (e) {
       if (e instanceof Error) {
         setError(e);
       }
     } finally {
       setPending(false);
-      setDone(true);
     }
   };
-  doJob();
-  return { doJob, done, isPending, error };
+  useEffect(() => {
+    doJob();
+  }, deps);
+  return [result, isPending, err];
 };
 export default useAsync;
