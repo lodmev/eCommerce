@@ -1,47 +1,56 @@
 import { Link, useParams } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { ProductProjection } from '@commercetools/platform-sdk';
 import styles from './Catalog.module.css';
 import ProductCard from '../Products/ProductCard';
 import { ROUTE_PATH } from '../../utils/globalVariables';
-import { loadAllProducts } from '../../store/reducers/productReducers';
 import { useStoreDispatch, useStoreSelector } from '../../hooks/userRedux';
 import Overlay from '../Modal/Overlay';
 import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 import ModalConfirm from '../Modal/ModalConfirm';
 import { setUserError } from '../../store/slices/userSlice';
-import debug from '../../utils/debug';
+import useAsync from '../../hooks/useAsync';
+import { getAllProducts, getProductCategoriesMap } from '../../api/products';
+// import debug from '../../utils/debug';
 
 const productsOnMainPage: number = 8;
 
 export default function Catalog() {
   const dispatch = useStoreDispatch();
+  const [currentCategory, setCurrentCategory] = useState('All categories');
   const params = useParams();
+  const [allProducts, isLoading, err] = useAsync(getAllProducts, []);
+  const [categoriesMap] = useAsync(getProductCategoriesMap, [false]);
+  const locale = useStoreSelector((state) => state.userData.userLanguage);
   useEffect(() => {
-    dispatch(loadAllProducts());
-    debug.log(params);
-  }, [dispatch]);
-  const { allProducts, isLoading, errorMsg } = useStoreSelector((state) => state.productData);
+    const id: string = params.subCatID || params.catID || '';
+    if (id && categoriesMap) {
+      setCurrentCategory(categoriesMap[id].name[locale]);
+    }
+  }, [params]);
   return (
     <div className={styles.catalog} id="catalog">
       <div className={styles.wrapper}>
-        <p className={styles['catalog-header']}>Catalog</p>
+        <p className={styles['catalog-header']}>{currentCategory}</p>
         <div className={styles.furniture}>
-          {allProducts.slice(0, productsOnMainPage).map((product: ProductProjection) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-          {(isLoading || errorMsg !== '') && (
+          {(isLoading || err) && (
             <Overlay>
               {isLoading && <LoadingSpinner />}
-              {errorMsg && (
+              {err && (
                 <ModalConfirm
-                  message={errorMsg}
+                  message={err?.message}
                   isError
                   onConfirm={() => dispatch(setUserError(''))}
                 />
               )}
             </Overlay>
           )}
+          {allProducts &&
+            allProducts
+              .slice(0, productsOnMainPage)
+              .map((product: ProductProjection) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
         </div>
         <Link className={styles.center} to={ROUTE_PATH.products}>
           <div className={styles.link}>
