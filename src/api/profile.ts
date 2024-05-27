@@ -5,11 +5,8 @@ export const updateCustomerPersonalData = async (
   userVersion: number,
   userInfo: IUpdateUserInfo,
 ) => {
-  // console.log('updateCustomerPersonalData');
-  // console.log(userInfo);
-  // console.log(userVersion);
-  const { firstName } = userInfo;
-  await getCurrentApiClient()
+  const { firstName, dateOfBirth, lastName, email } = userInfo;
+  const res = await getCurrentApiClient()
     .me()
     .post({
       body: {
@@ -19,11 +16,24 @@ export const updateCustomerPersonalData = async (
             action: 'setFirstName',
             firstName,
           },
+          {
+            action: 'setLastName',
+            lastName,
+          },
+          {
+            action: 'changeEmail',
+            email,
+          },
+          {
+            action: 'setDateOfBirth',
+            dateOfBirth,
+          },
         ],
       },
     })
     .execute();
-  // console.log(res);
+
+  return res;
 };
 
 export const changePassword = () => {};

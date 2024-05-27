@@ -1,5 +1,6 @@
 import { Customer } from '@commercetools/platform-sdk';
 import { FormEvent, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { useLoaderData, useNavigate } from 'react-router-dom';
 import { updateCustomerPersonalData } from '../../api/profile';
 import AddressCard from '../../components/AddressCard/AddressCard';
@@ -10,6 +11,7 @@ import ModalConfirm from '../../components/Modal/ModalConfirm';
 import Overlay from '../../components/Modal/Overlay';
 import { useStoreSelector } from '../../hooks/userRedux';
 import useValidateInput from '../../hooks/useValidateInput';
+import { setUserVersion } from '../../store/slices/userSlice';
 import { IUpdateUserInfo } from '../../types/interfaces';
 import { validateAge, validateEmail, validateName, validatePassword } from '../../utils/functions';
 import { ROUTE_PATH } from '../../utils/globalVariables';
@@ -18,7 +20,7 @@ import styles from './UserProfile.module.css';
 export default function UserProfile() {
   const customer = useLoaderData() as Customer;
   const navigate = useNavigate();
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const userVersion = useStoreSelector((state) => state.userData.userVersion);
   const { isUserAuthorized } = useStoreSelector((state) => state.userData);
   const [isEditUserInfo, setIsEditUserInfo] = useState(false);
@@ -92,12 +94,10 @@ export default function UserProfile() {
     reset: confirmNewPasswordReset,
   } = useValidateInput(validatePassword);
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!isEditUserInfo) return;
-
-    // const userVersion = dispatch(ge)
 
     const userInfo: IUpdateUserInfo = {
       email: emailInputValue,
@@ -106,12 +106,15 @@ export default function UserProfile() {
       dateOfBirth: dateInputValue,
     };
 
-    // console.log(userInfo);
-
-    updateCustomerPersonalData(userVersion, userInfo);
-
-    // console.log('submit');
-    // console.log(userInfo);
+    try {
+      const res = await updateCustomerPersonalData(userVersion, userInfo);
+      dispatch(setUserVersion(res.body.version));
+    } catch (error) {
+      // TODO:
+      // 1) show spinner on loading
+      // 2) show error modal to user
+      // console.error(error);
+    }
   };
 
   const handleChangePassword = () => {
