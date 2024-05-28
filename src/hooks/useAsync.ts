@@ -2,6 +2,7 @@ import { DependencyList, useEffect, useState } from 'react';
 
 const useAsync = <T, P, D extends DependencyList>(
   callback: (params?: P) => Promise<T>,
+  params: P,
   deps: D,
 ): [T | undefined, boolean, Error | undefined] => {
   const [isPending, setPending] = useState(false);
@@ -9,8 +10,9 @@ const useAsync = <T, P, D extends DependencyList>(
   const [result, setResult] = useState<T | undefined>();
   const doJob = async () => {
     try {
+      setError(undefined);
       setPending(true);
-      const res = await callback();
+      const res = await callback(params);
       setResult(res);
     } catch (e) {
       if (e instanceof Error) {

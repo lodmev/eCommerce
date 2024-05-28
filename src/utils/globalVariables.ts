@@ -1,4 +1,5 @@
 export const DEFAULT_LANGUAGE_KEY = 'en-US';
+export const PRODUCT_DEFAULT_FETCH_LIMIT = 8;
 
 export const ROUTE_PATH = {
   main: '/',

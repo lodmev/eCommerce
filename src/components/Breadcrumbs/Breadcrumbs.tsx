@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import { UIMatch, useMatches, Link } from 'react-router-dom';
 import { Breadcrumb } from 'antd';
 import { BreadcrumbItemType } from 'antd/es/breadcrumb/Breadcrumb';
@@ -86,11 +86,10 @@ const createCrumbItems = (
 };
 export default function Breadcrumbs(): ReactNode {
   const matches = useMatches();
-  let refetchCategory = false;
-  const [productCategoriesMap, isLoading, err] = useAsync<CategoriesMap, undefined, boolean[]>(
-    getProductCategoriesMap,
-    [refetchCategory],
-  );
+  const [needUpdate, setNeedUpdate] = useState(false);
+  const [productCategoriesMap, isLoading, err] = useAsync(getProductCategoriesMap, undefined, [
+    needUpdate,
+  ]);
   const locale = useStoreSelector((state) => state.userData.userLanguage);
   const crumbs = matches
     .filter((match) => Boolean((match.handle as { crumb?: CrumbType })?.crumb))
@@ -105,7 +104,7 @@ export default function Breadcrumbs(): ReactNode {
               message={err.message}
               isError
               onConfirm={() => {
-                refetchCategory = !refetchCategory;
+                setNeedUpdate((prev) => !prev);
               }}
             />
           )}

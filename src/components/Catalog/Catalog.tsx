@@ -1,31 +1,46 @@
-import { Link, useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
 import { ProductProjection } from '@commercetools/platform-sdk';
+import { Link, Params, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import styles from './Catalog.module.css';
 import ProductCard from '../Products/ProductCard';
-import { ROUTE_PATH } from '../../utils/globalVariables';
-import { useStoreDispatch, useStoreSelector } from '../../hooks/userRedux';
+import { PRODUCT_DEFAULT_FETCH_LIMIT, ROUTE_PATH } from '../../utils/globalVariables';
+import { useStoreSelector } from '../../hooks/userRedux';
 import Overlay from '../Modal/Overlay';
 import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 import ModalConfirm from '../Modal/ModalConfirm';
-import { setUserError } from '../../store/slices/userSlice';
 import useAsync from '../../hooks/useAsync';
-import { getAllProducts, getProductCategoriesMap } from '../../api/products';
+import { getProductCategoriesMap, searchProducts } from '../../api/products';
+import { SearchProductsQuery } from '../../types/types';
 // import debug from '../../utils/debug';
 
-const productsOnMainPage: number = 8;
+const findProducts = async (params?: Readonly<Params<string>>) => {
+  const id: string = params?.subCatID || params?.catID || '';
+  if (id) {
+    const searchQuery: SearchProductsQuery = {
+      queryArgs: { filter: `categories.id:"${id}"`, limit: PRODUCT_DEFAULT_FETCH_LIMIT },
+    };
+    return searchProducts(searchQuery);
+  }
+  return searchProducts();
+};
 
 export default function Catalog() {
-  const dispatch = useStoreDispatch();
-  const [currentCategory, setCurrentCategory] = useState('All categories');
+  const defaultCategoryName = 'All categories';
+  const [currentCategory, setCurrentCategory] = useState(defaultCategoryName);
   const params = useParams();
-  const [allProducts, isLoading, err] = useAsync(getAllProducts, []);
-  const [categoriesMap] = useAsync(getProductCategoriesMap, [false]);
+  const [needUpdate, setNeedUpdate] = useState(false);
+  const [allProductsResponse, isLoading, err] = useAsync(findProducts, params, [
+    params,
+    needUpdate,
+  ]);
+  const [categoriesMap] = useAsync(getProductCategoriesMap, undefined, [false]);
   const locale = useStoreSelector((state) => state.userData.userLanguage);
   useEffect(() => {
     const id: string = params.subCatID || params.catID || '';
     if (id && categoriesMap) {
       setCurrentCategory(categoriesMap[id].name[locale]);
+    } else {
+      setCurrentCategory(defaultCategoryName);
     }
   }, [params]);
   return (
@@ -38,19 +53,19 @@ export default function Catalog() {
               {isLoading && <LoadingSpinner />}
               {err && (
                 <ModalConfirm
-                  message={err?.message}
+                  message={`${err.name}`}
                   isError
-                  onConfirm={() => dispatch(setUserError(''))}
+                  onConfirm={() => {
+                    setNeedUpdate((prev) => !prev);
+                  }}
                 />
               )}
             </Overlay>
           ) : (
-            allProducts &&
-            allProducts
-              .slice(0, productsOnMainPage)
-              .map((product: ProductProjection) => (
-                <ProductCard key={product.id} product={product} />
-              ))
+            allProductsResponse &&
+            allProductsResponse.results.map((product: ProductProjection) => (
+              <ProductCard key={product.id} product={product} />
+            ))
           )}
         </div>
         <Link className={styles.center} to={ROUTE_PATH.products}>
