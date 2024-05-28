@@ -1,17 +1,16 @@
 import { ProductProjection } from '@commercetools/platform-sdk';
-import { Price } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/common';
 import { Link } from 'react-router-dom';
 import styles from './Product.module.css';
 import { ROUTE_PATH } from '../../utils/globalVariables';
-import { priceConverter } from '../../utils/functions';
 import { useStoreSelector } from '../../hooks/userRedux';
+import debug from '../../utils/debug';
+import Price from '../Price/Price';
 
 export default function ProductCard({ product }: { product: ProductProjection }) {
+  debug.dir(product);
   const { name, masterVariant, id, description } = product;
   const locale = useStoreSelector((state) => state.userData.userLanguage);
   const desc = description ? description[locale] : '';
-  const price: Price | undefined = masterVariant.prices?.[0];
-  const amount = priceConverter(price?.value.centAmount);
   const image = masterVariant.images?.[0];
   const imageUrl = image && image.url;
   const navigationToDetailedProduct = `${ROUTE_PATH.products}/${id}`;
@@ -21,7 +20,7 @@ export default function ProductCard({ product }: { product: ProductProjection })
       <img className={styles['product-card__image']} src={imageUrl} alt="product" />
       <p className={styles['product-card__brand']}>{name[locale]}</p>
       {desc && <p className={styles['product-card__description']}>{desc}</p>}
-      <p className={styles['product-card__price']}>Price: {amount} euro</p>
+      <Price price={masterVariant.prices?.[0]} />
       <button
         type="button"
         className={styles['product-card__btn-wishlist']}
