@@ -11,20 +11,25 @@ import ModalConfirm from '../Modal/ModalConfirm';
 import useAsync from '../../hooks/useAsync';
 import { getProductCategoriesMap, searchProducts } from '../../api/products';
 import { SearchProductsQuery } from '../../types/types';
+import Breadcrumbs from '../Breadcrumbs/Breadcrumbs';
 // import debug from '../../utils/debug';
 
+const getID = (params?: Readonly<Params<string>>) => params?.subCatID || params?.catID || '';
+
 const findProducts = async (params?: Readonly<Params<string>>) => {
-  const id: string = params?.subCatID || params?.catID || '';
+  const id: string = getID(params);
+  const queryArgs: { filter?: string | string[]; limit: number } = {
+    limit: PRODUCT_DEFAULT_FETCH_LIMIT,
+  };
   if (id) {
-    const searchQuery: SearchProductsQuery = {
-      queryArgs: { filter: `categories.id:"${id}"`, limit: PRODUCT_DEFAULT_FETCH_LIMIT },
-    };
-    return searchProducts(searchQuery);
+    queryArgs.filter = `categories.id:"${id}"`;
   }
-  return searchProducts();
+
+  const searchQuery: SearchProductsQuery = { queryArgs };
+  return searchProducts(searchQuery);
 };
 
-export default function Catalog() {
+export default function Catalog({ withLink }: { withLink?: boolean }) {
   const defaultCategoryName = 'All categories';
   const [currentCategory, setCurrentCategory] = useState(defaultCategoryName);
   const params = useParams();
@@ -36,16 +41,17 @@ export default function Catalog() {
   const [categoriesMap] = useAsync(getProductCategoriesMap, undefined, [false]);
   const locale = useStoreSelector((state) => state.userData.userLanguage);
   useEffect(() => {
-    const id: string = params.subCatID || params.catID || '';
+    const id: string = getID(params);
     if (id && categoriesMap) {
       setCurrentCategory(categoriesMap[id].name[locale]);
     } else {
       setCurrentCategory(defaultCategoryName);
     }
-  }, [params]);
+  }, [params, categoriesMap]);
   return (
     <div className={styles.catalog} id="catalog">
       <div className={styles.wrapper}>
+        <Breadcrumbs className={styles.breadcrumbs} />
         <p className={styles['catalog-header']}>{currentCategory}</p>
         <div className={styles.furniture}>
           {isLoading || err ? (
@@ -68,11 +74,13 @@ export default function Catalog() {
             ))
           )}
         </div>
-        <Link className={styles.center} to={ROUTE_PATH.products}>
-          <div className={styles.link}>
-            <p className={styles.text}>Go to catalog</p>
-          </div>
-        </Link>
+        {withLink && (
+          <Link className={styles.center} to={ROUTE_PATH.products}>
+            <div className={styles.link}>
+              <p className={styles.text}>Go to catalog</p>
+            </div>
+          </Link>
+        )}
       </div>
     </div>
   );

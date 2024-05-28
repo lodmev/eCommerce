@@ -7,7 +7,6 @@ import Overlay from '../Modal/Overlay';
 import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 import ModalConfirm from '../Modal/ModalConfirm';
 import { CategoriesMap } from '../../types/types';
-import Catalog from '../Catalog/Catalog';
 import useAsync from '../../hooks/useAsync';
 import { getProductCategoriesMap } from '../../api/products';
 // import debug from '../../utils/debug';
@@ -84,7 +83,7 @@ const createCrumbItems = (
   });
   return items;
 };
-export default function Breadcrumbs(): ReactNode {
+export default function Breadcrumbs({ className }: { className?: string }): ReactNode {
   const matches = useMatches();
   const [needUpdate, setNeedUpdate] = useState(false);
   const [productCategoriesMap, isLoading, err] = useAsync(getProductCategoriesMap, undefined, [
@@ -94,27 +93,25 @@ export default function Breadcrumbs(): ReactNode {
   const crumbs = matches
     .filter((match) => Boolean((match.handle as { crumb?: CrumbType })?.crumb))
     .map((match) => (match.handle as { crumb: CrumbType })?.crumb(match));
-  return (
-    <>
-      {isLoading || err ? (
-        <Overlay>
-          {isLoading && <LoadingSpinner />}
-          {err && (
-            <ModalConfirm
-              message={err.message}
-              isError
-              onConfirm={() => {
-                setNeedUpdate((prev) => !prev);
-              }}
-            />
-          )}
-        </Overlay>
-      ) : (
-        productCategoriesMap && (
-          <Breadcrumb items={createCrumbItems(crumbs, productCategoriesMap, locale)} />
-        )
+  return isLoading || err ? (
+    <Overlay>
+      {isLoading && <LoadingSpinner />}
+      {err && (
+        <ModalConfirm
+          message={err.message}
+          isError
+          onConfirm={() => {
+            setNeedUpdate((prev) => !prev);
+          }}
+        />
       )}
-      <Catalog />
-    </>
+    </Overlay>
+  ) : (
+    productCategoriesMap && (
+      <Breadcrumb
+        className={className}
+        items={createCrumbItems(crumbs, productCategoriesMap, locale)}
+      />
+    )
   );
 }

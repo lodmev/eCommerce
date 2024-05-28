@@ -8,7 +8,7 @@ import Main from '../pages/Main/Main';
 import Registration from '../pages/Registration/Registration';
 import UserProfile from '../pages/UserProfile/UserProfile';
 import { ROUTE_PATH } from '../utils/globalVariables';
-import Breadcrumbs, { CrumbTypes } from '../components/Breadcrumbs/Breadcrumbs';
+import { CrumbTypes } from '../components/Breadcrumbs/Breadcrumbs';
 import DetailedProduct from '../pages/DetailedProduct/DetailedProduct';
 import Catalog from '../components/Catalog/Catalog';
 
@@ -30,7 +30,7 @@ const router = createBrowserRouter([
         path: ROUTE_PATH.basket,
       },
       {
-        element: <Breadcrumbs />,
+        element: <Catalog />,
         path: ROUTE_PATH.products,
         handle: {
           crumb: (match: { id?: string }, type: CrumbTypes = 'mainList') => ({ match, type }),
