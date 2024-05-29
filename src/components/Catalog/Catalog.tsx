@@ -5,13 +5,11 @@ import styles from './Catalog.module.css';
 import ProductCard from '../Products/ProductCard';
 import { PRODUCT_DEFAULT_FETCH_LIMIT, ROUTE_PATH } from '../../utils/globalVariables';
 import { useStoreSelector } from '../../hooks/userRedux';
-import Overlay from '../Modal/Overlay';
-import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
-import ModalConfirm from '../Modal/ModalConfirm';
 import useAsync from '../../hooks/useAsync';
 import { getProductCategoriesMap, searchProducts } from '../../api/products';
 import { SearchProductsQuery } from '../../types/types';
 import Breadcrumbs from '../Breadcrumbs/Breadcrumbs';
+import Loader from '../Modal/Loader';
 // import debug from '../../utils/debug';
 
 const getID = (params?: Readonly<Params<string>>) => params?.subCatID || params?.catID || '';
@@ -55,18 +53,13 @@ export default function Catalog({ withLink }: { withLink?: boolean }) {
         <p className={styles['catalog-header']}>{currentCategory}</p>
         <div className={styles.furniture}>
           {isLoading || err ? (
-            <Overlay>
-              {isLoading && <LoadingSpinner />}
-              {err && (
-                <ModalConfirm
-                  message={`${err.name}`}
-                  isError
-                  onConfirm={() => {
-                    setNeedUpdate((prev) => !prev);
-                  }}
-                />
-              )}
-            </Overlay>
+            <Loader
+              isLoading={isLoading}
+              errMsg={err?.name}
+              errorHandler={() => {
+                setNeedUpdate((prev) => !prev);
+              }}
+            />
           ) : (
             allProductsResponse &&
             allProductsResponse.results.map((product: ProductProjection) => (

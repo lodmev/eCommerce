@@ -8,7 +8,8 @@ export const getAllProducts = async (): Promise<ProductProjection[]> => {
   return response.body.results;
 };
 
-export const getProductById = async (ID: string): Promise<ProductProjection> => {
+export const getProductById = async (ID?: string): Promise<ProductProjection> => {
+  if (!ID) return Promise.reject(new Error('there is no ID for fetching product'));
   const response = await getCurrentApiClient().productProjections().withId({ ID }).get().execute();
   return response.body;
 };

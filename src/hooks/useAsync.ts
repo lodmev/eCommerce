@@ -2,7 +2,7 @@ import { DependencyList, useEffect, useState } from 'react';
 
 const useAsync = <T, P, D extends DependencyList>(
   callback: (params?: P) => Promise<T>,
-  params: P,
+  params: P | undefined,
   deps: D,
 ): [T | undefined, boolean, Error | undefined] => {
   const [isPending, setPending] = useState(false);
