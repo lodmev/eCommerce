@@ -1,53 +1,86 @@
-import { Link, useParams } from 'react-router-dom';
-import { useEffect } from 'react';
 import { ProductProjection } from '@commercetools/platform-sdk';
+import { Link, Params, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import styles from './Catalog.module.css';
 import ProductCard from '../Products/ProductCard';
-import { ROUTE_PATH } from '../../utils/globalVariables';
-import { loadAllProducts } from '../../store/reducers/productReducers';
-import { useStoreDispatch, useStoreSelector } from '../../hooks/userRedux';
+import { PRODUCT_DEFAULT_FETCH_LIMIT, ROUTE_PATH } from '../../utils/globalVariables';
+import { useStoreSelector } from '../../hooks/userRedux';
 import Overlay from '../Modal/Overlay';
 import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 import ModalConfirm from '../Modal/ModalConfirm';
-import { setUserError } from '../../store/slices/userSlice';
-import debug from '../../utils/debug';
+import useAsync from '../../hooks/useAsync';
+import { getProductCategoriesMap, searchProducts } from '../../api/products';
+import { SearchProductsQuery } from '../../types/types';
+import Breadcrumbs from '../Breadcrumbs/Breadcrumbs';
+// import debug from '../../utils/debug';
 
-const productsOnMainPage: number = 8;
+const getID = (params?: Readonly<Params<string>>) => params?.subCatID || params?.catID || '';
 
-export default function Catalog() {
-  const dispatch = useStoreDispatch();
+const findProducts = async (params?: Readonly<Params<string>>) => {
+  const id: string = getID(params);
+  const queryArgs: { filter?: string | string[]; limit: number } = {
+    limit: PRODUCT_DEFAULT_FETCH_LIMIT,
+  };
+  if (id) {
+    queryArgs.filter = `categories.id:"${id}"`;
+  }
+
+  const searchQuery: SearchProductsQuery = { queryArgs };
+  return searchProducts(searchQuery);
+};
+
+export default function Catalog({ withLink }: { withLink?: boolean }) {
+  const defaultCategoryName = 'All categories';
+  const [currentCategory, setCurrentCategory] = useState(defaultCategoryName);
   const params = useParams();
+  const [needUpdate, setNeedUpdate] = useState(false);
+  const [allProductsResponse, isLoading, err] = useAsync(findProducts, params, [
+    params,
+    needUpdate,
+  ]);
+  const [categoriesMap] = useAsync(getProductCategoriesMap, undefined, [false]);
+  const locale = useStoreSelector((state) => state.userData.userLanguage);
   useEffect(() => {
-    dispatch(loadAllProducts());
-    debug.log(params);
-  }, [dispatch]);
-  const { allProducts, isLoading, errorMsg } = useStoreSelector((state) => state.productData);
+    const id: string = getID(params);
+    if (id && categoriesMap) {
+      setCurrentCategory(categoriesMap[id].name[locale]);
+    } else {
+      setCurrentCategory(defaultCategoryName);
+    }
+  }, [params, categoriesMap]);
   return (
     <div className={styles.catalog} id="catalog">
       <div className={styles.wrapper}>
-        <p className={styles['catalog-header']}>Catalog</p>
+        <Breadcrumbs className={styles.breadcrumbs} />
+        <p className={styles['catalog-header']}>{currentCategory}</p>
         <div className={styles.furniture}>
-          {allProducts.slice(0, productsOnMainPage).map((product: ProductProjection) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-          {(isLoading || errorMsg !== '') && (
+          {isLoading || err ? (
             <Overlay>
               {isLoading && <LoadingSpinner />}
-              {errorMsg && (
+              {err && (
                 <ModalConfirm
-                  message={errorMsg}
+                  message={`${err.name}`}
                   isError
-                  onConfirm={() => dispatch(setUserError(''))}
+                  onConfirm={() => {
+                    setNeedUpdate((prev) => !prev);
+                  }}
                 />
               )}
             </Overlay>
+          ) : (
+            allProductsResponse &&
+            allProductsResponse.results.map((product: ProductProjection) => (
+              <ProductCard key={product.id} product={product} />
+            ))
           )}
         </div>
-        <Link className={styles.center} to={ROUTE_PATH.products}>
-          <div className={styles.link}>
-            <p className={styles.text}>Go to catalog</p>
-          </div>
-        </Link>
+        {withLink && (
+          <Link className={styles.center} to={ROUTE_PATH.products}>
+            <div className={styles.link}>
+              <p className={styles.text}>Go to catalog</p>
+            </div>
+          </Link>
+        )}
       </div>
     </div>
   );
