@@ -3,11 +3,10 @@ import { Link } from 'react-router-dom';
 import styles from './Product.module.css';
 import { ROUTE_PATH } from '../../utils/globalVariables';
 import { useStoreSelector } from '../../hooks/userRedux';
-import debug from '../../utils/debug';
 import Price from '../Price/Price';
+// import debug from '../../utils/debug';
 
 export default function ProductCard({ product }: { product: ProductProjection }) {
-  debug.dir(product);
   const { name, masterVariant, id, description } = product;
   const locale = useStoreSelector((state) => state.userData.userLanguage);
   const desc = description ? description[locale] : '';
