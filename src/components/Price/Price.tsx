@@ -14,7 +14,7 @@ export default function Price({
   const basicFontSize = () => {
     switch (size) {
       case 'small':
-        return '14px';
+        return '12px';
       case 'medium':
         return '16px';
       case 'large':

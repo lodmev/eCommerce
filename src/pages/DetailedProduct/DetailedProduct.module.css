@@ -34,9 +34,6 @@
 }
 
 .name,
-.price,
-.sale,
-.final-price,
 .product-description,
 .shipping,
 .text {
@@ -59,31 +56,6 @@
     font-size: 24px;
     font-weight: 500;
     margin-bottom: 10px;
-  }
-}
-
-.price {
-  font-size: 24px;
-  text-decoration: line-through;
-  @media (width <= 600px) {
-    font-size: 14px;
-  }
-}
-
-.sale {
-  font-size: 24px;
-  color: red;
-  text-shadow: 0 0 20px rgba(28, 2, 2, 0.3);
-  @media (width <= 600px) {
-    font-size: 16px;
-  }
-}
-
-.final-price {
-  font-size: 26px;
-  @media (width <= 600px) {
-    font-size: 20px;
-    font-weight: 500;
   }
 }
 
@@ -126,7 +98,7 @@
   cursor: pointer;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
   z-index: 0;
-
+  transition: transform 0.5s;
   &:hover {
     transform: scale(1.02);
     box-shadow: 0 0 20px rgb(255, 255, 255);

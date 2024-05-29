@@ -1,7 +1,7 @@
 import { DependencyList, useEffect, useState } from 'react';
 
 const useAsync = <T, P, D extends DependencyList>(
-  callback: (params?: P) => Promise<T>,
+  callback: (params: P) => Promise<T>,
   params: P,
   deps: D,
 ): [T | undefined, boolean, Error | undefined] => {
