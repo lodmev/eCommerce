@@ -1,6 +1,6 @@
 import { CategoryPagedQueryResponse, ProductProjection } from '@commercetools/platform-sdk';
 import { getCurrentApiClient } from './apiRoot';
-import { CategoriesMap, SearchProductsQuery } from '../types/types';
+import { CategoriesMap, QueryArgs } from '../types/types';
 import { DEFAULT_LANGUAGE_KEY } from '../utils/globalVariables';
 
 export const getAllProducts = async (): Promise<ProductProjection[]> => {
@@ -58,12 +58,11 @@ export const getProductCategoriesMap = async (): Promise<CategoriesMap> => {
   });
   return categoriesMap;
 };
-
-export const searchProducts = async (queryArgs?: SearchProductsQuery) => {
+export const searchProducts = async (queryArgs?: QueryArgs) => {
   const response = await getCurrentApiClient()
     .productProjections()
     .search()
-    .get(queryArgs)
+    .get({ queryArgs })
     .execute();
   return response.body;
 };
