@@ -14,6 +14,7 @@ import { getProductCategoriesMap, searchProducts } from '../../api/products';
 import { QueryArgs } from '../../types/types';
 import Breadcrumbs from '../Breadcrumbs/Breadcrumbs';
 import Loader from '../Modal/Loader';
+import Filters from './Filters/Filters';
 // import debug from '../../utils/debug';
 
 const getID = (params?: Readonly<Params<string>>) => params?.subCatID || params?.catID || '';
@@ -58,6 +59,7 @@ export default function Catalog({ withLink }: { withLink?: boolean }) {
       <div className={styles.wrapper}>
         <Breadcrumbs className={styles.breadcrumbs} />
         <p className={styles['catalog-header']}>{currentCategory}</p>
+        <Filters />
         <div className={styles.furniture}>
           {isLoading || err ? (
             <Loader
