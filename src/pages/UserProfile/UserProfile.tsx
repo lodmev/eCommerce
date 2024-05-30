@@ -38,7 +38,7 @@ export default function UserProfile() {
 
   const {
     value: firstNameInputValue,
-    // isValid: firstNameIsValid,
+    isValid: firstNameIsValid,
     hasError: firstNameHasError,
     inputBlurHandler: firstNameBlurHandler,
     valueChangeHandler: firstNameChangeHandler,
@@ -46,7 +46,7 @@ export default function UserProfile() {
 
   const {
     value: lastNameInputValue,
-    // isValid: lastNameIsValid,
+    isValid: lastNameIsValid,
     hasError: lastNameHasError,
     inputBlurHandler: lastNameBlurHandler,
     valueChangeHandler: lastNameChangeHandler,
@@ -54,7 +54,7 @@ export default function UserProfile() {
 
   const {
     value: dateInputValue,
-    // isValid: dateIsValid,
+    isValid: dateIsValid,
     hasError: dateHasError,
     inputBlurHandler: dateBlurHandler,
     valueChangeHandler: dateChangeHandler,
@@ -62,7 +62,7 @@ export default function UserProfile() {
 
   const {
     value: emailInputValue,
-    // isValid: emailIsValid,
+    isValid: emailIsValid,
     hasError: emailHasError,
     inputBlurHandler: emailBlurHandler,
     valueChangeHandler: emailChangeHandler,
@@ -70,7 +70,7 @@ export default function UserProfile() {
 
   const {
     value: currentPasswordInputValue,
-    // isValid: currentPasswordIsValid,
+    isValid: currentPasswordIsValid,
     hasError: currentPasswordHasError,
     inputBlurHandler: currentPasswordBlurHandler,
     valueChangeHandler: currentPasswordChangeHandler,
@@ -79,7 +79,7 @@ export default function UserProfile() {
 
   const {
     value: newPasswordInputValue,
-    // isValid: newPasswordIsValid,
+    isValid: newPasswordIsValid,
     hasError: newPasswordHasError,
     inputBlurHandler: newPasswordBlurHandler,
     valueChangeHandler: newPasswordChangeHandler,
@@ -88,7 +88,7 @@ export default function UserProfile() {
 
   const {
     value: confirmNewPasswordInputValue,
-    // isValid: confirmNewPasswordIsValid,
+    isValid: confirmNewPasswordIsValid,
     hasError: confirmNewPasswordHasError,
     inputBlurHandler: confirmNewPasswordBlurHandler,
     valueChangeHandler: confirmNewPasswordChangeHandler,
@@ -99,6 +99,12 @@ export default function UserProfile() {
     e.preventDefault();
 
     if (!isEditUserInfo) return;
+
+    const isAllValid = [emailIsValid, firstNameIsValid, lastNameIsValid, dateIsValid].every(
+      (value) => value,
+    );
+
+    if (!isAllValid) return;
 
     const userInfo: IUpdateUserInfo = {
       email: emailInputValue,
@@ -122,8 +128,9 @@ export default function UserProfile() {
     const isNewPasswordConfirmed = newPasswordInputValue === confirmNewPasswordInputValue;
     const isAllInputsCorrect = [
       isNewPasswordConfirmed,
-      !newPasswordHasError,
-      !confirmNewPasswordHasError,
+      currentPasswordIsValid,
+      newPasswordIsValid,
+      confirmNewPasswordIsValid,
     ].every((val) => val);
 
     setIsNewPasswordFieldsCorrect(isNewPasswordConfirmed);
