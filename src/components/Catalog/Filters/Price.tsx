@@ -1,24 +1,15 @@
 import { InputNumber, Slider, Space } from 'antd';
-import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import styles from './Filters.module.css';
 import { PRICE_FILTER_VALUES } from '../../../utils/globalVariables';
 
 type Value = { value: number; type: 'min' | 'max' } | number[];
 
-export default function PriceFilter({ needReset }: { needReset: boolean }) {
-  const [, setSearchParams] = useSearchParams();
-  const [priceRange, setPriceRange] = useState<number[]>([
-    PRICE_FILTER_VALUES.minPrice,
-    PRICE_FILTER_VALUES.maxPrice,
-  ]);
-
-  useEffect(() => {
-    setSearchParams((prev) => {
-      prev.delete('price');
-      return prev;
-    });
-  }, [needReset]);
+export default function PriceFilter({
+  priceState,
+}: {
+  priceState: [number[], React.Dispatch<React.SetStateAction<number[]>>];
+}) {
+  const [priceRange, setPriceRange] = priceState;
   const onChangeValue = (val: Value) => {
     if (Array.isArray(val)) {
       setPriceRange(val);
@@ -38,6 +29,7 @@ export default function PriceFilter({ needReset }: { needReset: boolean }) {
     <>
       <Space wrap>
         <InputNumber
+          name="price-from"
           addonBefore={<p className={styles['input-price__label']}>From</p>}
           prefix="€"
           value={priceRange[0]}
@@ -46,6 +38,7 @@ export default function PriceFilter({ needReset }: { needReset: boolean }) {
           }}
         />
         <InputNumber
+          name="price-to"
           addonBefore={<p className={styles['input-price__label']}>To</p>}
           prefix="€"
           value={priceRange[1]}

@@ -1,5 +1,5 @@
 import { ProductProjection } from '@commercetools/platform-sdk';
-import { Link, Params, useParams } from 'react-router-dom';
+import { Link, Params, useParams, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import styles from './Catalog.module.css';
 import ProductCard from '../Products/ProductCard';
@@ -17,43 +17,67 @@ import Loader from '../Modal/Loader';
 import Filters from './Filters/Filters';
 // import debug from '../../utils/debug';
 
-const getID = (params?: Readonly<Params<string>>) => params?.subCatID || params?.catID || '';
+type RouteParams = Readonly<Params<string>>;
+type QueryParams = {
+  routeParams?: RouteParams;
+  searchParams: URLSearchParams;
+};
 
-const findProducts = async (params?: Readonly<Params<string>>) => {
-  const id: string = getID(params);
+const getID = (routeParams?: RouteParams) => routeParams?.subCatID || routeParams?.catID || '';
+
+const getQuery = ({ routeParams, searchParams }: QueryParams): QueryArgs => {
+  const id: string = getID(routeParams);
   const queryArgs: QueryArgs = {
     limit: PRODUCT_DEFAULT_FETCH_LIMIT,
   };
+  if (!id && searchParams.size === 0) {
+    return queryArgs;
+  }
+
+  const filterQuery: string[] = [];
+
   if (id) {
-    queryArgs.filter = `categories.id:"${id}"`;
+    filterQuery.push(`categories.id:"${id}"`);
+  }
+  const priceRange = searchParams.get('f_price');
+  if (priceRange) {
+    filterQuery.push(`variants.price.centAmount:range ${priceRange}`);
   }
   if (queryArgs.sort && queryArgs.sort instanceof Array) {
     queryArgs.sort.push('"createdAt"');
   } else {
     queryArgs.sort = [`name.${DEFAULT_LANGUAGE_KEY} asc`];
   }
-  return searchProducts(queryArgs);
+  queryArgs['filter.query'] = filterQuery;
+  return queryArgs;
+};
+
+const doSearchRequest = async ({ routeParams, searchParams }: QueryParams) => {
+  const query = getQuery({ routeParams, searchParams });
+  return searchProducts(query);
 };
 
 export default function Catalog({ withLink }: { withLink?: boolean }) {
   const defaultCategoryName = 'All categories';
   const [currentCategory, setCurrentCategory] = useState('Catalog');
-  const params = useParams();
+  const routeParams = useParams();
+  const [searchParams] = useSearchParams();
   const [needUpdate, setNeedUpdate] = useState(false);
-  const [allProductsResponse, isLoading, err] = useAsync(findProducts, params, [
-    params,
-    needUpdate,
-  ]);
+  const [allProductsResponse, isLoading, err] = useAsync(
+    doSearchRequest,
+    { routeParams, searchParams },
+    [routeParams, needUpdate],
+  );
   const [categoriesMap] = useAsync(getProductCategoriesMap, undefined, [false]);
   const locale = useStoreSelector((state) => state.userData.userLanguage);
   useEffect(() => {
-    const id: string = getID(params);
+    const id: string = getID(routeParams);
     if (id && categoriesMap) {
       setCurrentCategory(categoriesMap[id].name[locale]);
     } else {
       setCurrentCategory(defaultCategoryName);
     }
-  }, [params, categoriesMap]);
+  }, [routeParams, categoriesMap]);
   return (
     <div className={styles.catalog} id="catalog">
       <div className={styles.wrapper}>
