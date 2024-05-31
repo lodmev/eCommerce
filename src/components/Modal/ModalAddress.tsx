@@ -16,6 +16,8 @@ type Props = {
     city?: string;
     streetName?: string;
     postalCode?: string;
+    isShipping?: boolean;
+    isBilling?: boolean;
     isDefaultBilling?: boolean;
     isDefaultShipping?: boolean;
   };
@@ -31,8 +33,10 @@ export default function ModalAddress(props: Props) {
     },
   );
 
-  const [isDefaultBilling, setIsDefaultBilling] = useState(!!editingAddress.isDefaultBilling);
-  const [isDefaultShipping, setIsDefaultShipping] = useState(!!editingAddress.isDefaultShipping);
+  const [isDefaultAddress, setIsDefaultAddress] = useState(
+    (editingAddress.isShipping && editingAddress.isDefaultShipping) ||
+      (editingAddress.isBilling && editingAddress.isDefaultBilling),
+  );
 
   const {
     value: streetInputValue,
@@ -79,10 +83,35 @@ export default function ModalAddress(props: Props) {
     }
   }
 
+  let typeOfAddress = '';
+
+  if (editingAddress.isShipping) {
+    typeOfAddress = 'Shipping ';
+  } else if (editingAddress.isBilling) {
+    typeOfAddress = 'Billing ';
+  } else {
+    typeOfAddress = 'New ';
+  }
+
   return (
     <div className={styles.modal}>
       <fieldset className={styles.fieldset}>
-        <legend>Edit address</legend>
+        <legend>{typeOfAddress}Address</legend>
+        {!editingAddress.isShipping && !editingAddress.isBilling && (
+          <div>
+            <p>Type of address</p>
+            <div className={styles['radio-buttons']}>
+              <label htmlFor="address-shipping">
+                <input type="radio" name="address-type" id="address-shipping" />
+                Shipping
+              </label>
+              <label htmlFor="address-billing">
+                <input type="radio" name="address-type" id="address-billing" />
+                Billing
+              </label>
+            </div>
+          </div>
+        )}
         <SelectComponent
           value={selectedCountry}
           onChange={(value) => {
@@ -124,25 +153,15 @@ export default function ModalAddress(props: Props) {
           errorText="Must contain at least one character and no special characters or numbers"
         />
         <div className={styles.checkboxes}>
-          <label htmlFor="default-shipping-billing">
+          <label htmlFor="is-default-address">
             <input
               className={styles.checkbox}
               type="checkbox"
-              id="default-shipping-billing"
-              checked={isDefaultShipping}
-              onChange={() => setIsDefaultShipping((prev) => !prev)}
+              id="is-default-address"
+              checked={isDefaultAddress}
+              onChange={() => setIsDefaultAddress((prev) => !prev)}
             />
-            Set as default shipping
-          </label>
-          <label htmlFor="default-shipping-billing">
-            <input
-              className={styles.checkbox}
-              type="checkbox"
-              id="default-shipping-billing"
-              checked={isDefaultBilling}
-              onChange={() => setIsDefaultBilling((prev) => !prev)}
-            />
-            Set as default billing
+            Set as default
           </label>
         </div>
       </fieldset>

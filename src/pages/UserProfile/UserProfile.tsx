@@ -359,6 +359,8 @@ export default function UserProfile() {
                 city: address.city,
                 streetName: address.streetName,
                 postalCode: address.postalCode,
+                isShipping: customer.shippingAddressIds?.includes(address.id || ''),
+                isBilling: customer.billingAddressIds?.includes(address.id || ''),
                 isDefaultBilling,
                 isDefaultShipping,
               });
