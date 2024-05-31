@@ -1,6 +1,9 @@
 import { InputNumber, InputNumberProps, Slider, Space } from 'antd';
 import styles from './Filters.module.css';
 
+export type Range = number[];
+export type RangeState = [Range, React.Dispatch<React.SetStateAction<Range>>];
+
 type Value = { value: number; type: 'min' | 'max' } | number[];
 
 export default function RangeFilter({
@@ -10,7 +13,7 @@ export default function RangeFilter({
   min,
   max,
 }: {
-  valuesState: [number[], React.Dispatch<React.SetStateAction<number[]>>];
+  valuesState: RangeState;
   prefix?: InputNumberProps<number>['prefix'];
   suffix?: InputNumberProps<number>['suffix'];
   min?: number;
@@ -67,4 +70,4 @@ export default function RangeFilter({
       />
     </>
   );
-}
+} // import debug from '../../../utils/debug';

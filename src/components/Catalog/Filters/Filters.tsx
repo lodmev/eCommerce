@@ -2,16 +2,14 @@ import { Button, Collapse, CollapseProps, Form, Select, Space } from 'antd';
 import { ReactNode, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import styles from './Filters.module.css';
-import RangeFilter from './Range';
+import RangeFilter, { RangeState, Range } from './Range';
 import { DIMENSIONS_FILTER_VALUES, PRICE_FILTER_VALUES } from '../../../utils/globalVariables';
-import debug from '../../../utils/debug';
-
-type Range = number[];
+// import debug from '../../../utils/debug';
 
 function getDimensionsItem(dimensionsStates: {
-  width: [Range, React.Dispatch<React.SetStateAction<Range>>];
-  length: [Range, React.Dispatch<React.SetStateAction<Range>>];
-  height: [Range, React.Dispatch<React.SetStateAction<Range>>];
+  width: RangeState;
+  length: RangeState;
+  height: RangeState;
 }) {
   return {
     key: 'dimensions',
@@ -66,21 +64,53 @@ function getDimensionsItem(dimensionsStates: {
 
 export default function Filters(): ReactNode {
   const [, setSearchParams] = useSearchParams();
-  const priceState = useState<Range>([PRICE_FILTER_VALUES.min, PRICE_FILTER_VALUES.max]);
+  const initPriceState = [PRICE_FILTER_VALUES.min, PRICE_FILTER_VALUES.max];
+  const initDimState = [DIMENSIONS_FILTER_VALUES.min, DIMENSIONS_FILTER_VALUES.max];
+  const priceState = useState<Range>(initPriceState);
   const dimensionsStates = {
-    width: useState<Range>([DIMENSIONS_FILTER_VALUES.min, DIMENSIONS_FILTER_VALUES.max]),
-    length: useState<Range>([DIMENSIONS_FILTER_VALUES.min, DIMENSIONS_FILTER_VALUES.max]),
-    height: useState<Range>([DIMENSIONS_FILTER_VALUES.min, DIMENSIONS_FILTER_VALUES.max]),
+    width: useState<Range>(initDimState),
+    length: useState<Range>(initDimState),
+    height: useState<Range>(initDimState),
   };
-  const [priceRange] = priceState;
+  const colorsState = useState<string[]>([]);
   const applyFilters = () => {
-    setSearchParams((prev) => {
-      prev.set('f_price', `(${priceRange[0] * 100} to ${priceRange[1] * 100})`);
-      debug.log(prev);
-      return prev;
+    setSearchParams((urlSearchParams) => {
+      urlSearchParams.set('f_price', `(${priceState[0][0] * 100} to ${priceState[0][1] * 100})`);
+      urlSearchParams.set(
+        'f_width',
+        `(${dimensionsStates.width[0][0]} to ${dimensionsStates.width[0][1]})`,
+      );
+      urlSearchParams.set(
+        'f_length',
+        `(${dimensionsStates.length[0][0]} to ${dimensionsStates.length[0][1]})`,
+      );
+      urlSearchParams.set(
+        'f_height',
+        `(${dimensionsStates.height[0][0]} to ${dimensionsStates.height[0][1]})`,
+      );
+      return urlSearchParams;
     });
   };
-  const FilterItems: CollapseProps['items'] = [
+  const resetFilters = () => {
+    priceState[1](initPriceState);
+    dimensionsStates.width[1](initDimState);
+    dimensionsStates.length[1](initDimState);
+    dimensionsStates.height[1](initDimState);
+    colorsState[1]([]);
+    setSearchParams((urlSearchParams) => {
+      const iteratorKey = urlSearchParams.keys();
+      let key = iteratorKey.next();
+      while (!key.done) {
+        if (key.value.startsWith('f_')) {
+          urlSearchParams.delete(key.value);
+        }
+        key = iteratorKey.next();
+      }
+      return urlSearchParams;
+    });
+  };
+
+  const filterItems: CollapseProps['items'] = [
     {
       key: 'priceRange',
       label: 'Choose price range',
@@ -96,6 +126,10 @@ export default function Filters(): ReactNode {
           placeholder="Select colors"
           className={styles['select-color']}
           mode="multiple"
+          value={colorsState[0]}
+          onChange={(value) => {
+            colorsState[1](value);
+          }}
           options={[
             {
               label: 'Black',
@@ -124,12 +158,14 @@ export default function Filters(): ReactNode {
       label: 'Filters',
       children: (
         <Form onFinish={applyFilters}>
-          <Collapse size="small" items={FilterItems} />
+          <Collapse size="small" items={filterItems} />
           <Space className={styles['form-buttons']}>
             <Button type="primary" htmlType="submit">
               Apply
             </Button>
-            <Button htmlType="button">Reset</Button>
+            <Button htmlType="button" onClick={resetFilters}>
+              Reset
+            </Button>
           </Space>
         </Form>
       ),
