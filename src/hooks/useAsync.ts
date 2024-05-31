@@ -1,4 +1,4 @@
-import { DependencyList, useEffect, useState } from 'react';
+import { DependencyList, useCallback, useEffect, useState } from 'react';
 
 const useAsync = <T, P, D extends DependencyList>(
   callback: (params: P) => Promise<T>,
@@ -8,7 +8,7 @@ const useAsync = <T, P, D extends DependencyList>(
   const [isPending, setPending] = useState(false);
   const [err, setError] = useState<Error | undefined>(undefined);
   const [result, setResult] = useState<T | undefined>();
-  const doJob = async () => {
+  const doJob = useCallback(async () => {
     try {
       setError(undefined);
       setPending(true);
@@ -21,7 +21,7 @@ const useAsync = <T, P, D extends DependencyList>(
     } finally {
       setPending(false);
     }
-  };
+  }, deps);
   useEffect(() => {
     doJob();
   }, deps);

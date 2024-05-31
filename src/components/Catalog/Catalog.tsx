@@ -1,5 +1,5 @@
 import { ProductProjection } from '@commercetools/platform-sdk';
-import { Link, Params, useParams, useSearchParams } from 'react-router-dom';
+import { Link, Params, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import styles from './Catalog.module.css';
 import ProductCard from '../Products/ProductCard';
@@ -18,41 +18,52 @@ import Filters from './Filters/Filters';
 // import debug from '../../utils/debug';
 
 type RouteParams = Readonly<Params<string>>;
-type QueryParams = {
+type LocationParams = {
   routeParams?: RouteParams;
   searchParams: URLSearchParams;
 };
 
 const getID = (routeParams?: RouteParams) => routeParams?.subCatID || routeParams?.catID || '';
 
-const getQuery = ({ routeParams, searchParams }: QueryParams): QueryArgs => {
-  const id: string = getID(routeParams);
-  const queryArgs: QueryArgs = {
-    limit: PRODUCT_DEFAULT_FETCH_LIMIT,
-  };
-  if (!id && searchParams.size === 0) {
+const appendFilters = ({
+  locationParams,
+  queryArgs,
+}: {
+  locationParams: LocationParams;
+  queryArgs: QueryArgs;
+}) => {
+  const id: string = getID(locationParams.routeParams);
+  if (!id && locationParams.searchParams.size === 0) {
     return queryArgs;
   }
 
   const filterQuery: string[] = [];
+  queryArgs['filter.query'] = filterQuery;
 
   if (id) {
     filterQuery.push(`categories.id:"${id}"`);
   }
-  const priceRange = searchParams.get('f_price');
+  const priceRange = locationParams.searchParams.get('f_price');
   if (priceRange) {
     filterQuery.push(`variants.price.centAmount:range ${priceRange}`);
   }
+  return queryArgs;
+};
+
+const getQuery = ({ routeParams, searchParams }: LocationParams): QueryArgs => {
+  const queryArgs: QueryArgs = {
+    limit: PRODUCT_DEFAULT_FETCH_LIMIT,
+  };
+  appendFilters({ locationParams: { routeParams, searchParams }, queryArgs });
   if (queryArgs.sort && queryArgs.sort instanceof Array) {
     queryArgs.sort.push('"createdAt"');
   } else {
     queryArgs.sort = [`name.${DEFAULT_LANGUAGE_KEY} asc`];
   }
-  queryArgs['filter.query'] = filterQuery;
   return queryArgs;
 };
 
-const doSearchRequest = async ({ routeParams, searchParams }: QueryParams) => {
+const doSearchRequest = async ({ routeParams, searchParams }: LocationParams) => {
   const query = getQuery({ routeParams, searchParams });
   return searchProducts(query);
 };
@@ -62,13 +73,13 @@ export default function Catalog({ withLink }: { withLink?: boolean }) {
   const [currentCategory, setCurrentCategory] = useState('Catalog');
   const routeParams = useParams();
   const [searchParams] = useSearchParams();
-  const [needUpdate, setNeedUpdate] = useState(false);
+  const navigate = useNavigate();
   const [allProductsResponse, isLoading, err] = useAsync(
     doSearchRequest,
     { routeParams, searchParams },
-    [routeParams, needUpdate],
+    [routeParams],
   );
-  const [categoriesMap] = useAsync(getProductCategoriesMap, undefined, [false]);
+  const [categoriesMap] = useAsync(getProductCategoriesMap, undefined, []);
   const locale = useStoreSelector((state) => state.userData.userLanguage);
   useEffect(() => {
     const id: string = getID(routeParams);
@@ -90,7 +101,7 @@ export default function Catalog({ withLink }: { withLink?: boolean }) {
               isLoading={isLoading}
               errMsg={err?.name}
               errorHandler={() => {
-                setNeedUpdate((prev) => !prev);
+                navigate(ROUTE_PATH.main);
               }}
             />
           ) : (

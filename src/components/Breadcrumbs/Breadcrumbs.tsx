@@ -1,5 +1,5 @@
-import { ReactNode, useState } from 'react';
-import { UIMatch, useMatches, Link } from 'react-router-dom';
+import { ReactNode } from 'react';
+import { UIMatch, useMatches, Link, useNavigate } from 'react-router-dom';
 import { Breadcrumb } from 'antd';
 import { BreadcrumbItemType } from 'antd/es/breadcrumb/Breadcrumb';
 import { useStoreSelector } from '../../hooks/userRedux';
@@ -9,6 +9,7 @@ import ModalConfirm from '../Modal/ModalConfirm';
 import { CategoriesMap } from '../../types/types';
 import useAsync from '../../hooks/useAsync';
 import { getProductCategoriesMap } from '../../api/products';
+import { ROUTE_PATH } from '../../utils/globalVariables';
 // import debug from '../../utils/debug';
 
 export type CrumbTypes = 'mainList' | 'category' | 'subcategory';
@@ -85,10 +86,8 @@ const createCrumbItems = (
 };
 export default function Breadcrumbs({ className }: { className?: string }): ReactNode {
   const matches = useMatches();
-  const [needUpdate, setNeedUpdate] = useState(false);
-  const [productCategoriesMap, isLoading, err] = useAsync(getProductCategoriesMap, undefined, [
-    needUpdate,
-  ]);
+  const navigate = useNavigate();
+  const [productCategoriesMap, isLoading, err] = useAsync(getProductCategoriesMap, undefined, []);
   const locale = useStoreSelector((state) => state.userData.userLanguage);
   const crumbs = matches
     .filter((match) => Boolean((match.handle as { crumb?: CrumbType })?.crumb))
@@ -101,7 +100,7 @@ export default function Breadcrumbs({ className }: { className?: string }): Reac
           message={err.message}
           isError
           onConfirm={() => {
-            setNeedUpdate((prev) => !prev);
+            navigate(ROUTE_PATH.main);
           }}
         />
       )}
