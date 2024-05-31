@@ -1,9 +1,14 @@
 .filters {
   margin: 1rem;
 }
-.input-price__label {
+.manual-input__label {
   width: 1.7rem;
 }
 .form-buttons {
   margin-top: 1rem;
+}
+
+.select-color {
+  min-width: 10rem;
+  max-width: 100%;
 }

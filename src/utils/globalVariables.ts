@@ -1,8 +1,12 @@
 export const DEFAULT_LANGUAGE_KEY = 'en-US';
 export const PRODUCT_DEFAULT_FETCH_LIMIT = 8;
 export const PRICE_FILTER_VALUES = {
-  minPrice: 1,
-  maxPrice: 10000,
+  min: 1,
+  max: 5000,
+} as const;
+export const DIMENSIONS_FILTER_VALUES = {
+  min: 50,
+  max: 6000,
 } as const;
 
 export const ROUTE_PATH = {
