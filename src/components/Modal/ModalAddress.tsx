@@ -47,7 +47,7 @@ export default function ModalAddress(props: Props) {
     hasError: streetHasError,
     inputBlurHandler: streetBlurHandler,
     valueChangeHandler: streetChangeHandler,
-  } = useValidateInput((value: string) => value.trim().length > 0, editingAddress.country);
+  } = useValidateInput((value: string) => value.trim().length > 0, editingAddress.streetName);
 
   const {
     value: cityInputValue,
