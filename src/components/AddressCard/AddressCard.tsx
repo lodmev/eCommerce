@@ -26,16 +26,39 @@ export default function AddressCard(props: Props) {
     onClickEdit,
   } = props;
 
+  const isDefaultShipping = id === defaultShippingAddressId;
+  const isDefaultBilling = id === defaultBillingAddressId;
+  const isShipping = shippingAddressIds?.includes(id!);
+  const isBilling = billingAddressIds?.includes(id!);
+  const defaultInputParams = {
+    name: '',
+    isDefault: false,
+  };
+
+  if (isShipping) {
+    defaultInputParams.name = 'shipping';
+    if (isDefaultShipping) defaultInputParams.isDefault = true;
+  }
+
+  if (isBilling) {
+    defaultInputParams.name = 'billing';
+    if (isDefaultBilling) defaultInputParams.isDefault = true;
+  }
+
   return (
     <li className={styles.card}>
-      {id && shippingAddressIds?.includes(id) && <span>Shipping Address:</span>}
-      {id && billingAddressIds?.includes(id) && <span>Billing Address:</span>}
+      {isShipping && <span>Shipping Address:</span>}
+      {isBilling && <span>Billing Address:</span>}
       <span>Country: {country}</span>
       <span>City: {city}</span>
       <span>Street Name: {streetName}</span>
       <span>Postal Code: {postalCode}</span>
-      {id === defaultShippingAddressId && <span>This is Default Shipping Address</span>}
-      {id === defaultBillingAddressId && <span>This is Default Billing Address</span>}
+      <label htmlFor={id}>
+        <input type="radio" name={defaultInputParams.name} id={id} />
+        Set as Default
+      </label>
+      {isDefaultShipping && <span>This is Default Shipping Address</span>}
+      {isDefaultBilling && <span>This is Default Billing Address</span>}
       <div className={styles.controls}>
         <Button onClick={onClickDelete} styleClass="red-outlined-small">
           Delete
