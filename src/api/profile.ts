@@ -94,3 +94,23 @@ export const removeAddress = async (userVersion: number, addressId: string) => {
 
   return res;
 };
+
+export const changeAddress = async (userVersion: number, address: BaseAddress) => {
+  const res = await getCurrentApiClient()
+    .me()
+    .post({
+      body: {
+        version: userVersion,
+        actions: [
+          {
+            action: 'changeAddress',
+            addressId: address.id,
+            address,
+          },
+        ],
+      },
+    })
+    .execute();
+
+  return res;
+};

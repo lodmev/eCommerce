@@ -78,12 +78,13 @@ export default function ModalAddress(props: Props) {
 
     if (isAllValid) {
       const addressData: BaseAddress = {
+        id: editingAddress.id,
         country: selectedCountry.value,
         postalCode: postalInputValue,
         streetName: streetInputValue,
         city: cityInputValue,
       };
-      // console.log('all fields are valid');
+
       onConfirm(addressData);
     } else {
       postalBlurHandler();

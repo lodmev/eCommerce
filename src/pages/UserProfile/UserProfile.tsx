@@ -5,6 +5,7 @@ import { useLoaderData, useNavigate } from 'react-router-dom';
 import { loginUser, logoutUser } from '../../api/customers';
 import {
   addNewAddress,
+  changeAddress,
   changeUserPassword,
   removeAddress,
   updateCustomerPersonalData,
@@ -181,14 +182,16 @@ export default function UserProfile() {
     // or show modal with error
   }
 
-  function handleEditAddress(/* address: BaseAddress */) {
+  async function handleEditAddress(address: BaseAddress) {
     // 1) send request to API
     // 2) show loading spinner
     // 3) re-render address cards
     // 4) set new user version
 
-    // console.log('edit existing address');
-    // console.log(address);
+    // const res = await changeAddress(userVersion, address);
+    // console.log(res);
+
+    await changeAddress(userVersion, address);
     setIsEditAddressModal(false);
   }
 
@@ -400,7 +403,7 @@ export default function UserProfile() {
         <Overlay>
           <ModalAddress
             onCancel={() => setIsEditAddressModal(false)}
-            onConfirm={() => handleEditAddress()}
+            onConfirm={(address: BaseAddress) => handleEditAddress(address)}
             editingAddress={editingAddress}
           />
         </Overlay>
