@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import useValidateInput from '../../hooks/useValidateInput';
 import { validateCity, validatePostalCode } from '../../utils/functions';
 import { COUNTRIES_OPTIONS_LIST } from '../../utils/globalVariables';
@@ -32,6 +32,8 @@ export default function ModalAddress(props: Props) {
       label: '',
     },
   );
+
+  const [inputAddressType, setInputAddressType] = useState('shipping');
 
   const [isDefaultAddress, setIsDefaultAddress] = useState(
     (editingAddress.isShipping && editingAddress.isDefaultShipping) ||
@@ -93,6 +95,12 @@ export default function ModalAddress(props: Props) {
     typeOfAddress = 'New ';
   }
 
+  function handleChangeAddressType(e: ChangeEvent<HTMLInputElement>) {
+    const { addressType } = e.target.dataset;
+    if (addressType) setInputAddressType(addressType);
+    // console.log(e.target.dataset.addressType);
+  }
+
   return (
     <div className={styles.modal}>
       <fieldset className={styles.fieldset}>
@@ -102,11 +110,25 @@ export default function ModalAddress(props: Props) {
             <p>Type of address</p>
             <div className={styles['radio-buttons']}>
               <label htmlFor="address-shipping">
-                <input type="radio" name="address-type" id="address-shipping" />
+                <input
+                  type="radio"
+                  name="address-type"
+                  data-address-type="shipping"
+                  id="address-shipping"
+                  checked={inputAddressType === 'shipping'}
+                  onChange={handleChangeAddressType}
+                />
                 Shipping
               </label>
               <label htmlFor="address-billing">
-                <input type="radio" name="address-type" id="address-billing" />
+                <input
+                  type="radio"
+                  name="address-type"
+                  data-address-type="billing"
+                  id="address-billing"
+                  checked={inputAddressType === 'billing'}
+                  onChange={handleChangeAddressType}
+                />
                 Billing
               </label>
             </div>
