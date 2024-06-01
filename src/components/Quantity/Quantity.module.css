@@ -1,0 +1,25 @@
+.quantity-input {
+  display: flex;
+  height: 20px;
+  justify-content: space-evenly;
+  align-items: center;
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, 0.16),
+    0 3px 6px rgba(0, 0, 0, 0.23);
+  border-radius: 3px;
+}
+
+.quantity-input__modifier {
+  padding: 5px;
+  width: 20px;
+  background: #f3f3f3;
+  text-align: center;
+
+  cursor: pointer;
+}
+
+.quantity-input__screen {
+  width: 40px;
+  padding: 5px;
+  text-align: center;
+}
