@@ -3,7 +3,12 @@ import { FormEvent, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useLoaderData, useNavigate } from 'react-router-dom';
 import { loginUser, logoutUser } from '../../api/customers';
-import { addNewAddress, changeUserPassword, updateCustomerPersonalData } from '../../api/profile';
+import {
+  addNewAddress,
+  changeUserPassword,
+  removeAddress,
+  updateCustomerPersonalData,
+} from '../../api/profile';
 import AddressCard from '../../components/AddressCard/AddressCard';
 import Button from '../../components/Button/Button';
 import Input from '../../components/Input/Input';
@@ -29,7 +34,7 @@ export default function UserProfile() {
   const [isNewPasswordFieldsCorrect, setIsNewPasswordFieldsCorrect] = useState(true);
   const [isEditAddressModal, setIsEditAddressModal] = useState(false);
   const [isAddAddressModal, setIsAddAddressModal] = useState(false);
-  const [isConfirmDeleteAddress, setIsConfirmDeleteAddress] = useState(false);
+  const [deleteAddressId, setDeleteAddressId] = useState<string | null>(null);
   const [editingAddress, setEditingAddress] = useState({});
 
   if (!isUserAuthorized) navigate(ROUTE_PATH.main);
@@ -163,16 +168,25 @@ export default function UserProfile() {
     */
   };
 
-  function handleDeleteAddress() {
+  async function handleDeleteAddress(addressId: string) {
     // 1) send request to API
     // 2) show loading spinner
-    setIsConfirmDeleteAddress(false);
+    // 3) re-render address cards
+    // 4) set new user version
+    // const res = await removeAddress(userVersion, addressId);
+    // console.log(res);
+
+    await removeAddress(userVersion, addressId);
+    setDeleteAddressId(null);
     // or show modal with error
   }
 
   function handleEditAddress(/* address: BaseAddress */) {
     // 1) send request to API
     // 2) show loading spinner
+    // 3) re-render address cards
+    // 4) set new user version
+
     // console.log('edit existing address');
     // console.log(address);
     setIsEditAddressModal(false);
@@ -181,7 +195,9 @@ export default function UserProfile() {
   async function handleAddAddress(address: BaseAddress) {
     // 1) send request to API
     // 2) show loading spinner
-    // 3) re-render addresses
+    // 3) re-render addresses cards
+    // 4) set new user version
+
     // console.log('add new address');
     // console.log(address);
     // const res = await addNewAddress(userVersion, address);
@@ -351,7 +367,7 @@ export default function UserProfile() {
             defaultShippingAddressId={customer.defaultShippingAddressId}
             defaultBillingAddressId={customer.defaultBillingAddressId}
             onClickDelete={() => {
-              setIsConfirmDeleteAddress(true);
+              setDeleteAddressId(address.id!);
             }}
             onClickEdit={() => {
               const isDefaultShipping = customer.shippingAddressIds?.includes(
@@ -398,11 +414,11 @@ export default function UserProfile() {
           />
         </Overlay>
       )}
-      {isConfirmDeleteAddress && (
+      {deleteAddressId && (
         <Overlay>
           <ModalConfirm
-            onCancel={() => setIsConfirmDeleteAddress(false)}
-            onConfirm={() => handleDeleteAddress()}
+            onCancel={() => setDeleteAddressId(null)}
+            onConfirm={() => handleDeleteAddress(deleteAddressId)}
             message="Are you sure want to delete this address?"
           />
         </Overlay>
