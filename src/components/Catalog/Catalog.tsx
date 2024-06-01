@@ -43,10 +43,11 @@ const appendFilters = ({
   if (id) {
     filterQuery.push(`categories.id:"${id}"`);
   }
-  const priceRange = locationParams.searchParams.get('f_price');
-  if (priceRange) {
-    filterQuery.push(`variants.price.centAmount:range ${priceRange}`);
-  }
+  // const priceRange = locationParams.searchParams.get('f_price');
+  locationParams.searchParams.forEach((value) => filterQuery.push(value));
+  // if (priceRange) {
+  //   filterQuery.push(`variants.price.centAmount:range ${priceRange}`);
+  // }
   return queryArgs;
 };
 

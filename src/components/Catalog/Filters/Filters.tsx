@@ -61,33 +61,107 @@ function getDimensionsItem(dimensionsStates: {
     ),
   };
 }
+const parseRange = (str: string | null): number[] | null => {
+  if (str) {
+    const match = str.match(/(\d{1,}) to (\d{1,})/);
+    if (match && match instanceof Array) {
+      return match.map((v) => Number(v)).filter((v) => !Number.isNaN(v));
+    }
+  }
+  return null;
+};
+const getInitPriceState = (searchParams: URLSearchParams) => {
+  const filterPrice = searchParams.get('f_price');
+  const priceRange = parseRange(filterPrice);
+  if (priceRange instanceof Array) {
+    return priceRange.map((v) => v / 100);
+  }
+  return priceRange;
+};
+
+const getInitDimState = (
+  searchParams: URLSearchParams,
+  field: 'f_width' | 'f_length' | 'f_height',
+) => {
+  const dimField = searchParams.get(field);
+  const dimRange = parseRange(dimField);
+  return dimRange;
+};
+const getInitColors = (searchParams: URLSearchParams) => {
+  const filterColors = searchParams.get('f_colors');
+  if (filterColors) {
+    const match = filterColors.match(/".*"/);
+    if (match && match?.[0] && typeof match?.[0] === 'string') {
+      return match[0].split(',').map((v) => v.replace(/["]+/g, ''));
+    }
+  }
+  return [];
+};
 
 export default function Filters(): ReactNode {
-  const [, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  // useEffect(() => {
+  //   setSearchParams((urlSearchParams) => {
+  //     urlSearchParams.forEach((_, key, parent) => {
+  //       parent.delete(key);
+  //     });
+  //     return urlSearchParams;
+  //   });
+  // }, []);
   const initPriceState = [PRICE_FILTER_VALUES.min, PRICE_FILTER_VALUES.max];
   const initDimState = [DIMENSIONS_FILTER_VALUES.min, DIMENSIONS_FILTER_VALUES.max];
-  const priceState = useState<Range>(initPriceState);
+  const priceState = useState<Range>(getInitPriceState(searchParams) || initPriceState);
   const dimensionsStates = {
-    width: useState<Range>(initDimState),
-    length: useState<Range>(initDimState),
-    height: useState<Range>(initDimState),
+    width: useState<Range>(getInitDimState(searchParams, 'f_width') || initDimState),
+    length: useState<Range>(getInitDimState(searchParams, 'f_length') || initDimState),
+    height: useState<Range>(getInitDimState(searchParams, 'f_height') || initDimState),
   };
-  const colorsState = useState<string[]>([]);
+  const colorsState = useState<string[]>(getInitColors(searchParams));
+
   const applyFilters = () => {
     setSearchParams((urlSearchParams) => {
-      urlSearchParams.set('f_price', `(${priceState[0][0] * 100} to ${priceState[0][1] * 100})`);
-      urlSearchParams.set(
-        'f_width',
-        `(${dimensionsStates.width[0][0]} to ${dimensionsStates.width[0][1]})`,
-      );
-      urlSearchParams.set(
-        'f_length',
-        `(${dimensionsStates.length[0][0]} to ${dimensionsStates.length[0][1]})`,
-      );
-      urlSearchParams.set(
-        'f_height',
-        `(${dimensionsStates.height[0][0]} to ${dimensionsStates.height[0][1]})`,
-      );
+      if (
+        priceState[0][0] !== PRICE_FILTER_VALUES.min ||
+        priceState[0][1] !== PRICE_FILTER_VALUES.max
+      ) {
+        urlSearchParams.set(
+          'f_price',
+          `variants.price.centAmount:range (${priceState[0][0] * 100} to ${priceState[0][1] * 100})`,
+        );
+      }
+      if (
+        dimensionsStates.width[0][0] !== DIMENSIONS_FILTER_VALUES.min ||
+        dimensionsStates.width[0][1] !== DIMENSIONS_FILTER_VALUES.max
+      ) {
+        urlSearchParams.set(
+          'f_width',
+          `variants.attributes.width:range (${dimensionsStates.width[0][0]} to ${dimensionsStates.width[0][1]})`,
+        );
+      }
+      if (
+        dimensionsStates.length[0][0] !== DIMENSIONS_FILTER_VALUES.min ||
+        dimensionsStates.length[0][1] !== DIMENSIONS_FILTER_VALUES.max
+      ) {
+        urlSearchParams.set(
+          'f_length',
+          `variants.attributes.length:range (${dimensionsStates.length[0][0]} to ${dimensionsStates.length[0][1]})`,
+        );
+      }
+      if (
+        dimensionsStates.height[0][0] !== DIMENSIONS_FILTER_VALUES.min ||
+        dimensionsStates.height[0][1] !== DIMENSIONS_FILTER_VALUES.max
+      ) {
+        urlSearchParams.set(
+          'f_height',
+          `variants.attributes.height:range (${dimensionsStates.height[0][0]} to ${dimensionsStates.height[0][1]})`,
+        );
+      }
+      if (colorsState[0].length > 0) {
+        urlSearchParams.set(
+          'f_colors',
+          `variants.attributes.upholstery_color.key:${colorsState[0].map((color) => `"${color}"`).join(',')}`,
+        );
+      }
       return urlSearchParams;
     });
   };
@@ -97,16 +171,14 @@ export default function Filters(): ReactNode {
     dimensionsStates.length[1](initDimState);
     dimensionsStates.height[1](initDimState);
     colorsState[1]([]);
-    setSearchParams((urlSearchParams) => {
-      const iteratorKey = urlSearchParams.keys();
-      let key = iteratorKey.next();
-      while (!key.done) {
-        if (key.value.startsWith('f_')) {
-          urlSearchParams.delete(key.value);
+    setSearchParams((prev) => {
+      const newParams = new URLSearchParams();
+      prev.forEach((value, key) => {
+        if (!key.startsWith('f_')) {
+          newParams.set(key, value);
         }
-        key = iteratorKey.next();
-      }
-      return urlSearchParams;
+      });
+      return newParams;
     });
   };
 
@@ -114,7 +186,14 @@ export default function Filters(): ReactNode {
     {
       key: 'priceRange',
       label: 'Choose price range',
-      children: <RangeFilter valuesState={priceState} prefix="€" />,
+      children: (
+        <RangeFilter
+          valuesState={priceState}
+          prefix="€"
+          min={PRICE_FILTER_VALUES.min}
+          max={PRICE_FILTER_VALUES.max}
+        />
+      ),
     },
     getDimensionsItem(dimensionsStates),
     {
