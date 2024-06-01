@@ -1,9 +1,9 @@
-import { Customer } from '@commercetools/platform-sdk';
+import { BaseAddress, Customer } from '@commercetools/platform-sdk';
 import { FormEvent, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useLoaderData, useNavigate } from 'react-router-dom';
 import { loginUser, logoutUser } from '../../api/customers';
-import { changeUserPassword, updateCustomerPersonalData } from '../../api/profile';
+import { addNewAddress, changeUserPassword, updateCustomerPersonalData } from '../../api/profile';
 import AddressCard from '../../components/AddressCard/AddressCard';
 import Button from '../../components/Button/Button';
 import Input from '../../components/Input/Input';
@@ -170,15 +170,23 @@ export default function UserProfile() {
     // or show modal with error
   }
 
-  function handleEditAddress() {
+  function handleEditAddress(/* address: BaseAddress */) {
     // 1) send request to API
     // 2) show loading spinner
+    // console.log('edit existing address');
+    // console.log(address);
     setIsEditAddressModal(false);
   }
 
-  function handleAddAddress() {
+  async function handleAddAddress(address: BaseAddress) {
     // 1) send request to API
     // 2) show loading spinner
+    // 3) re-render addresses
+    // console.log('add new address');
+    // console.log(address);
+    // const res = await addNewAddress(userVersion, address);
+    // console.log(res);
+    await addNewAddress(userVersion, address);
     setIsAddAddressModal(false);
   }
 
@@ -385,7 +393,7 @@ export default function UserProfile() {
         <Overlay>
           <ModalAddress
             onCancel={() => setIsAddAddressModal(false)}
-            onConfirm={() => handleAddAddress()}
+            onConfirm={(address: BaseAddress) => handleAddAddress(address)}
             editingAddress={{}}
           />
         </Overlay>

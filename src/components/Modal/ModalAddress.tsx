@@ -1,3 +1,4 @@
+import { BaseAddress } from '@commercetools/platform-sdk';
 import { ChangeEvent, useState } from 'react';
 import useValidateInput from '../../hooks/useValidateInput';
 import { validateCity, validatePostalCode } from '../../utils/functions';
@@ -9,7 +10,7 @@ import styles from './ModalAddress.module.css';
 
 type Props = {
   onCancel: () => void;
-  onConfirm: () => void;
+  onConfirm: (address: BaseAddress) => void;
   editingAddress: {
     id?: string;
     country?: string;
@@ -76,8 +77,14 @@ export default function ModalAddress(props: Props) {
     ].every((value) => value);
 
     if (isAllValid) {
+      const addressData: BaseAddress = {
+        country: selectedCountry.value,
+        postalCode: postalInputValue,
+        streetName: streetInputValue,
+        city: cityInputValue,
+      };
       // console.log('all fields are valid');
-      onConfirm();
+      onConfirm(addressData);
     } else {
       postalBlurHandler();
       cityBlurHandler();
@@ -180,7 +187,7 @@ export default function ModalAddress(props: Props) {
               className={styles.checkbox}
               type="checkbox"
               id="is-default-address"
-              checked={isDefaultAddress}
+              checked={isDefaultAddress === true}
               onChange={() => setIsDefaultAddress((prev) => !prev)}
             />
             Set as default

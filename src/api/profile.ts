@@ -1,3 +1,4 @@
+import { BaseAddress } from '@commercetools/platform-sdk';
 import { IUpdateUserInfo } from '../types/interfaces';
 import { getCurrentApiClient } from './apiRoot';
 
@@ -49,6 +50,25 @@ export const changeUserPassword = async (
         version: userVersion,
         currentPassword,
         newPassword,
+      },
+    })
+    .execute();
+
+  return res;
+};
+
+export const addNewAddress = async (userVersion: number, address: BaseAddress) => {
+  const res = await getCurrentApiClient()
+    .me()
+    .post({
+      body: {
+        version: userVersion,
+        actions: [
+          {
+            action: 'addAddress',
+            address,
+          },
+        ],
       },
     })
     .execute();
