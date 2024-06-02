@@ -10,7 +10,7 @@ import styles from './ModalAddress.module.css';
 
 type Props = {
   onCancel: () => void;
-  onConfirm: (address: BaseAddress) => void;
+  onConfirm: (address: BaseAddress, addressType?: string) => void;
   editingAddress: {
     id?: string;
     country?: string;
@@ -85,7 +85,7 @@ export default function ModalAddress(props: Props) {
         city: cityInputValue,
       };
 
-      onConfirm(addressData);
+      onConfirm(addressData, inputAddressType);
     } else {
       postalBlurHandler();
       cityBlurHandler();

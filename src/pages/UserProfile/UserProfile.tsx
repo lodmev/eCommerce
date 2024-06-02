@@ -4,7 +4,9 @@ import { useDispatch } from 'react-redux';
 import { useLoaderData, useNavigate } from 'react-router-dom';
 import { loginUser, logoutUser } from '../../api/customers';
 import {
+  addBillingAddressID,
   addNewAddress,
+  addShippingAddressID,
   changeAddress,
   changeUserPassword,
   removeAddress,
@@ -173,10 +175,6 @@ export default function UserProfile() {
   async function handleDeleteAddress(addressId: string) {
     // 1) send request to API
     // 2) show loading spinner
-    // 3) re-render address cards
-    // 4) set new user version
-    // const res = await removeAddress(userVersion, addressId);
-    // console.log(res);
 
     const res = await removeAddress(userVersion, addressId);
     setAddresses(res.body.addresses);
@@ -188,11 +186,6 @@ export default function UserProfile() {
   async function handleEditAddress(address: BaseAddress) {
     // 1) send request to API
     // 2) show loading spinner
-    // 3) re-render address cards
-    // 4) set new user version
-
-    // const res = await changeAddress(userVersion, address);
-    // console.log(res);
 
     const res = await changeAddress(userVersion, address);
     setAddresses(res.body.addresses);
@@ -200,20 +193,31 @@ export default function UserProfile() {
     setIsEditAddressModal(false);
   }
 
-  async function handleAddAddress(address: BaseAddress) {
+  async function handleAddAddress(address: BaseAddress, addressType: string) {
     // 1) send request to API
     // 2) show loading spinner
-    // 3) re-render addresses cards
-    // 4) set new user version
 
-    // console.log('add new address');
-    // console.log(address);
-    // const res = await addNewAddress(userVersion, address);
-    // console.log(res);
+    // console.log('add address: ', address);
+    // console.log('addressType: ', addressType);
 
-    const res = await addNewAddress(userVersion, address);
-    setAddresses(res.body.addresses);
-    dispatch(setUserVersion(res.body.version));
+    const responseAdd = await addNewAddress(userVersion, address);
+    dispatch(setUserVersion(responseAdd.body.version));
+
+    // TODO:
+    // REFACTOR:
+    // add shipping or billing address with one request using multiple actions
+    const newAddressId = responseAdd.body.addresses[responseAdd.body.addresses.length - 1].id;
+    if (addressType === 'shipping') {
+      const resId = await addShippingAddressID(userVersion + 1, newAddressId!);
+      setAddresses(resId.body.addresses);
+      dispatch(setUserVersion(resId.body.version));
+    }
+    if (addressType === 'billing') {
+      const resId = await addBillingAddressID(userVersion + 1, newAddressId!);
+      setAddresses(resId.body.addresses);
+      dispatch(setUserVersion(resId.body.version));
+    }
+
     setIsAddAddressModal(false);
   }
 
@@ -420,7 +424,9 @@ export default function UserProfile() {
         <Overlay>
           <ModalAddress
             onCancel={() => setIsAddAddressModal(false)}
-            onConfirm={(address: BaseAddress) => handleAddAddress(address)}
+            onConfirm={(address: BaseAddress, addressType: 'shipping' | 'billing') =>
+              handleAddAddress(address, addressType)
+            }
             editingAddress={{}}
           />
         </Overlay>

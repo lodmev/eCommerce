@@ -114,3 +114,41 @@ export const changeAddress = async (userVersion: number, address: BaseAddress) =
 
   return res;
 };
+
+export const addShippingAddressID = async (userVersion: number, addressId: string) => {
+  const res = await getCurrentApiClient()
+    .me()
+    .post({
+      body: {
+        version: userVersion,
+        actions: [
+          {
+            action: 'addShippingAddressId',
+            addressId,
+          },
+        ],
+      },
+    })
+    .execute();
+
+  return res;
+};
+
+export const addBillingAddressID = async (userVersion: number, addressId: string) => {
+  const res = await getCurrentApiClient()
+    .me()
+    .post({
+      body: {
+        version: userVersion,
+        actions: [
+          {
+            action: 'addBillingAddressId',
+            addressId,
+          },
+        ],
+      },
+    })
+    .execute();
+
+  return res;
+};
