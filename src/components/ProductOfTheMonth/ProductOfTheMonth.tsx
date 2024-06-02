@@ -31,13 +31,13 @@ export default function ProductOfTheMonth() {
           </p>
         </div>
 
-        <Link className={styles.product} to={ROUTE_PATH.detailedProduct}>
+        <Link className={styles.product} to={ROUTE_PATH.products}>
           <div className={styles.product}>
             <img className={styles.image} src={sofa} alt="sofa" />
           </div>
         </Link>
       </div>
-      <Link className={styles.center} to={ROUTE_PATH.detailedProduct}>
+      <Link className={styles.center} to={ROUTE_PATH.products}>
         <div className={styles.link}>
           <p className={styles.text}>Read more</p>
         </div>

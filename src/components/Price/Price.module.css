@@ -1,0 +1,36 @@
+.price-container {
+  font-size: inherit;
+  color: inherit;
+  font-weight: 500;
+  * {
+    margin: 0.5em;
+    @media (width <= 600px) {
+      margin: 0.2em;
+      font-weight: 400;
+    }
+  }
+  .old-price {
+    font-size: 1.3em;
+    text-decoration: line-through;
+    @media (width <= 600px) {
+      font-size: 1em;
+    }
+  }
+
+  .sale {
+    font-size: 1.3em;
+    color: red;
+    text-shadow: 0 0 20px rgba(28, 2, 2, 0.3);
+    @media (width <= 600px) {
+      font-size: 0.9em;
+    }
+  }
+
+  .final-price {
+    font-size: 1.6em;
+    @media (width <= 600px) {
+      font-size: 1em;
+      font-weight: 500;
+    }
+  }
+}

@@ -1,8 +1,6 @@
-import { MyCustomerDraft } from '@commercetools/platform-sdk';
 import { FormEvent, useState } from 'react';
 import { Link } from 'react-router-dom';
 import useValidateInput from '../../hooks/useValidateInput';
-import { ICustomerRegisterData } from '../../types/interfaces';
 import {
   validateAge,
   validateCity,
@@ -16,9 +14,10 @@ import Button from '../Button/Button';
 import Input from '../Input/Input';
 import SelectComponent from '../SelectComponent/SelectComponent';
 import styles from './FormRegistration.module.css';
+import { RegisterCustomerDraft } from '../../types/types';
 
 type Props = {
-  onSubmit: (customer: MyCustomerDraft) => void;
+  onSubmit: (customer: RegisterCustomerDraft) => void;
 };
 
 export default function FormRegistration(props: Props) {
@@ -170,12 +169,13 @@ export default function FormRegistration(props: Props) {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const customerData: ICustomerRegisterData = {
+    const customerData: RegisterCustomerDraft = {
       email: emailInputValue,
       password: passwordInputValue,
       firstName: firstNameInputValue,
       lastName: lastNameInputValue,
       dateOfBirth: dateInputValue,
+      shippingAddresses: [0],
       addresses: [
         {
           streetName: streetInputValue,
@@ -193,6 +193,9 @@ export default function FormRegistration(props: Props) {
         country: selectedBillingCountry.value,
         postalCode: postalBillingInputValue,
       });
+      customerData.billingAddresses = [1];
+    } else {
+      customerData.billingAddresses = [0];
     }
 
     if (isDefaultShippingAndBilling && isShippingEqualBilling) {
@@ -224,7 +227,7 @@ export default function FormRegistration(props: Props) {
           label="Your Email"
           type="email"
           placeholder="Email"
-          errorText="Invalid email address"
+          errorText="Invalid email address."
         />
         <Input
           onBlur={passwordBlurHandler}
@@ -235,7 +238,7 @@ export default function FormRegistration(props: Props) {
           label="Your password"
           type="password"
           placeholder="Password"
-          errorText="Minimum 8 characters, at least 1 uppercase letter, 1 lowercase letter, 1 number and must not contain leading or trailing whitespace."
+          errorText="Minimum 8 latin characters, at least 1 uppercase letter, 1 lowercase letter, 1 number and must not contain whitespace."
         />
         <div className={styles['input-group']}>
           <Input
@@ -325,7 +328,6 @@ export default function FormRegistration(props: Props) {
             />
             Set as default
           </label>
-          {/* тут должен быть чекбокс set as default и если он выбран, то первый адрес становиться дефолтным для шипинг и для билинг. Или только для шипинг если снизу ещё один адрес будет */}
         </fieldset>
         <div>
           <label htmlFor="shiping-billing-address">
@@ -345,7 +347,7 @@ export default function FormRegistration(props: Props) {
             Same address for shipping and billing
           </label>
         </div>
-        {!isShippingEqualBilling && ( // ну тут ты понял что is NOT shipping === billing, тогда отрисовываем
+        {!isShippingEqualBilling && (
           <fieldset className={styles.fieldset}>
             <legend>Address for billing</legend>
             <div className={styles['input-group']}>

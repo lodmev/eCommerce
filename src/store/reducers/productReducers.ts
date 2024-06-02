@@ -2,20 +2,21 @@ import { ErrorResponse, ProductProjection } from '@commercetools/platform-sdk';
 import { StoreDispatch } from '../store';
 import { getAllProducts } from '../../api/products';
 import {
-  loadAllProductsError,
+  setLoadProductsError,
   loadAllProductsSuccess,
-  setAllProductsIsLoading,
-} from '../slices/productListSlice';
+  setProductsIsLoading,
+} from '../slices/productSlice';
+// import debug from '../../utils/debug';
 
 export const loadAllProducts = () => async (dispatch: StoreDispatch) => {
-  dispatch(setAllProductsIsLoading(true));
+  dispatch(setProductsIsLoading(true));
   try {
     const allProductsList: ProductProjection[] = await getAllProducts();
     dispatch(loadAllProductsSuccess(allProductsList));
   } catch (error) {
     const err = error as ErrorResponse;
-    dispatch(loadAllProductsError(err.message));
+    dispatch(setLoadProductsError(err.message));
   }
 };
 
-export const loadFakeForEsLint = () => {};
+export const loadProductById = (/* ID: string */) => async (/* dispatch: StoreDispatch */) => {};

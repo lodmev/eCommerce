@@ -1,9 +1,16 @@
+export const DEFAULT_LANGUAGE_KEY = 'en-US';
+export const PRODUCT_DEFAULT_FETCH_LIMIT = 8;
+export const PRICE_FILTER_VALUES = {
+  minPrice: 1,
+  maxPrice: 10000,
+} as const;
+
 export const ROUTE_PATH = {
   main: '/',
   aboutUs: '/about-us',
   basket: '/basket',
-  catalogProduct: '/catalog-product',
-  detailedProduct: '/detailed-product',
+  products: '/products',
+
   login: '/login',
   registration: '/registration',
   userProfile: '/user-profile',

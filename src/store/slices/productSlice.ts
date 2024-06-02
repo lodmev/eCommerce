@@ -1,35 +1,36 @@
 import { ProductProjection } from '@commercetools/platform-sdk';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+// import debug from '../../utils/debug';
 
-type ProductListState = {
+type ProductState = {
   allProducts: ProductProjection[];
   isLoading: boolean;
   errorMsg: string;
 };
 
-const initialProductListState: ProductListState = {
+const initialProductState: ProductState = {
   allProducts: [],
   isLoading: false,
   errorMsg: '',
 };
 
-const productListSlice = createSlice({
-  name: 'productListData',
-  initialState: initialProductListState,
+const productSlice = createSlice({
+  name: 'productData',
+  initialState: initialProductState,
   reducers: {
     loadAllProductsSuccess: (state, action: PayloadAction<ProductProjection[]>) => {
       state.allProducts = action.payload;
       state.isLoading = false;
     },
-    setAllProductsIsLoading: (state, action: PayloadAction<boolean>) => {
+    setProductsIsLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
     },
-    loadAllProductsError: (state, action: PayloadAction<string>) => {
+    setLoadProductsError: (state, action: PayloadAction<string>) => {
       state.errorMsg = action.payload;
       state.isLoading = false;
     },
   },
 });
-export default productListSlice;
-export const { loadAllProductsSuccess, setAllProductsIsLoading, loadAllProductsError } =
-  productListSlice.actions;
+export default productSlice;
+export const { loadAllProductsSuccess, setProductsIsLoading, setLoadProductsError } =
+  productSlice.actions;

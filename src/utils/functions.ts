@@ -50,3 +50,7 @@ export const validatePostalCode: IValidatePostalCode = {
 export function enumToArray(enumObject: { [key: string]: string }): string[] {
   return Object.keys(enumObject).map((key) => enumObject[key]);
 }
+
+export function priceConverter(centAmount: number | undefined): number {
+  return centAmount ? centAmount / 100 : NaN;
+}

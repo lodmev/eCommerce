@@ -1,7 +1,9 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { logoutUser } from '../../api/customers';
+import { DEFAULT_LANGUAGE_KEY } from '../../utils/globalVariables';
 
 type UserState = {
+  userLanguage: string;
   isUserAuthorized: boolean;
   isLoading: boolean;
   errorMsg: string;
@@ -10,6 +12,7 @@ type UserState = {
 };
 
 const initialUserState: UserState = {
+  userLanguage: DEFAULT_LANGUAGE_KEY,
   isUserAuthorized: Boolean(window.sessionStorage.getItem('token')),
   isLoading: false,
   errorMsg: '',
