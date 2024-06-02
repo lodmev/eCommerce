@@ -8,14 +8,17 @@ export default function Basket() {
   const { productsInBasket, productIdToQuantity } = useStoreSelector((state) => state.basketData);
   return (
     <div className={styles.cart}>
-      <h2>{`You haven't added items to your cart yet`}</h2>
-      {productsInBasket.map((product: ProductProjection) => (
-        <ProductInBasket
-          key={product.id}
-          product={product}
-          quantity={productIdToQuantity[product.id]}
-        />
-      ))}
+      {productsInBasket.length ? (
+        productsInBasket.map((product: ProductProjection) => (
+          <ProductInBasket
+            key={product.id}
+            product={product}
+            quantity={productIdToQuantity[product.id]}
+          />
+        ))
+      ) : (
+        <h2>{`You haven't added items to your cart yet`}</h2>
+      )}
       <HashLink to="/#catalog">Go to catalogue</HashLink>
     </div>
   );
