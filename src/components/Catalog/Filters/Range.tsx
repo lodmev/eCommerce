@@ -1,15 +1,25 @@
-import { InputNumber, Slider, Space } from 'antd';
+import { InputNumber, InputNumberProps, Slider, Space } from 'antd';
 import styles from './Filters.module.css';
-import { PRICE_FILTER_VALUES } from '../../../utils/globalVariables';
+
+export type Range = number[];
+export type RangeState = [Range, React.Dispatch<React.SetStateAction<Range>>];
 
 type Value = { value: number; type: 'min' | 'max' } | number[];
 
-export default function PriceFilter({
-  priceState,
+export default function RangeFilter({
+  valuesState,
+  prefix,
+  suffix,
+  min,
+  max,
 }: {
-  priceState: [number[], React.Dispatch<React.SetStateAction<number[]>>];
+  valuesState: RangeState;
+  prefix?: InputNumberProps<number>['prefix'];
+  suffix?: InputNumberProps<number>['suffix'];
+  min?: number;
+  max?: number;
 }) {
-  const [priceRange, setPriceRange] = priceState;
+  const [priceRange, setPriceRange] = valuesState;
   const onChangeValue = (val: Value) => {
     if (Array.isArray(val)) {
       setPriceRange(val);
@@ -30,8 +40,9 @@ export default function PriceFilter({
       <Space wrap>
         <InputNumber
           name="price-from"
-          addonBefore={<p className={styles['input-price__label']}>From</p>}
-          prefix="€"
+          addonBefore={<p className={styles['manual-input__label']}>From</p>}
+          prefix={prefix}
+          suffix={suffix}
           value={priceRange[0]}
           onChange={(val) => {
             onChangeValue({ value: val as number, type: 'min' });
@@ -39,8 +50,9 @@ export default function PriceFilter({
         />
         <InputNumber
           name="price-to"
-          addonBefore={<p className={styles['input-price__label']}>To</p>}
-          prefix="€"
+          addonBefore={<p className={styles['manual-input__label']}>To</p>}
+          prefix={prefix}
+          suffix={suffix}
           value={priceRange[1]}
           onChange={(val) => {
             onChangeValue({ value: val as number, type: 'max' });
@@ -48,8 +60,8 @@ export default function PriceFilter({
         />
       </Space>
       <Slider
-        min={PRICE_FILTER_VALUES.minPrice}
-        max={PRICE_FILTER_VALUES.maxPrice}
+        min={min}
+        max={max}
         range
         defaultValue={priceRange}
         onChange={(props) => {
@@ -58,4 +70,4 @@ export default function PriceFilter({
       />
     </>
   );
-}
+} // import debug from '../../../utils/debug';
