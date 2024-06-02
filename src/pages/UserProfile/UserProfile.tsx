@@ -36,6 +36,12 @@ export default function UserProfile() {
   const [addresses, setAddresses] = useState(customer.addresses);
   const [shippingAddressIds, setShippingAddressIds] = useState(customer.shippingAddressIds);
   const [billingAddressIds, setBillingAddressIds] = useState(customer.billingAddressIds);
+  const [defaultShippingAddressId, setDefaultShippingAddressId] = useState(
+    customer.defaultShippingAddressId,
+  );
+  const [defaultBillingAddressId, setDefaultBillingAddressId] = useState(
+    customer.defaultBillingAddressId,
+  );
 
   const [isEditUserInfo, setIsEditUserInfo] = useState(false);
   const [isChangePassword, setIsChangePassword] = useState(false);
@@ -228,6 +234,15 @@ export default function UserProfile() {
     setIsAddAddressModal(false);
   }
 
+  function handleChangeDefaultAddress(id: string) {
+    const isShipping = shippingAddressIds?.includes(id);
+    if (isShipping) {
+      setDefaultShippingAddressId(id);
+    } else {
+      setDefaultBillingAddressId(id);
+    }
+  }
+
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
       <h1>User Profile</h1>
@@ -386,18 +401,14 @@ export default function UserProfile() {
             postalCode={address.postalCode}
             shippingAddressIds={shippingAddressIds}
             billingAddressIds={billingAddressIds}
-            defaultShippingAddressId={customer.defaultShippingAddressId}
-            defaultBillingAddressId={customer.defaultBillingAddressId}
+            defaultShippingAddressId={defaultShippingAddressId}
+            defaultBillingAddressId={defaultBillingAddressId}
             onClickDelete={() => {
               setDeleteAddressId(address.id!);
             }}
             onClickEdit={() => {
-              const isDefaultShipping = shippingAddressIds?.includes(
-                customer.defaultShippingAddressId!,
-              );
-              const isDefaultBilling = billingAddressIds?.includes(
-                customer.defaultBillingAddressId!,
-              );
+              const isDefaultShipping = shippingAddressIds?.includes(defaultShippingAddressId!);
+              const isDefaultBilling = billingAddressIds?.includes(defaultBillingAddressId!);
 
               setEditingAddress({
                 id: address.id,
@@ -412,6 +423,7 @@ export default function UserProfile() {
               });
               setIsEditAddressModal(true);
             }}
+            onChangeDefault={(id: string) => handleChangeDefaultAddress(id)}
           />
         ))}
       </ul>

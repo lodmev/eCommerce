@@ -36,10 +36,10 @@ export default function ModalAddress(props: Props) {
 
   const [inputAddressType, setInputAddressType] = useState('shipping');
 
-  const [isDefaultAddress, setIsDefaultAddress] = useState(
-    (editingAddress.isShipping && editingAddress.isDefaultShipping) ||
-      (editingAddress.isBilling && editingAddress.isDefaultBilling),
-  );
+  // const [isDefaultAddress, setIsDefaultAddress] = useState(
+  //   (editingAddress.isShipping && editingAddress.isDefaultShipping) ||
+  //     (editingAddress.isBilling && editingAddress.isDefaultBilling),
+  // );
 
   const {
     value: streetInputValue,
@@ -182,7 +182,7 @@ export default function ModalAddress(props: Props) {
           type="text"
           errorText="Must contain at least one character and no special characters or numbers"
         />
-        <div className={styles.checkboxes}>
+        {/* <div className={styles.checkboxes}>
           <label htmlFor="is-default-address">
             <input
               className={styles.checkbox}
@@ -193,7 +193,7 @@ export default function ModalAddress(props: Props) {
             />
             Set as default
           </label>
-        </div>
+        </div> */}
       </fieldset>
       <div className={styles.controls}>
         <Button type="button" onClick={onCancel} styleClass="red-outlined">
