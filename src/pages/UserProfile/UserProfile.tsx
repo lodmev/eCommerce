@@ -11,8 +11,9 @@ import {
   changeUserPassword,
   removeAddress,
   updateCustomerPersonalData,
-  setDefaultBillingAddress as apiSetDefaultShippingAddress,
-  setDefaultShippingAddress as apiSetDefaultBillingAddress,
+  setDefaultBillingAddress as apiSetDefaultBillingAddress,
+  setDefaultShippingAddress as apiSetDefaultShippingAddress,
+  setDefaultShippingAndBillingAddress as apiSetDefaultShippingAndBillingAddress,
 } from '../../api/profile';
 import AddressCard from '../../components/AddressCard/AddressCard';
 import Button from '../../components/Button/Button';
@@ -238,18 +239,26 @@ export default function UserProfile() {
 
   async function handleChangeDefaultAddress(id: string) {
     const isShipping = shippingAddressIds?.includes(id);
+    const isBilling = billingAddressIds?.includes(id);
+
+    if (isShipping && isBilling) {
+      const res = await apiSetDefaultShippingAndBillingAddress(userVersion, id);
+      dispatch(setUserVersion(res.body.version));
+      setDefaultShippingAddressId(id);
+      setDefaultBillingAddressId(id);
+      return;
+    }
 
     if (isShipping) {
       const res = await apiSetDefaultShippingAddress(userVersion, id);
-      // console.log('set shipping');
-      // console.log(res);
-      setUserVersion(res.body.version);
+      dispatch(setUserVersion(res.body.version));
       setDefaultShippingAddressId(id);
-    } else {
+      return;
+    }
+
+    if (isBilling) {
       const res = await apiSetDefaultBillingAddress(userVersion, id);
-      // console.log('set billing');
-      // console.log(res);
-      setUserVersion(res.body.version);
+      dispatch(setUserVersion(res.body.version));
       setDefaultBillingAddressId(id);
     }
   }

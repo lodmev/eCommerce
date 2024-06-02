@@ -31,7 +31,20 @@ export default function AddressCard(props: Props) {
 
   const isShipping = shippingAddressIds?.includes(id!);
   const isBilling = billingAddressIds?.includes(id!);
-  const inputName = isShipping ? 'shipping' : 'billing';
+
+  let inputName = '';
+  if (isShipping) inputName = 'shipping';
+  if (isBilling) inputName = 'billing';
+  if (isShipping && isBilling) {
+    if (id === defaultShippingAddressId) inputName = 'shipping';
+    if (id === defaultBillingAddressId) inputName = 'billing';
+
+    if (
+      (id === defaultShippingAddressId && id === defaultBillingAddressId) ||
+      (id !== defaultShippingAddressId && id !== defaultBillingAddressId)
+    )
+      inputName = 'shipping/billing';
+  }
 
   function handleChangeDefault(e: ChangeEvent<HTMLInputElement>) {
     if (onChangeDefault) onChangeDefault(e.target.id);
@@ -39,8 +52,9 @@ export default function AddressCard(props: Props) {
 
   return (
     <li className={styles.card} data-address-id={id}>
-      {isShipping && <span>Shipping Address:</span>}
-      {isBilling && <span>Billing Address:</span>}
+      {isShipping && !isBilling && <span>Shipping Address:</span>}
+      {isBilling && !isShipping && <span>Billing Address:</span>}
+      {isBilling && isShipping && <span>Shipping/Billing Address:</span>}
       <span>Country: {country}</span>
       <span>City: {city}</span>
       <span>Street Name: {streetName}</span>
@@ -55,8 +69,6 @@ export default function AddressCard(props: Props) {
         />
         Set as Default {inputName}
       </label>
-      {/* {isDefaultShipping && <span>This is Default Shipping Address</span>}
-      {isDefaultBilling && <span>This is Default Billing Address</span>} */}
       <div className={styles.controls}>
         <Button onClick={onClickDelete} styleClass="red-outlined-small">
           Delete
