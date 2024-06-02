@@ -14,6 +14,7 @@ export const ROUTE_PATH = {
   login: '/login',
   registration: '/registration',
   userProfile: '/user-profile',
+  checkout: '/checkout',
 };
 
 export const COUNTRIES_OPTIONS_LIST = [
