@@ -32,7 +32,11 @@ export default function UserProfile() {
   const dispatch = useDispatch();
   const userVersion = useStoreSelector((state) => state.userData.userVersion);
   const { isUserAuthorized } = useStoreSelector((state) => state.userData);
+
   const [addresses, setAddresses] = useState(customer.addresses);
+  const [shippingAddressIds, setShippingAddressIds] = useState(customer.shippingAddressIds);
+  const [billingAddressIds, setBillingAddressIds] = useState(customer.billingAddressIds);
+
   const [isEditUserInfo, setIsEditUserInfo] = useState(false);
   const [isChangePassword, setIsChangePassword] = useState(false);
   const [isNewPasswordFieldsCorrect, setIsNewPasswordFieldsCorrect] = useState(true);
@@ -193,7 +197,7 @@ export default function UserProfile() {
     setIsEditAddressModal(false);
   }
 
-  async function handleAddAddress(address: BaseAddress, addressType: string) {
+  async function handleAddAddress(address: BaseAddress, addressType?: string) {
     // 1) send request to API
     // 2) show loading spinner
 
@@ -210,11 +214,14 @@ export default function UserProfile() {
     if (addressType === 'shipping') {
       const resId = await addShippingAddressID(userVersion + 1, newAddressId!);
       setAddresses(resId.body.addresses);
+      setShippingAddressIds(resId.body.shippingAddressIds);
       dispatch(setUserVersion(resId.body.version));
     }
+
     if (addressType === 'billing') {
       const resId = await addBillingAddressID(userVersion + 1, newAddressId!);
       setAddresses(resId.body.addresses);
+      setBillingAddressIds(resId.body.billingAddressIds);
       dispatch(setUserVersion(resId.body.version));
     }
 
@@ -377,18 +384,18 @@ export default function UserProfile() {
             city={address.city}
             streetName={address.streetName}
             postalCode={address.postalCode}
-            shippingAddressIds={customer.shippingAddressIds}
-            billingAddressIds={customer.billingAddressIds}
+            shippingAddressIds={shippingAddressIds}
+            billingAddressIds={billingAddressIds}
             defaultShippingAddressId={customer.defaultShippingAddressId}
             defaultBillingAddressId={customer.defaultBillingAddressId}
             onClickDelete={() => {
               setDeleteAddressId(address.id!);
             }}
             onClickEdit={() => {
-              const isDefaultShipping = customer.shippingAddressIds?.includes(
+              const isDefaultShipping = shippingAddressIds?.includes(
                 customer.defaultShippingAddressId!,
               );
-              const isDefaultBilling = customer.billingAddressIds?.includes(
+              const isDefaultBilling = billingAddressIds?.includes(
                 customer.defaultBillingAddressId!,
               );
 
@@ -398,8 +405,8 @@ export default function UserProfile() {
                 city: address.city,
                 streetName: address.streetName,
                 postalCode: address.postalCode,
-                isShipping: customer.shippingAddressIds?.includes(address.id || ''),
-                isBilling: customer.billingAddressIds?.includes(address.id || ''),
+                isShipping: shippingAddressIds?.includes(address.id || ''),
+                isBilling: billingAddressIds?.includes(address.id || ''),
                 isDefaultBilling,
                 isDefaultShipping,
               });
@@ -424,7 +431,7 @@ export default function UserProfile() {
         <Overlay>
           <ModalAddress
             onCancel={() => setIsAddAddressModal(false)}
-            onConfirm={(address: BaseAddress, addressType: 'shipping' | 'billing') =>
+            onConfirm={(address: BaseAddress, addressType?: string) =>
               handleAddAddress(address, addressType)
             }
             editingAddress={{}}
