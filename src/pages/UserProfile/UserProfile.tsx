@@ -30,6 +30,7 @@ export default function UserProfile() {
   const dispatch = useDispatch();
   const userVersion = useStoreSelector((state) => state.userData.userVersion);
   const { isUserAuthorized } = useStoreSelector((state) => state.userData);
+  const [addresses, setAddresses] = useState(customer.addresses);
   const [isEditUserInfo, setIsEditUserInfo] = useState(false);
   const [isChangePassword, setIsChangePassword] = useState(false);
   const [isNewPasswordFieldsCorrect, setIsNewPasswordFieldsCorrect] = useState(true);
@@ -177,7 +178,9 @@ export default function UserProfile() {
     // const res = await removeAddress(userVersion, addressId);
     // console.log(res);
 
-    await removeAddress(userVersion, addressId);
+    const res = await removeAddress(userVersion, addressId);
+    setAddresses(res.body.addresses);
+    dispatch(setUserVersion(res.body.version));
     setDeleteAddressId(null);
     // or show modal with error
   }
@@ -191,7 +194,9 @@ export default function UserProfile() {
     // const res = await changeAddress(userVersion, address);
     // console.log(res);
 
-    await changeAddress(userVersion, address);
+    const res = await changeAddress(userVersion, address);
+    setAddresses(res.body.addresses);
+    dispatch(setUserVersion(res.body.version));
     setIsEditAddressModal(false);
   }
 
@@ -205,7 +210,10 @@ export default function UserProfile() {
     // console.log(address);
     // const res = await addNewAddress(userVersion, address);
     // console.log(res);
-    await addNewAddress(userVersion, address);
+
+    const res = await addNewAddress(userVersion, address);
+    setAddresses(res.body.addresses);
+    dispatch(setUserVersion(res.body.version));
     setIsAddAddressModal(false);
   }
 
@@ -357,7 +365,7 @@ export default function UserProfile() {
       </div>
       <h2>Addresses:</h2>
       <ul className={styles['address-cards']}>
-        {customer.addresses.map((address) => (
+        {addresses.map((address) => (
           <AddressCard
             key={address.id}
             id={address.id}
