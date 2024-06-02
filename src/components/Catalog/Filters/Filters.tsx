@@ -1,11 +1,37 @@
 import { Button, Collapse, CollapseProps, Form, Select, Space } from 'antd';
-import { ReactNode, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import styles from './Filters.module.css';
 import RangeFilter, { RangeState, Range } from './Range';
 import { DIMENSIONS_FILTER_VALUES, PRICE_FILTER_VALUES } from '../../../utils/globalVariables';
 // import debug from '../../../utils/debug';
 
+type AllFiltersState = {
+  priceFilter: Range | null;
+  widthFilter: Range | null;
+  lengthFilter: Range | null;
+  heightFilter: Range | null;
+  colorFilter: string[];
+};
+
+const formatFilters = (allFilters: AllFiltersState): ReactNode => {
+  const priceStr = allFilters.priceFilter ? ` price: ${allFilters.priceFilter.join('-')} €;` : '';
+  const widthStr = allFilters.widthFilter ? ` width: ${allFilters.widthFilter.join('-')} mm;` : '';
+  const lengthStr = allFilters.lengthFilter
+    ? ` length: ${allFilters.lengthFilter.join('-')} mm;`
+    : '';
+  const heightStr = allFilters.heightFilter
+    ? ` height: ${allFilters.heightFilter.join('-')} mm;`
+    : '';
+  const colorStr =
+    allFilters.colorFilter.length > 0
+      ? ` colors: ${allFilters.colorFilter.map((color) => `"${color}"`).join(', ')}`
+      : '';
+  if (priceStr || widthStr || lengthStr || heightStr || colorStr) {
+    return `Already filtered for:${priceStr}${widthStr}${lengthStr}${heightStr}${colorStr}`;
+  }
+  return '';
+};
 function getDimensionsItem(dimensionsStates: {
   width: RangeState;
   length: RangeState;
@@ -108,16 +134,28 @@ export default function Filters(): ReactNode {
   //     return urlSearchParams;
   //   });
   // }, []);
-  const initPriceState = [PRICE_FILTER_VALUES.min, PRICE_FILTER_VALUES.max];
-  const initDimState = [DIMENSIONS_FILTER_VALUES.min, DIMENSIONS_FILTER_VALUES.max];
-  const priceState = useState<Range>(getInitPriceState(searchParams) || initPriceState);
+  const defaultPriceState = [PRICE_FILTER_VALUES.min, PRICE_FILTER_VALUES.max];
+  const defaultDimState = [DIMENSIONS_FILTER_VALUES.min, DIMENSIONS_FILTER_VALUES.max];
+  const getInitFiltersState = () => ({
+    priceFilter: getInitPriceState(searchParams),
+    widthFilter: getInitDimState(searchParams, 'f_width'),
+    lengthFilter: getInitDimState(searchParams, 'f_length'),
+    heightFilter: getInitDimState(searchParams, 'f_height'),
+    colorFilter: getInitColors(searchParams),
+  });
+  const [allFiltersState, setFiltersState] = useState<AllFiltersState>(getInitFiltersState());
+  const priceState = useState<Range>(allFiltersState.priceFilter || defaultPriceState);
   const dimensionsStates = {
-    width: useState<Range>(getInitDimState(searchParams, 'f_width') || initDimState),
-    length: useState<Range>(getInitDimState(searchParams, 'f_length') || initDimState),
-    height: useState<Range>(getInitDimState(searchParams, 'f_height') || initDimState),
+    width: useState<Range>(allFiltersState.widthFilter || defaultDimState),
+    length: useState<Range>(allFiltersState.lengthFilter || defaultDimState),
+    height: useState<Range>(allFiltersState.heightFilter || defaultDimState),
   };
-  const colorsState = useState<string[]>(getInitColors(searchParams));
-
+  const colorsState = useState<string[]>(allFiltersState.colorFilter);
+  const [filterLabel, setFilterLabel] = useState(formatFilters(allFiltersState));
+  useEffect(() => {
+    setFiltersState(getInitFiltersState());
+    setFilterLabel(formatFilters(getInitFiltersState()));
+  }, [searchParams]);
   const applyFilters = () => {
     setSearchParams((urlSearchParams) => {
       if (
@@ -128,6 +166,10 @@ export default function Filters(): ReactNode {
           'f_price',
           `variants.price.centAmount:range (${priceState[0][0] * 100} to ${priceState[0][1] * 100})`,
         );
+        setFiltersState((filters) => ({
+          ...filters,
+          priceFilter: [priceState[0][0], priceState[0][1]],
+        }));
       }
       if (
         dimensionsStates.width[0][0] !== DIMENSIONS_FILTER_VALUES.min ||
@@ -137,6 +179,10 @@ export default function Filters(): ReactNode {
           'f_width',
           `variants.attributes.width:range (${dimensionsStates.width[0][0]} to ${dimensionsStates.width[0][1]})`,
         );
+        setFiltersState((filters) => ({
+          ...filters,
+          widthFilter: [dimensionsStates.width[0][0], dimensionsStates.width[0][1]],
+        }));
       }
       if (
         dimensionsStates.length[0][0] !== DIMENSIONS_FILTER_VALUES.min ||
@@ -146,6 +192,10 @@ export default function Filters(): ReactNode {
           'f_length',
           `variants.attributes.length:range (${dimensionsStates.length[0][0]} to ${dimensionsStates.length[0][1]})`,
         );
+        setFiltersState((filters) => ({
+          ...filters,
+          lengthFilter: [dimensionsStates.length[0][0], dimensionsStates.length[0][1]],
+        }));
       }
       if (
         dimensionsStates.height[0][0] !== DIMENSIONS_FILTER_VALUES.min ||
@@ -155,21 +205,30 @@ export default function Filters(): ReactNode {
           'f_height',
           `variants.attributes.height:range (${dimensionsStates.height[0][0]} to ${dimensionsStates.height[0][1]})`,
         );
+        setFiltersState((filters) => ({
+          ...filters,
+          heightFilter: [dimensionsStates.height[0][0], dimensionsStates.height[0][1]],
+        }));
       }
       if (colorsState[0].length > 0) {
         urlSearchParams.set(
           'f_colors',
           `variants.attributes.upholstery_color.key:${colorsState[0].map((color) => `"${color}"`).join(',')}`,
         );
+        setFiltersState((filters) => ({
+          ...filters,
+          colorFilter: colorsState[0],
+        }));
       }
       return urlSearchParams;
     });
+    setFilterLabel(formatFilters(allFiltersState));
   };
   const resetFilters = () => {
-    priceState[1](initPriceState);
-    dimensionsStates.width[1](initDimState);
-    dimensionsStates.length[1](initDimState);
-    dimensionsStates.height[1](initDimState);
+    priceState[1](defaultPriceState);
+    dimensionsStates.width[1](defaultDimState);
+    dimensionsStates.length[1](defaultDimState);
+    dimensionsStates.height[1](defaultDimState);
     colorsState[1]([]);
     setSearchParams((prev) => {
       const newParams = new URLSearchParams();
@@ -180,6 +239,8 @@ export default function Filters(): ReactNode {
       });
       return newParams;
     });
+    setFiltersState(getInitFiltersState);
+    setFilterLabel(formatFilters(allFiltersState));
   };
 
   const filterItems: CollapseProps['items'] = [
@@ -234,7 +295,7 @@ export default function Filters(): ReactNode {
   const items: CollapseProps['items'] = [
     {
       key: 1,
-      label: 'Filters',
+      label: 'Add filters',
       children: (
         <Form onFinish={applyFilters}>
           <Collapse size="small" items={filterItems} />
@@ -250,5 +311,10 @@ export default function Filters(): ReactNode {
       ),
     },
   ];
-  return <Collapse className={styles.filters} size="small" items={items} />;
+  return (
+    <>
+      {filterLabel && <b>{filterLabel}</b>}
+      <Collapse className={styles.filters} size="small" items={items} />
+    </>
+  );
 }
