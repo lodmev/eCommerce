@@ -11,6 +11,8 @@ import {
   changeUserPassword,
   removeAddress,
   updateCustomerPersonalData,
+  setDefaultBillingAddress as apiSetDefaultShippingAddress,
+  setDefaultShippingAddress as apiSetDefaultBillingAddress,
 } from '../../api/profile';
 import AddressCard from '../../components/AddressCard/AddressCard';
 import Button from '../../components/Button/Button';
@@ -234,11 +236,20 @@ export default function UserProfile() {
     setIsAddAddressModal(false);
   }
 
-  function handleChangeDefaultAddress(id: string) {
+  async function handleChangeDefaultAddress(id: string) {
     const isShipping = shippingAddressIds?.includes(id);
+
     if (isShipping) {
+      const res = await apiSetDefaultShippingAddress(userVersion, id);
+      // console.log('set shipping');
+      // console.log(res);
+      setUserVersion(res.body.version);
       setDefaultShippingAddressId(id);
     } else {
+      const res = await apiSetDefaultBillingAddress(userVersion, id);
+      // console.log('set billing');
+      // console.log(res);
+      setUserVersion(res.body.version);
       setDefaultBillingAddressId(id);
     }
   }

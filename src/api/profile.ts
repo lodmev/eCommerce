@@ -152,3 +152,41 @@ export const addBillingAddressID = async (userVersion: number, addressId: string
 
   return res;
 };
+
+export const setDefaultShippingAddress = async (userVersion: number, addressId: string) => {
+  const res = await getCurrentApiClient()
+    .me()
+    .post({
+      body: {
+        version: userVersion,
+        actions: [
+          {
+            action: 'setDefaultShippingAddress',
+            addressId,
+          },
+        ],
+      },
+    })
+    .execute();
+
+  return res;
+};
+
+export const setDefaultBillingAddress = async (userVersion: number, addressId: string) => {
+  const res = await getCurrentApiClient()
+    .me()
+    .post({
+      body: {
+        version: userVersion,
+        actions: [
+          {
+            action: 'setDefaultBillingAddress',
+            addressId,
+          },
+        ],
+      },
+    })
+    .execute();
+
+  return res;
+};
