@@ -12,3 +12,14 @@
   min-width: 10rem;
   max-width: 100%;
 }
+
+.applied-filters {
+  margin-left: 1rem;
+  font-weight: 500;
+  span {
+    font-weight: normal;
+    color: #69b1ff;
+    margin-left: 0.3rem;
+    margin-right: 0.1rem;
+  }
+}

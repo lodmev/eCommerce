@@ -4,34 +4,8 @@ import { useSearchParams } from 'react-router-dom';
 import styles from './Filters.module.css';
 import RangeFilter, { RangeState, Range } from './Range';
 import { DIMENSIONS_FILTER_VALUES, PRICE_FILTER_VALUES } from '../../../utils/globalVariables';
-// import debug from '../../../utils/debug';
+import { AllFiltersState, AppliedFilters } from './AppliedFilters';
 
-type AllFiltersState = {
-  priceFilter: Range | null;
-  widthFilter: Range | null;
-  lengthFilter: Range | null;
-  heightFilter: Range | null;
-  colorFilter: string[];
-};
-
-const formatFilters = (allFilters: AllFiltersState): ReactNode => {
-  const priceStr = allFilters.priceFilter ? ` price: ${allFilters.priceFilter.join('-')} €;` : '';
-  const widthStr = allFilters.widthFilter ? ` width: ${allFilters.widthFilter.join('-')} mm;` : '';
-  const lengthStr = allFilters.lengthFilter
-    ? ` length: ${allFilters.lengthFilter.join('-')} mm;`
-    : '';
-  const heightStr = allFilters.heightFilter
-    ? ` height: ${allFilters.heightFilter.join('-')} mm;`
-    : '';
-  const colorStr =
-    allFilters.colorFilter.length > 0
-      ? ` colors: ${allFilters.colorFilter.map((color) => `"${color}"`).join(', ')}`
-      : '';
-  if (priceStr || widthStr || lengthStr || heightStr || colorStr) {
-    return `Already filtered for:${priceStr}${widthStr}${lengthStr}${heightStr}${colorStr}`;
-  }
-  return '';
-};
 function getDimensionsItem(dimensionsStates: {
   width: RangeState;
   length: RangeState;
@@ -151,10 +125,8 @@ export default function Filters(): ReactNode {
     height: useState<Range>(allFiltersState.heightFilter || defaultDimState),
   };
   const colorsState = useState<string[]>(allFiltersState.colorFilter);
-  const [filterLabel, setFilterLabel] = useState(formatFilters(allFiltersState));
   useEffect(() => {
     setFiltersState(getInitFiltersState());
-    setFilterLabel(formatFilters(getInitFiltersState()));
   }, [searchParams]);
   const applyFilters = () => {
     setSearchParams((urlSearchParams) => {
@@ -222,7 +194,6 @@ export default function Filters(): ReactNode {
       }
       return urlSearchParams;
     });
-    setFilterLabel(formatFilters(allFiltersState));
   };
   const resetFilters = () => {
     priceState[1](defaultPriceState);
@@ -240,7 +211,6 @@ export default function Filters(): ReactNode {
       return newParams;
     });
     setFiltersState(getInitFiltersState);
-    setFilterLabel(formatFilters(allFiltersState));
   };
 
   const filterItems: CollapseProps['items'] = [
@@ -313,7 +283,7 @@ export default function Filters(): ReactNode {
   ];
   return (
     <>
-      {filterLabel && <b>{filterLabel}</b>}
+      <AppliedFilters allFilters={allFiltersState} />
       <Collapse className={styles.filters} size="small" items={items} />
     </>
   );

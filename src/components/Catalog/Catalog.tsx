@@ -44,10 +44,9 @@ const appendFilters = ({
     filterQuery.push(`categories.id:"${id}"`);
   }
   // const priceRange = locationParams.searchParams.get('f_price');
-  locationParams.searchParams.forEach((value) => filterQuery.push(value));
-  // if (priceRange) {
-  //   filterQuery.push(`variants.price.centAmount:range ${priceRange}`);
-  // }
+  locationParams.searchParams.forEach((value, key) => {
+    if (key.startsWith('f_')) filterQuery.push(value);
+  });
   return queryArgs;
 };
 
