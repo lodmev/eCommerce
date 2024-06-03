@@ -159,6 +159,7 @@ export default function UserProfile() {
     try {
       const res = await changeUserPassword(
         userVersion,
+        userId,
         currentPasswordInputValue,
         newPasswordInputValue,
       );

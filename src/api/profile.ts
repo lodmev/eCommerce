@@ -1,7 +1,7 @@
 import { BaseAddress } from '@commercetools/platform-sdk';
 import { IUpdateUserInfo } from '../types/interfaces';
 import { randomUUID } from '../utils/functions';
-import { getCurrentApiClient, manageCustomersApiClient } from './apiRoot';
+import { manageCustomersApiClient } from './apiRoot';
 
 export const updateCustomerPersonalData = async (
   userVersion: number,
@@ -42,17 +42,19 @@ export const updateCustomerPersonalData = async (
 
 export const changeUserPassword = async (
   userVersion: number,
+  userId: string,
   currentPassword: string,
   newPassword: string,
 ) => {
-  const res = await getCurrentApiClient()
-    .me()
+  const res = await manageCustomersApiClient
+    .customers()
     .password()
     .post({
       body: {
         version: userVersion,
         currentPassword,
         newPassword,
+        id: userId,
       },
     })
     .execute();
