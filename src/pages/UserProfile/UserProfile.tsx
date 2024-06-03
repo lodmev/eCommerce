@@ -53,6 +53,7 @@ export default function UserProfile() {
   const [editingAddress, setEditingAddress] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   if (!isUserAuthorized) navigate(ROUTE_PATH.main);
 
@@ -143,6 +144,7 @@ export default function UserProfile() {
     try {
       const res = await updateCustomerPersonalData(userVersion, userId, userInfo);
       dispatch(setUserVersion(res.body.version));
+      setSuccessMsg('Your personal data has been successfully updated!');
     } catch (error) {
       if (error instanceof Error) {
         setError(error);
@@ -477,6 +479,15 @@ export default function UserProfile() {
             onCancel={() => setDeleteAddressId(null)}
             onConfirm={() => handleDeleteAddress(deleteAddressId)}
             message="Are you sure want to delete this address?"
+          />
+        </Overlay>
+      )}
+      {successMsg && (
+        <Overlay>
+          <ModalConfirm
+            onCancel={() => setSuccessMsg(null)}
+            onConfirm={() => setSuccessMsg(null)}
+            message={successMsg}
           />
         </Overlay>
       )}
