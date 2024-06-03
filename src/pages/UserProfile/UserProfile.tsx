@@ -16,6 +16,7 @@ import {
 import AddressCard from '../../components/AddressCard/AddressCard';
 import Button from '../../components/Button/Button';
 import Input from '../../components/Input/Input';
+import Loader from '../../components/Modal/Loader';
 import ModalAddress from '../../components/Modal/ModalAddress';
 import ModalConfirm from '../../components/Modal/ModalConfirm';
 import Overlay from '../../components/Modal/Overlay';
@@ -50,10 +51,10 @@ export default function UserProfile() {
   const [isAddAddressModal, setIsAddAddressModal] = useState(false);
   const [deleteAddressId, setDeleteAddressId] = useState<string | null>(null);
   const [editingAddress, setEditingAddress] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
   if (!isUserAuthorized) navigate(ROUTE_PATH.main);
-
-  // console.log('user profile customer', customer);
 
   const {
     value: firstNameInputValue,
@@ -114,6 +115,11 @@ export default function UserProfile() {
     reset: confirmNewPasswordReset,
   } = useValidateInput(validatePassword);
 
+  const handleModalError = () => {
+    setIsLoading(false);
+    setError(null);
+  };
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -132,14 +138,22 @@ export default function UserProfile() {
       dateOfBirth: dateInputValue,
     };
 
+    setIsLoading(true);
+
     try {
       const res = await updateCustomerPersonalData(userVersion, userId, userInfo);
       dispatch(setUserVersion(res.body.version));
     } catch (error) {
+      if (error instanceof Error) {
+        setError(error);
+      }
       // TODO:
       // 1) show spinner on loading
       // 2) show error modal to user
       // console.error(error);
+    } finally {
+      setIsLoading(false);
+      setIsEditUserInfo(false);
     }
   };
 
@@ -436,6 +450,7 @@ export default function UserProfile() {
       <Button onClick={() => setIsAddAddressModal(true)} type="button" styleClass="green-outlined">
         + Add New Address
       </Button>
+      <Loader isLoading={isLoading} errMsg={error?.message} errorHandler={handleModalError} />
       {isEditAddressModal && (
         <Overlay>
           <ModalAddress
