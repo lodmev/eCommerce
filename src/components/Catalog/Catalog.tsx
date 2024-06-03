@@ -15,12 +15,14 @@ import { QueryArgs } from '../../types/types';
 import Breadcrumbs from '../Breadcrumbs/Breadcrumbs';
 import Loader from '../Modal/Loader';
 import Filters from './Filters/Filters';
+import Sorting from './Sorting/Sorting';
 // import debug from '../../utils/debug';
 
 type RouteParams = Readonly<Params<string>>;
-type LocationParams = {
+type RequestParams = {
   routeParams?: RouteParams;
   searchParams: URLSearchParams;
+  sortParams: string;
 };
 
 const getID = (routeParams?: RouteParams) => routeParams?.subCatID || routeParams?.catID || '';
@@ -29,7 +31,7 @@ const appendFilters = ({
   locationParams,
   queryArgs,
 }: {
-  locationParams: LocationParams;
+  locationParams: Omit<RequestParams, 'sortParams'>;
   queryArgs: QueryArgs;
 }) => {
   const id: string = getID(locationParams.routeParams);
@@ -50,21 +52,21 @@ const appendFilters = ({
   return queryArgs;
 };
 
-const getQuery = ({ routeParams, searchParams }: LocationParams): QueryArgs => {
+const getQuery = ({ routeParams, searchParams, sortParams }: RequestParams): QueryArgs => {
   const queryArgs: QueryArgs = {
     limit: PRODUCT_DEFAULT_FETCH_LIMIT,
   };
   appendFilters({ locationParams: { routeParams, searchParams }, queryArgs });
-  if (queryArgs.sort && queryArgs.sort instanceof Array) {
-    queryArgs.sort.push('"createdAt"');
-  } else {
+  if (sortParams === '') {
     queryArgs.sort = [`name.${DEFAULT_LANGUAGE_KEY} asc`];
+  } else {
+    queryArgs.sort = [sortParams];
   }
   return queryArgs;
 };
 
-const doSearchRequest = async ({ routeParams, searchParams }: LocationParams) => {
-  const query = getQuery({ routeParams, searchParams });
+const doSearchRequest = async ({ routeParams, searchParams, sortParams }: RequestParams) => {
+  const query = getQuery({ routeParams, searchParams, sortParams });
   return searchProducts(query);
 };
 
@@ -74,10 +76,11 @@ export default function Catalog({ withLink }: { withLink?: boolean }) {
   const routeParams = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const [sortParams, setSortParams] = useState('');
   const [allProductsResponse, isLoading, err] = useAsync(
     doSearchRequest,
-    { routeParams, searchParams },
-    [routeParams],
+    { routeParams, searchParams, sortParams },
+    [routeParams, sortParams],
   );
   const [categoriesMap] = useAsync(getProductCategoriesMap, undefined, []);
   const locale = useStoreSelector((state) => state.userData.userLanguage);
@@ -92,9 +95,10 @@ export default function Catalog({ withLink }: { withLink?: boolean }) {
   return (
     <div className={styles.catalog} id="catalog">
       <div className={styles.wrapper}>
-        <Breadcrumbs className={styles.breadcrumbs} />
+        {!withLink && <Breadcrumbs className={styles.breadcrumbs} />}
         <p className={styles['catalog-header']}>{currentCategory}</p>
-        <Filters />
+        {!withLink && <Filters />}
+        {!withLink && <Sorting setSortParams={setSortParams} />}
         <div className={styles.furniture}>
           {isLoading || err ? (
             <Loader
