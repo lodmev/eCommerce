@@ -117,11 +117,10 @@ export default function UserProfile() {
   } = useValidateInput(validatePassword);
 
   const handleModalError = () => {
-    setIsLoading(false);
     setError(null);
   };
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleChangePersonalData = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!isEditUserInfo) return;
@@ -142,7 +141,7 @@ export default function UserProfile() {
     setIsLoading(true);
 
     try {
-      const res = await updateCustomerPersonalData(userVersion, userId, userInfo);
+      const res = await updateCustomerPersonalData(1, userId, userInfo);
       dispatch(setUserVersion(res.body.version));
       setSuccessMsg('Your personal data has been successfully updated!');
     } catch (error) {
@@ -172,6 +171,8 @@ export default function UserProfile() {
 
     if (!isAllInputsCorrect) return;
 
+    setIsLoading(true);
+
     try {
       const res = await changeUserPassword(
         userVersion,
@@ -184,13 +185,15 @@ export default function UserProfile() {
       // 1) Update auth token
       logoutUser();
       loginUser({ email: emailInputValue, password: newPasswordInputValue });
+      setSuccessMsg('Your password has been successfully changed.');
+      currentPasswordReset();
+      newPasswordReset();
+      confirmNewPasswordReset();
+      setIsChangePassword(false);
     } catch (error) {
-      // TODO:
-      // 2) show loading
-      // 3) after password has been changed
-      //    show either success or error modal message
-      // 4) reset password input fields
-      // 5) setIsCurrentPasswordCorrect(false)
+      if (error instanceof Error) setError(error);
+    } finally {
+      setIsLoading(false);
     }
 
     /*
@@ -266,7 +269,7 @@ export default function UserProfile() {
   }
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
+    <form className={styles.form} onSubmit={handleChangePersonalData}>
       <h1>User Profile</h1>
       <div>
         <div className={styles['input-group']}>
