@@ -25,6 +25,10 @@ module.exports = {
     'react-hooks/exhaustive-deps': 'off',
     'react/no-array-index-key': 'off',
     'jsx-a11y/no-noninteractive-element-interactions': 'off',
+    '@typescript-eslint/no-shadow': 'off',
+    '@typescript-eslint/no-use-before-define': 'off',
+    'react/jsx-no-bind': 'off',
+
 
 
 },

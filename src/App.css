@@ -4,6 +4,8 @@
   --main-links-color: rgba(247, 248, 250, 0.8);
   --main-text-color: #66695c;
   --main-container-color: #e5f5e6;
+  --main-contrast-color: #56b280;
+  --dissabled-color: #a1a1a1;
 }
 
 #root {
@@ -17,4 +19,8 @@
 
 a {
   text-decoration: inherit;
+
+  &[aria-disabled='true'] {
+    pointer-events: none;
+  }
 }

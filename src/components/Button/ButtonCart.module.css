@@ -29,6 +29,11 @@
     transform: translateY(-2px);
   }
 
+  &:active {
+    box-shadow: 0 2px white;
+    transform: translateY(4px);
+  }
+
   @media (width <= 600px) {
     font-size: 14px;
     padding: 10px 15px;
