@@ -13,11 +13,15 @@
 
 .modal-password {
   width: 100%;
-  max-width: 55svw;
+  padding: 1em;
   background-color: whitesmoke;
   padding: 1em;
   border-radius: 5px;
   border: 1px solid black;
+
+  @media (min-width: 768px) {
+    max-width: 55svw;
+  }
 }
 
 .modal-buttons {

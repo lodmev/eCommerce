@@ -1,14 +1,17 @@
 import { BaseAddress } from '@commercetools/platform-sdk';
 import { IUpdateUserInfo } from '../types/interfaces';
-import { getCurrentApiClient } from './apiRoot';
+import { randomUUID } from '../utils/functions';
+import { manageCustomersApiClient } from './apiRoot';
 
 export const updateCustomerPersonalData = async (
   userVersion: number,
+  userId: string,
   userInfo: IUpdateUserInfo,
 ) => {
   const { firstName, dateOfBirth, lastName, email } = userInfo;
-  const res = await getCurrentApiClient()
-    .me()
+  const res = await manageCustomersApiClient
+    .customers()
+    .withId({ ID: userId })
     .post({
       body: {
         version: userVersion,
@@ -39,17 +42,19 @@ export const updateCustomerPersonalData = async (
 
 export const changeUserPassword = async (
   userVersion: number,
+  userId: string,
   currentPassword: string,
   newPassword: string,
 ) => {
-  const res = await getCurrentApiClient()
-    .me()
+  const res = await manageCustomersApiClient
+    .customers()
     .password()
     .post({
       body: {
         version: userVersion,
         currentPassword,
         newPassword,
+        id: userId,
       },
     })
     .execute();
@@ -57,16 +62,31 @@ export const changeUserPassword = async (
   return res;
 };
 
-export const addNewAddress = async (userVersion: number, address: BaseAddress) => {
-  const res = await getCurrentApiClient()
-    .me()
+export const addNewAddress = async (
+  userVersion: number,
+  userId: string,
+  address: BaseAddress,
+  addressType: string,
+) => {
+  const key = randomUUID();
+  const actionString = addressType === 'shipping' ? 'addShippingAddressId' : 'addBillingAddressId';
+  const res = await manageCustomersApiClient
+    .customers()
+    .withId({ ID: userId })
     .post({
       body: {
         version: userVersion,
         actions: [
           {
             action: 'addAddress',
-            address,
+            address: {
+              ...address,
+              key,
+            },
+          },
+          {
+            action: actionString,
+            addressKey: key,
           },
         ],
       },
@@ -76,9 +96,10 @@ export const addNewAddress = async (userVersion: number, address: BaseAddress) =
   return res;
 };
 
-export const removeAddress = async (userVersion: number, addressId: string) => {
-  const res = await getCurrentApiClient()
-    .me()
+export const removeAddress = async (userVersion: number, userId: string, addressId: string) => {
+  const res = await manageCustomersApiClient
+    .customers()
+    .withId({ ID: userId })
     .post({
       body: {
         version: userVersion,
@@ -95,9 +116,10 @@ export const removeAddress = async (userVersion: number, addressId: string) => {
   return res;
 };
 
-export const changeAddress = async (userVersion: number, address: BaseAddress) => {
-  const res = await getCurrentApiClient()
-    .me()
+export const changeAddress = async (userVersion: number, userId: string, address: BaseAddress) => {
+  const res = await manageCustomersApiClient
+    .customers()
+    .withId({ ID: userId })
     .post({
       body: {
         version: userVersion,
@@ -115,50 +137,14 @@ export const changeAddress = async (userVersion: number, address: BaseAddress) =
   return res;
 };
 
-export const addShippingAddressID = async (userVersion: number, addressId: string) => {
-  const res = await getCurrentApiClient()
-    .me()
-    .post({
-      body: {
-        version: userVersion,
-        actions: [
-          {
-            action: 'addShippingAddressId',
-            addressId,
-          },
-        ],
-      },
-    })
-    .execute();
-
-  return res;
-};
-
-export const addBillingAddressID = async (userVersion: number, addressId: string) => {
-  const res = await getCurrentApiClient()
-    .me()
-    .post({
-      body: {
-        version: userVersion,
-        actions: [
-          {
-            action: 'addBillingAddressId',
-            addressId,
-          },
-        ],
-      },
-    })
-    .execute();
-
-  return res;
-};
-
 export const setDefaultShippingAndBillingAddress = async (
   userVersion: number,
+  userId: string,
   addressId: string,
 ) => {
-  const res = await getCurrentApiClient()
-    .me()
+  const res = await manageCustomersApiClient
+    .customers()
+    .withId({ ID: userId })
     .post({
       body: {
         version: userVersion,
@@ -179,9 +165,14 @@ export const setDefaultShippingAndBillingAddress = async (
   return res;
 };
 
-export const setDefaultShippingAddress = async (userVersion: number, addressId: string) => {
-  const res = await getCurrentApiClient()
-    .me()
+export const setDefaultShippingAddress = async (
+  userVersion: number,
+  userId: string,
+  addressId: string,
+) => {
+  const res = await manageCustomersApiClient
+    .customers()
+    .withId({ ID: userId })
     .post({
       body: {
         version: userVersion,
@@ -198,9 +189,14 @@ export const setDefaultShippingAddress = async (userVersion: number, addressId: 
   return res;
 };
 
-export const setDefaultBillingAddress = async (userVersion: number, addressId: string) => {
-  const res = await getCurrentApiClient()
-    .me()
+export const setDefaultBillingAddress = async (
+  userVersion: number,
+  userId: string,
+  addressId: string,
+) => {
+  const res = await manageCustomersApiClient
+    .customers()
+    .withId({ ID: userId })
     .post({
       body: {
         version: userVersion,

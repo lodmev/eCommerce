@@ -1,5 +1,5 @@
 import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
-import ModalConfirm from './ModalConfirm';
+import ModalAlert from './ModalAlert';
 import Overlay from './Overlay';
 
 export default function Loader({
@@ -14,7 +14,7 @@ export default function Loader({
   return isLoading || errMsg ? (
     <Overlay>
       {isLoading && <LoadingSpinner />}
-      {errMsg && <ModalConfirm message={`${errMsg}`} isError onConfirm={errorHandler} />}
+      {errMsg && <ModalAlert message={`${errMsg}`} isError onConfirm={errorHandler} />}
     </Overlay>
   ) : null;
 }

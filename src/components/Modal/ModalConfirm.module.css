@@ -5,6 +5,7 @@
   align-items: center;
   gap: 2em;
   padding: 1em;
+  margin: 1em;
   border-radius: 4px;
   border: 1px solid #898989;
   background-color: #f9f9f9;
@@ -13,4 +14,11 @@
     border: 1px solid var(--error-color);
     color: var(--error-color);
   }
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap-reverse;
+  justify-content: center;
+  gap: 1em;
 }

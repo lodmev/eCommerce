@@ -7,9 +7,10 @@ import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import ModalConfirm from '../../components/Modal/ModalConfirm';
 import Overlay from '../../components/Modal/Overlay';
 import { ROUTE_PATH } from '../../utils/globalVariables';
-import { setUserLogin } from '../../store/slices/userSlice';
+import { setUserId, setUserLogin, setUserVersion } from '../../store/slices/userSlice';
 import { useStoreDispatch } from '../../hooks/userRedux';
 import { RegisterCustomerDraft } from '../../types/types';
+import ModalAlert from '../../components/Modal/ModalAlert';
 
 export default function Registration() {
   const [hasOverlay, setHasOverlay] = useState(false);
@@ -35,9 +36,11 @@ export default function Registration() {
     setHasOverlay(true);
     setIsLoading(true);
     try {
-      await signupUser(customer);
+      const { version, id } = await signupUser(customer);
       setSuccessMessage('Your account has been successfully created!');
       dispatch(setUserLogin());
+      dispatch(setUserVersion(version));
+      dispatch(setUserId(id));
 
       // rou
     } catch (err) {
@@ -64,7 +67,7 @@ export default function Registration() {
         <Overlay>
           {isLoading && <LoadingSpinner />}
           {errorMessage && (
-            <ModalConfirm message={errorMessage} isError onConfirm={handleConfirmError} />
+            <ModalAlert message={errorMessage} isError onConfirm={handleConfirmError} />
           )}
           {successMessage && (
             <ModalConfirm message={successMessage} onConfirm={handleConfirmSuccess} />
