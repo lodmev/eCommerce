@@ -7,6 +7,7 @@ import Login from '../pages/Login/Login';
 import Main from '../pages/Main/Main';
 import Registration from '../pages/Registration/Registration';
 import UserProfile from '../pages/UserProfile/UserProfile';
+import userProfileLoader from '../pages/UserProfile/UserProfileLoader';
 import { ROUTE_PATH } from '../utils/globalVariables';
 import { CrumbTypes } from '../components/Breadcrumbs/Breadcrumbs';
 import DetailedProduct from '../pages/DetailedProduct/DetailedProduct';
@@ -71,6 +72,7 @@ const router = createBrowserRouter([
       },
       {
         element: <UserProfile />,
+        loader: userProfileLoader,
         path: ROUTE_PATH.userProfile,
       },
     ],

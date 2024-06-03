@@ -7,6 +7,8 @@ type UserState = {
   isUserAuthorized: boolean;
   isLoading: boolean;
   errorMsg: string;
+  userVersion: number;
+  userId: string;
 };
 
 const initialUserState: UserState = {
@@ -14,6 +16,8 @@ const initialUserState: UserState = {
   isUserAuthorized: Boolean(window.sessionStorage.getItem('token')),
   isLoading: false,
   errorMsg: '',
+  userVersion: 1,
+  userId: '',
 };
 
 const userSlice = createSlice({
@@ -34,7 +38,20 @@ const userSlice = createSlice({
     setUserError: (state, action: PayloadAction<string>) => {
       state.errorMsg = action.payload;
     },
+    setUserVersion: (state, action: PayloadAction<number>) => {
+      state.userVersion = action.payload;
+    },
+    setUserId: (state, action: PayloadAction<string>) => {
+      state.userId = action.payload;
+    },
   },
 });
 export default userSlice;
-export const { setUserLogin, setUserLogout, setUserIsLoading, setUserError } = userSlice.actions;
+export const {
+  setUserLogin,
+  setUserVersion,
+  setUserId,
+  setUserLogout,
+  setUserIsLoading,
+  setUserError,
+} = userSlice.actions;
