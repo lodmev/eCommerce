@@ -16,13 +16,16 @@ import Breadcrumbs from '../Breadcrumbs/Breadcrumbs';
 import Loader from '../Modal/Loader';
 import Filters from './Filters/Filters';
 import Sorting from './Sorting/Sorting';
+import Searching from './Searching/Searching';
 // import debug from '../../utils/debug';
 
 type RouteParams = Readonly<Params<string>>;
+
 type RequestParams = {
   routeParams?: RouteParams;
   searchParams: URLSearchParams;
   sortParams: string;
+  searchRequest: { locale: string; value: string };
 };
 
 function ProductCards({
@@ -52,7 +55,7 @@ const appendFilters = ({
   locationParams,
   queryArgs,
 }: {
-  locationParams: Omit<RequestParams, 'sortParams'>;
+  locationParams: Omit<RequestParams, 'sortParams' | 'searchRequest'>;
   queryArgs: QueryArgs;
 }) => {
   const id: string = getID(locationParams.routeParams);
@@ -73,22 +76,39 @@ const appendFilters = ({
   return queryArgs;
 };
 
-const getQuery = ({ routeParams, searchParams, sortParams }: RequestParams): QueryArgs => {
+const getQuery = ({
+  routeParams,
+  searchParams,
+  sortParams,
+  searchRequest: searchText,
+}: RequestParams): QueryArgs => {
   const queryArgs: QueryArgs = {
     limit: PRODUCT_DEFAULT_FETCH_LIMIT,
   };
+  // add search text
+  if (searchText.value) {
+    queryArgs[`text.${searchText.locale}`] = searchText.value;
+    queryArgs.fuzzy = true;
+  }
+  // append filters
   appendFilters({ locationParams: { routeParams, searchParams }, queryArgs });
+  // set sort params
   if (sortParams === '') {
     queryArgs.sort = [`score asc`];
+    queryArgs.sort.push('id asc');
   } else {
     queryArgs.sort = [sortParams];
   }
-  queryArgs.sort.push('id asc');
   return queryArgs;
 };
 
-const doSearchRequest = async ({ routeParams, searchParams, sortParams }: RequestParams) => {
-  const query = getQuery({ routeParams, searchParams, sortParams });
+const doSearchRequest = async ({
+  routeParams,
+  searchParams,
+  sortParams,
+  searchRequest: searchText,
+}: RequestParams) => {
+  const query = getQuery({ routeParams, searchParams, sortParams, searchRequest: searchText });
   return searchProducts(query);
 };
 
@@ -99,13 +119,14 @@ export default function Catalog({ isPreview }: { isPreview?: boolean }) {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [sortParams, setSortParams] = useState('');
+  const [searchText, setSearchText] = useState('');
+  const locale = useStoreSelector((state) => state.userData.userLanguage);
   const [allProductsResponse, isLoading, err] = useAsync(
     doSearchRequest,
-    { routeParams, searchParams, sortParams },
-    [routeParams, sortParams],
+    { routeParams, searchParams, sortParams, searchRequest: { locale, value: searchText } },
+    [routeParams, sortParams, searchText],
   );
   const [categoriesMap] = useAsync(getProductCategoriesMap, undefined, []);
-  const locale = useStoreSelector((state) => state.userData.userLanguage);
   useEffect(() => {
     const id: string = getID(routeParams);
     if (id && categoriesMap) {
@@ -123,6 +144,7 @@ export default function Catalog({ isPreview }: { isPreview?: boolean }) {
         </p>
         {!isPreview && <Filters />}
         {!isPreview && <Sorting setSortParams={setSortParams} />}
+        {!isPreview && <Searching setSearchText={setSearchText} loading={isLoading} />}
         <div className={styles.furniture}>
           {isLoading || err ? (
             <Loader
