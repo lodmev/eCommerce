@@ -1,4 +1,4 @@
-import { Button, Collapse, Segmented, Space } from 'antd';
+import { Button, Collapse, Segmented, Space, Tooltip } from 'antd';
 import { SegmentedOptions, SegmentedValue } from 'antd/es/segmented';
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -58,20 +58,24 @@ function SortElement({
       />
       <Space>
         order:
-        <Button
-          disabled={selectedValue === ''}
-          onClick={() => {
-            setSortOrder('asc');
-          }}
-          icon={<FontAwesomeIcon icon={faCircleChevronUp} className={ascChecked} />}
-        />
-        <Button
-          disabled={selectedValue === ''}
-          onClick={() => {
-            setSortOrder('desc');
-          }}
-          icon={<FontAwesomeIcon icon={faCircleChevronDown} className={descChecked} />}
-        />
+        <Tooltip title="Ascending order">
+          <Button
+            disabled={selectedValue === ''}
+            onClick={() => {
+              setSortOrder('asc');
+            }}
+            icon={<FontAwesomeIcon icon={faCircleChevronUp} className={ascChecked} />}
+          />
+        </Tooltip>
+        <Tooltip title="Descending order">
+          <Button
+            disabled={selectedValue === ''}
+            onClick={() => {
+              setSortOrder('desc');
+            }}
+            icon={<FontAwesomeIcon icon={faCircleChevronDown} className={descChecked} />}
+          />
+        </Tooltip>
       </Space>
     </Space>
   );
