@@ -343,7 +343,7 @@ export default function UserProfile() {
             type="button"
             styleClass="green-outlined"
           >
-            Edit Personal Data
+            {isEditUserInfo ? 'Cancel editing' : 'Edit Personal Data'}
           </Button>
           <Button disabled={!isEditUserInfo} type="submit" styleClass="green-outlined">
             Save Changes
