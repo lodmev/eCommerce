@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { Navigate, createBrowserRouter } from 'react-router-dom';
 import AboutUs from '../pages/AboutUs/AboutUs';
 import NotFound from '../pages/NotFound/NotFound';
 import AppLayout from '../pages/AppLayout';
@@ -74,6 +74,7 @@ const router = createBrowserRouter([
         element: <UserProfile />,
         loader: userProfileLoader,
         path: ROUTE_PATH.userProfile,
+        errorElement: <Navigate to={ROUTE_PATH.login} />,
       },
     ],
   },
