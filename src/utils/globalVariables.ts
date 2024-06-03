@@ -1,5 +1,6 @@
 export const DEFAULT_LANGUAGE_KEY = 'en-US';
 export const PRODUCT_DEFAULT_FETCH_LIMIT = 8;
+export const CATALOG_PREVIEW_LIMIT = 2;
 export const PRICE_FILTER_VALUES = {
   min: 1,
   max: 5000,

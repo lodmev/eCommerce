@@ -23,7 +23,10 @@
     }
   }
 }
-
+.product-card_preview {
+  width: auto;
+  max-width: 570px;
+}
 .product-card__image {
   border-radius: 20px;
   width: 100%;
@@ -34,7 +37,7 @@
 .product-card__description,
 .product-card__price,
 .product-card__brand {
-  margin: 0.2rem 0;
+  margin: 0.5rem 0;
   font-size: inherit;
   color: inherit;
 }
