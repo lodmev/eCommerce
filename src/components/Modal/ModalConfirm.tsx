@@ -18,9 +18,11 @@ export default function ModalConfirm(props: Props) {
       {isError && <h3>Error</h3>}
       <p>{message}</p>
       <div className={styles.buttons}>
-        <Button onClick={onCancel} styleClass="red-outlined" type="button">
-          Cancel
-        </Button>
+        {onCancel && (
+          <Button onClick={onCancel} styleClass="red-outlined" type="button">
+            Cancel
+          </Button>
+        )}
         <Button onClick={onConfirm} styleClass="green-outlined" type="button">
           OK
         </Button>
