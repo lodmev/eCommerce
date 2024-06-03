@@ -1,0 +1,40 @@
+.modal {
+  width: 100%;
+  max-width: 55svw;
+  background-color: whitesmoke;
+  padding: 1em;
+  border-radius: 5px;
+  border: 1px solid black;
+}
+
+.fieldset {
+  padding: 1em;
+  margin: 0.5em 0;
+  border-radius: 5px;
+}
+
+.controls {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.checkbox {
+  margin-top: 1em;
+  margin-right: 0.4em;
+}
+
+.checkboxes {
+  display: flex;
+  flex-direction: column;
+}
+
+.radio-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3em;
+  margin: 0.5em 0 1em;
+
+  label {
+    cursor: pointer;
+  }
+}
