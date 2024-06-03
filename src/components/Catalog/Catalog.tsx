@@ -68,6 +68,7 @@ export default function Catalog({ isPreview }: { isPreview?: boolean }) {
         {!isPreview && <Filters />}
         {!isPreview && <Sorting setSortParams={setSortParams} />}
         {!isPreview && <Searching setSearchText={setSearchText} loading={isLoading} />}
+
         <div className={styles.furniture}>
           {isLoading || err ? (
             <Loader
