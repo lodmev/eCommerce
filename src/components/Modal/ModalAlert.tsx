@@ -3,13 +3,12 @@ import styles from './ModalConfirm.module.css';
 
 type Props = {
   onConfirm?: () => void;
-  onCancel?: () => void;
   message?: string;
   isError?: boolean;
 };
 
 export default function ModalConfirm(props: Props) {
-  const { onConfirm, onCancel, message, isError = false } = props;
+  const { onConfirm, message, isError = false } = props;
 
   const errorStyle = isError ? ` ${styles.error}` : '';
 
@@ -17,10 +16,7 @@ export default function ModalConfirm(props: Props) {
     <div className={`${styles.modal}${errorStyle}`}>
       {isError && <h3>Error</h3>}
       <p>{message}</p>
-      <div className={styles.buttons}>
-        <Button onClick={onCancel} styleClass="red-outlined" type="button">
-          Cancel
-        </Button>
+      <div>
         <Button onClick={onConfirm} styleClass="green-outlined" type="button">
           OK
         </Button>

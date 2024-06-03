@@ -18,6 +18,7 @@ import Button from '../../components/Button/Button';
 import Input from '../../components/Input/Input';
 import Loader from '../../components/Modal/Loader';
 import ModalAddress from '../../components/Modal/ModalAddress';
+import ModalAlert from '../../components/Modal/ModalAlert';
 import ModalConfirm from '../../components/Modal/ModalConfirm';
 import Overlay from '../../components/Modal/Overlay';
 import { useStoreSelector } from '../../hooks/userRedux';
@@ -495,11 +496,7 @@ export default function UserProfile() {
       )}
       {successMsg && (
         <Overlay>
-          <ModalConfirm
-            onCancel={() => setSuccessMsg(null)}
-            onConfirm={() => setSuccessMsg(null)}
-            message={successMsg}
-          />
+          <ModalAlert onConfirm={() => setSuccessMsg(null)} message={successMsg} />
         </Overlay>
       )}
     </form>

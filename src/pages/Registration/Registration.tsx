@@ -10,6 +10,7 @@ import { ROUTE_PATH } from '../../utils/globalVariables';
 import { setUserId, setUserLogin, setUserVersion } from '../../store/slices/userSlice';
 import { useStoreDispatch } from '../../hooks/userRedux';
 import { RegisterCustomerDraft } from '../../types/types';
+import ModalAlert from '../../components/Modal/ModalAlert';
 
 export default function Registration() {
   const [hasOverlay, setHasOverlay] = useState(false);
@@ -66,7 +67,7 @@ export default function Registration() {
         <Overlay>
           {isLoading && <LoadingSpinner />}
           {errorMessage && (
-            <ModalConfirm message={errorMessage} isError onConfirm={handleConfirmError} />
+            <ModalAlert message={errorMessage} isError onConfirm={handleConfirmError} />
           )}
           {successMessage && (
             <ModalConfirm message={successMessage} onConfirm={handleConfirmSuccess} />
