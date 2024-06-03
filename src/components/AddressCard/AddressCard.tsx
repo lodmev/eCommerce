@@ -67,7 +67,8 @@ export default function AddressCard(props: Props) {
           name={inputName}
           id={id}
         />
-        Set as Default {inputName}
+        {id === defaultShippingAddressId || id === defaultBillingAddressId ? '' : 'Set as '}Default{' '}
+        {inputName}
       </label>
       <div className={styles.controls}>
         <Button onClick={onClickDelete} styleClass="red-outlined-small">
