@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import styles from './Catalog.module.css';
 import ProductCard from '../Products/ProductCard';
 import {
-  DEFAULT_LANGUAGE_KEY,
+  CATALOG_PREVIEW_LIMIT,
   PRODUCT_DEFAULT_FETCH_LIMIT,
   ROUTE_PATH,
 } from '../../utils/globalVariables';
@@ -25,6 +25,27 @@ type RequestParams = {
   sortParams: string;
 };
 
+function ProductCards({
+  isPreview,
+  products,
+}: {
+  products?: ProductProjection[];
+  isPreview?: boolean;
+}) {
+  let allProducts: ProductProjection[] | undefined;
+  if (products) {
+    if (isPreview) {
+      allProducts = products.slice(0, CATALOG_PREVIEW_LIMIT);
+    } else {
+      allProducts = products;
+    }
+  }
+  return allProducts
+    ? allProducts.map((product: ProductProjection) => (
+        <ProductCard key={product.id} product={product} isPreview={isPreview} />
+      ))
+    : null;
+}
 const getID = (routeParams?: RouteParams) => routeParams?.subCatID || routeParams?.catID || '';
 
 const appendFilters = ({
@@ -58,10 +79,11 @@ const getQuery = ({ routeParams, searchParams, sortParams }: RequestParams): Que
   };
   appendFilters({ locationParams: { routeParams, searchParams }, queryArgs });
   if (sortParams === '') {
-    queryArgs.sort = [`name.${DEFAULT_LANGUAGE_KEY} asc`];
+    queryArgs.sort = [`score asc`];
   } else {
     queryArgs.sort = [sortParams];
   }
+  queryArgs.sort.push('id asc');
   return queryArgs;
 };
 
@@ -70,7 +92,7 @@ const doSearchRequest = async ({ routeParams, searchParams, sortParams }: Reques
   return searchProducts(query);
 };
 
-export default function Catalog({ withLink }: { withLink?: boolean }) {
+export default function Catalog({ isPreview }: { isPreview?: boolean }) {
   const defaultCategoryName = 'All categories';
   const [currentCategory, setCurrentCategory] = useState('Catalog');
   const routeParams = useParams();
@@ -95,10 +117,12 @@ export default function Catalog({ withLink }: { withLink?: boolean }) {
   return (
     <div className={styles.catalog} id="catalog">
       <div className={styles.wrapper}>
-        {!withLink && <Breadcrumbs className={styles.breadcrumbs} />}
-        <p className={styles['catalog-header']}>{currentCategory}</p>
-        {!withLink && <Filters />}
-        {!withLink && <Sorting setSortParams={setSortParams} />}
+        {!isPreview && <Breadcrumbs className={styles.breadcrumbs} />}
+        <p className={styles['catalog-header']}>
+          {!isPreview ? currentCategory : 'The most popular'}
+        </p>
+        {!isPreview && <Filters />}
+        {!isPreview && <Sorting setSortParams={setSortParams} />}
         <div className={styles.furniture}>
           {isLoading || err ? (
             <Loader
@@ -109,13 +133,10 @@ export default function Catalog({ withLink }: { withLink?: boolean }) {
               }}
             />
           ) : (
-            allProductsResponse &&
-            allProductsResponse.results.map((product: ProductProjection) => (
-              <ProductCard key={product.id} product={product} />
-            ))
+            <ProductCards products={allProductsResponse?.results} isPreview={isPreview} />
           )}
         </div>
-        {withLink && (
+        {isPreview && (
           <Link className={styles.center} to={ROUTE_PATH.products}>
             <div className={styles.link}>
               <p className={styles.text}>Go to catalog</p>
