@@ -1,29 +1,18 @@
-import { ProductProjection } from '@commercetools/platform-sdk';
-import { Link, Params, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { ProductProjection } from '@commercetools/platform-sdk';
 import styles from './Catalog.module.css';
-import ProductCard from '../Products/ProductCard';
-import {
-  CATALOG_PREVIEW_LIMIT,
-  PRODUCT_DEFAULT_FETCH_LIMIT,
-  ROUTE_PATH,
-} from '../../utils/globalVariables';
+import { CATALOG_PREVIEW_LIMIT, ROUTE_PATH } from '../../utils/globalVariables';
 import { useStoreSelector } from '../../hooks/userRedux';
 import useAsync from '../../hooks/useAsync';
-import { getProductCategoriesMap, searchProducts } from '../../api/products';
-import { QueryArgs } from '../../types/types';
+import { getProductCategoriesMap } from '../../api/products';
 import Breadcrumbs from '../Breadcrumbs/Breadcrumbs';
 import Loader from '../Modal/Loader';
 import Filters from './Filters/Filters';
 import Sorting from './Sorting/Sorting';
-// import debug from '../../utils/debug';
-
-type RouteParams = Readonly<Params<string>>;
-type RequestParams = {
-  routeParams?: RouteParams;
-  searchParams: URLSearchParams;
-  sortParams: string;
-};
+import Searching from './Searching/Searching';
+import { doSearchRequest, getID } from '../../api/doProductSearchRequest';
+import ProductCard from '../Products/ProductCard';
 
 function ProductCards({
   isPreview,
@@ -46,52 +35,6 @@ function ProductCards({
       ))
     : null;
 }
-const getID = (routeParams?: RouteParams) => routeParams?.subCatID || routeParams?.catID || '';
-
-const appendFilters = ({
-  locationParams,
-  queryArgs,
-}: {
-  locationParams: Omit<RequestParams, 'sortParams'>;
-  queryArgs: QueryArgs;
-}) => {
-  const id: string = getID(locationParams.routeParams);
-  if (!id && locationParams.searchParams.size === 0) {
-    return queryArgs;
-  }
-
-  const filterQuery: string[] = [];
-  queryArgs['filter.query'] = filterQuery;
-
-  if (id) {
-    filterQuery.push(`categories.id:"${id}"`);
-  }
-  // const priceRange = locationParams.searchParams.get('f_price');
-  locationParams.searchParams.forEach((value, key) => {
-    if (key.startsWith('f_')) filterQuery.push(value);
-  });
-  return queryArgs;
-};
-
-const getQuery = ({ routeParams, searchParams, sortParams }: RequestParams): QueryArgs => {
-  const queryArgs: QueryArgs = {
-    limit: PRODUCT_DEFAULT_FETCH_LIMIT,
-  };
-  appendFilters({ locationParams: { routeParams, searchParams }, queryArgs });
-  if (sortParams === '') {
-    queryArgs.sort = [`score asc`];
-  } else {
-    queryArgs.sort = [sortParams];
-  }
-  queryArgs.sort.push('id asc');
-  return queryArgs;
-};
-
-const doSearchRequest = async ({ routeParams, searchParams, sortParams }: RequestParams) => {
-  const query = getQuery({ routeParams, searchParams, sortParams });
-  return searchProducts(query);
-};
-
 export default function Catalog({ isPreview }: { isPreview?: boolean }) {
   const defaultCategoryName = 'All categories';
   const [currentCategory, setCurrentCategory] = useState('Catalog');
@@ -99,13 +42,14 @@ export default function Catalog({ isPreview }: { isPreview?: boolean }) {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [sortParams, setSortParams] = useState('');
+  const [searchText, setSearchText] = useState('');
+  const locale = useStoreSelector((state) => state.userData.userLanguage);
   const [allProductsResponse, isLoading, err] = useAsync(
     doSearchRequest,
-    { routeParams, searchParams, sortParams },
-    [routeParams, sortParams],
+    { routeParams, searchParams, sortParams, searchRequest: { locale, value: searchText } },
+    [routeParams, sortParams, searchText],
   );
   const [categoriesMap] = useAsync(getProductCategoriesMap, undefined, []);
-  const locale = useStoreSelector((state) => state.userData.userLanguage);
   useEffect(() => {
     const id: string = getID(routeParams);
     if (id && categoriesMap) {
@@ -123,6 +67,8 @@ export default function Catalog({ isPreview }: { isPreview?: boolean }) {
         </p>
         {!isPreview && <Filters />}
         {!isPreview && <Sorting setSortParams={setSortParams} />}
+        {!isPreview && <Searching setSearchText={setSearchText} loading={isLoading} />}
+
         <div className={styles.furniture}>
           {isLoading || err ? (
             <Loader

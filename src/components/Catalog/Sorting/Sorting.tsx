@@ -1,4 +1,4 @@
-import { Button, Collapse, Segmented, Space, Tooltip } from 'antd';
+import { Button, Collapse, Flex, Segmented, Space, Tooltip } from 'antd';
 import { SegmentedOptions, SegmentedValue } from 'antd/es/segmented';
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -49,7 +49,7 @@ function SortElement({
     },
   ];
   return (
-    <Space>
+    <Flex wrap gap="small">
       <Segmented
         className={styles['sort-segments']}
         options={options}
@@ -57,7 +57,6 @@ function SortElement({
         onChange={setSelectedValue}
       />
       <Space>
-        order:
         <Tooltip title="Ascending order">
           <Button
             disabled={selectedValue === ''}
@@ -77,7 +76,7 @@ function SortElement({
           />
         </Tooltip>
       </Space>
-    </Space>
+    </Flex>
   );
 }
 
@@ -95,10 +94,10 @@ export default function Sorting({
         {
           key: 'sortParent',
           label: (
-            <div>
+            <Space align="center">
               Sort by:
               <SortElement setSortParams={setSortParams} />
-            </div>
+            </Space>
           ),
           showArrow: false,
         },

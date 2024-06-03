@@ -1,9 +1,8 @@
-.sorting {
+.searching {
   margin: 1rem;
   padding-left: 0.5rem;
   font-weight: 500;
 }
-
-.order-checked {
-  color: #031cf7;
+.search-input {
+  width: 15rem;
 }
