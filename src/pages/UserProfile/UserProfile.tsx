@@ -198,12 +198,12 @@ export default function UserProfile() {
     */
   };
 
-  async function handleDeleteAddress(addressId: string) {
+  const handleDeleteAddress = async () => {
     setDeleteAddressId(null);
     setIsLoading(true);
 
     try {
-      const res = await removeAddress(userVersion, userId, addressId);
+      const res = await removeAddress(userVersion, userId, deleteAddressId!);
       setAddresses(res.body.addresses);
       dispatch(setUserVersion(res.body.version));
     } catch (error) {
@@ -211,9 +211,9 @@ export default function UserProfile() {
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
-  async function handleEditAddress(address: BaseAddress) {
+  const handleEditAddress = async (address: BaseAddress) => {
     setIsEditAddressModal(false);
     setIsLoading(true);
 
@@ -226,9 +226,9 @@ export default function UserProfile() {
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
-  async function handleAddAddress(address: BaseAddress, addressType?: string) {
+  const handleAddAddress = async (address: BaseAddress, addressType?: string) => {
     setIsAddAddressModal(false);
     setIsLoading(true);
 
@@ -249,9 +249,9 @@ export default function UserProfile() {
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
-  async function handleChangeDefaultAddress(id: string) {
+  const handleChangeDefaultAddress = async (id: string) => {
     setIsLoading(true);
 
     const isShipping = shippingAddressIds?.includes(id);
@@ -283,7 +283,7 @@ export default function UserProfile() {
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   return (
     <form className={styles.form} onSubmit={handleChangePersonalData}>
@@ -358,13 +358,6 @@ export default function UserProfile() {
       </div>
       <div>
         <div className={styles['input-group']}>
-          {/* <Button
-            type="button"
-            onClick={() => setIsChangePassword((prev) => !prev)}
-            styleClass="green-outlined"
-          >
-            Change Password
-          </Button> */}
           {isChangePassword && (
             <Overlay>
               <div className={styles['modal-password']}>
@@ -465,7 +458,7 @@ export default function UserProfile() {
               });
               setIsEditAddressModal(true);
             }}
-            onChangeDefault={(id: string) => handleChangeDefaultAddress(id)}
+            onChangeDefault={handleChangeDefaultAddress}
           />
         ))}
       </ul>
@@ -477,7 +470,7 @@ export default function UserProfile() {
         <Overlay>
           <ModalAddress
             onCancel={() => setIsEditAddressModal(false)}
-            onConfirm={(address: BaseAddress) => handleEditAddress(address)}
+            onConfirm={handleEditAddress}
             editingAddress={editingAddress}
           />
         </Overlay>
@@ -486,9 +479,7 @@ export default function UserProfile() {
         <Overlay>
           <ModalAddress
             onCancel={() => setIsAddAddressModal(false)}
-            onConfirm={(address: BaseAddress, addressType?: string) =>
-              handleAddAddress(address, addressType)
-            }
+            onConfirm={handleAddAddress}
             editingAddress={{}}
           />
         </Overlay>
@@ -497,7 +488,7 @@ export default function UserProfile() {
         <Overlay>
           <ModalConfirm
             onCancel={() => setDeleteAddressId(null)}
-            onConfirm={() => handleDeleteAddress(deleteAddressId)}
+            onConfirm={handleDeleteAddress}
             message="Are you sure want to delete this address?"
           />
         </Overlay>
