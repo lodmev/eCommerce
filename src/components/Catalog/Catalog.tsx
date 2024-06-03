@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import styles from './Catalog.module.css';
 import ProductCard from '../Products/ProductCard';
 import {
-  DEFAULT_LANGUAGE_KEY,
+  CATALOG_PREVIEW_LIMIT,
   PRODUCT_DEFAULT_FETCH_LIMIT,
   ROUTE_PATH,
 } from '../../utils/globalVariables';
@@ -15,21 +15,44 @@ import { QueryArgs } from '../../types/types';
 import Breadcrumbs from '../Breadcrumbs/Breadcrumbs';
 import Loader from '../Modal/Loader';
 import Filters from './Filters/Filters';
+import Sorting from './Sorting/Sorting';
 // import debug from '../../utils/debug';
 
 type RouteParams = Readonly<Params<string>>;
-type LocationParams = {
+type RequestParams = {
   routeParams?: RouteParams;
   searchParams: URLSearchParams;
+  sortParams: string;
 };
 
+function ProductCards({
+  isPreview,
+  products,
+}: {
+  products?: ProductProjection[];
+  isPreview?: boolean;
+}) {
+  let allProducts: ProductProjection[] | undefined;
+  if (products) {
+    if (isPreview) {
+      allProducts = products.slice(0, CATALOG_PREVIEW_LIMIT);
+    } else {
+      allProducts = products;
+    }
+  }
+  return allProducts
+    ? allProducts.map((product: ProductProjection) => (
+        <ProductCard key={product.id} product={product} isPreview={isPreview} />
+      ))
+    : null;
+}
 const getID = (routeParams?: RouteParams) => routeParams?.subCatID || routeParams?.catID || '';
 
 const appendFilters = ({
   locationParams,
   queryArgs,
 }: {
-  locationParams: LocationParams;
+  locationParams: Omit<RequestParams, 'sortParams'>;
   queryArgs: QueryArgs;
 }) => {
   const id: string = getID(locationParams.routeParams);
@@ -50,34 +73,36 @@ const appendFilters = ({
   return queryArgs;
 };
 
-const getQuery = ({ routeParams, searchParams }: LocationParams): QueryArgs => {
+const getQuery = ({ routeParams, searchParams, sortParams }: RequestParams): QueryArgs => {
   const queryArgs: QueryArgs = {
     limit: PRODUCT_DEFAULT_FETCH_LIMIT,
   };
   appendFilters({ locationParams: { routeParams, searchParams }, queryArgs });
-  if (queryArgs.sort && queryArgs.sort instanceof Array) {
-    queryArgs.sort.push('"createdAt"');
+  if (sortParams === '') {
+    queryArgs.sort = [`score asc`];
   } else {
-    queryArgs.sort = [`name.${DEFAULT_LANGUAGE_KEY} asc`];
+    queryArgs.sort = [sortParams];
   }
+  queryArgs.sort.push('id asc');
   return queryArgs;
 };
 
-const doSearchRequest = async ({ routeParams, searchParams }: LocationParams) => {
-  const query = getQuery({ routeParams, searchParams });
+const doSearchRequest = async ({ routeParams, searchParams, sortParams }: RequestParams) => {
+  const query = getQuery({ routeParams, searchParams, sortParams });
   return searchProducts(query);
 };
 
-export default function Catalog({ withLink }: { withLink?: boolean }) {
+export default function Catalog({ isPreview }: { isPreview?: boolean }) {
   const defaultCategoryName = 'All categories';
   const [currentCategory, setCurrentCategory] = useState('Catalog');
   const routeParams = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const [sortParams, setSortParams] = useState('');
   const [allProductsResponse, isLoading, err] = useAsync(
     doSearchRequest,
-    { routeParams, searchParams },
-    [routeParams],
+    { routeParams, searchParams, sortParams },
+    [routeParams, sortParams],
   );
   const [categoriesMap] = useAsync(getProductCategoriesMap, undefined, []);
   const locale = useStoreSelector((state) => state.userData.userLanguage);
@@ -92,9 +117,12 @@ export default function Catalog({ withLink }: { withLink?: boolean }) {
   return (
     <div className={styles.catalog} id="catalog">
       <div className={styles.wrapper}>
-        <Breadcrumbs className={styles.breadcrumbs} />
-        <p className={styles['catalog-header']}>{currentCategory}</p>
-        <Filters />
+        {!isPreview && <Breadcrumbs className={styles.breadcrumbs} />}
+        <p className={styles['catalog-header']}>
+          {!isPreview ? currentCategory : 'The most popular'}
+        </p>
+        {!isPreview && <Filters />}
+        {!isPreview && <Sorting setSortParams={setSortParams} />}
         <div className={styles.furniture}>
           {isLoading || err ? (
             <Loader
@@ -105,13 +133,10 @@ export default function Catalog({ withLink }: { withLink?: boolean }) {
               }}
             />
           ) : (
-            allProductsResponse &&
-            allProductsResponse.results.map((product: ProductProjection) => (
-              <ProductCard key={product.id} product={product} />
-            ))
+            <ProductCards products={allProductsResponse?.results} isPreview={isPreview} />
           )}
         </div>
-        {withLink && (
+        {isPreview && (
           <Link className={styles.center} to={ROUTE_PATH.products}>
             <div className={styles.link}>
               <p className={styles.text}>Go to catalog</p>

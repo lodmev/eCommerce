@@ -6,16 +6,26 @@ import { useStoreSelector } from '../../hooks/userRedux';
 import Price from '../Price/Price';
 // import debug from '../../utils/debug';
 
-export default function ProductCard({ product }: { product: ProductProjection }) {
+export default function ProductCard({
+  product,
+  isPreview,
+}: {
+  product: ProductProjection;
+  isPreview?: boolean;
+}) {
   const { name, masterVariant, id, description } = product;
   const locale = useStoreSelector((state) => state.userData.userLanguage);
   const desc = description ? description[locale] : '';
   const image = masterVariant.images?.[0];
   const imageUrl = image && image.url;
   const navigationToDetailedProduct = `${ROUTE_PATH.products}/${id}`;
+  const previewClass = isPreview ? styles['product-card_preview'] : '';
 
   return (
-    <Link className={styles['product-card']} to={navigationToDetailedProduct}>
+    <Link
+      className={[styles['product-card'], previewClass].join(' ')}
+      to={navigationToDetailedProduct}
+    >
       <img className={styles['product-card__image']} src={imageUrl} alt="product" />
       <p className={styles['product-card__brand']}>{name[locale]}</p>
       {desc && <p className={styles['product-card__description']}>{desc}</p>}

@@ -6,7 +6,7 @@ export default function Main() {
   return (
     <>
       <Description />
-      <Catalog withLink />
+      <Catalog isPreview />
       <ProductOfTheMonth />
     </>
   );
