@@ -148,10 +148,6 @@ export default function UserProfile() {
       if (error instanceof Error) {
         setError(error);
       }
-      // TODO:
-      // 1) show spinner on loading
-      // 2) show error modal to user
-      // console.error(error);
     } finally {
       setIsLoading(false);
       setIsEditUserInfo(false);
@@ -203,68 +199,89 @@ export default function UserProfile() {
   };
 
   async function handleDeleteAddress(addressId: string) {
-    // 1) send request to API
-    // 2) show loading spinner
-
-    const res = await removeAddress(userVersion, userId, addressId);
-    setAddresses(res.body.addresses);
-    dispatch(setUserVersion(res.body.version));
     setDeleteAddressId(null);
-    // or show modal with error
+    setIsLoading(true);
+
+    try {
+      const res = await removeAddress(userVersion, userId, addressId);
+      setAddresses(res.body.addresses);
+      dispatch(setUserVersion(res.body.version));
+    } catch (error) {
+      if (error instanceof Error) setError(error);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   async function handleEditAddress(address: BaseAddress) {
-    // 1) send request to API
-    // 2) show loading spinner
-
-    const res = await changeAddress(userVersion, userId, address);
-    setAddresses(res.body.addresses);
-    dispatch(setUserVersion(res.body.version));
     setIsEditAddressModal(false);
+    setIsLoading(true);
+
+    try {
+      const res = await changeAddress(userVersion, userId, address);
+      setAddresses(res.body.addresses);
+      dispatch(setUserVersion(res.body.version));
+    } catch (error) {
+      if (error instanceof Error) setError(error);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   async function handleAddAddress(address: BaseAddress, addressType?: string) {
-    // 1) send request to API
-    // 2) show loading spinner
-
-    const res = await addNewAddress(userVersion, userId, address, addressType || '');
-    dispatch(setUserVersion(res.body.version));
-    setAddresses(res.body.addresses);
-
-    if (addressType === 'shipping') {
-      setShippingAddressIds(res.body.shippingAddressIds);
-    }
-
-    if (addressType === 'billing') {
-      setBillingAddressIds(res.body.billingAddressIds);
-    }
-
     setIsAddAddressModal(false);
+    setIsLoading(true);
+
+    try {
+      const res = await addNewAddress(userVersion, userId, address, addressType || '');
+      dispatch(setUserVersion(res.body.version));
+      setAddresses(res.body.addresses);
+
+      if (addressType === 'shipping') {
+        setShippingAddressIds(res.body.shippingAddressIds);
+      }
+
+      if (addressType === 'billing') {
+        setBillingAddressIds(res.body.billingAddressIds);
+      }
+    } catch (error) {
+      if (error instanceof Error) setError(error);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   async function handleChangeDefaultAddress(id: string) {
+    setIsLoading(true);
+
     const isShipping = shippingAddressIds?.includes(id);
     const isBilling = billingAddressIds?.includes(id);
 
-    if (isShipping && isBilling) {
-      const res = await apiSetDefaultShippingAndBillingAddress(userVersion, userId, id);
-      dispatch(setUserVersion(res.body.version));
-      setDefaultShippingAddressId(id);
-      setDefaultBillingAddressId(id);
-      return;
-    }
+    try {
+      if (isShipping && isBilling) {
+        const res = await apiSetDefaultShippingAndBillingAddress(userVersion, userId, id);
+        dispatch(setUserVersion(res.body.version));
+        setDefaultShippingAddressId(id);
+        setDefaultBillingAddressId(id);
+        return;
+      }
 
-    if (isShipping) {
-      const res = await apiSetDefaultShippingAddress(userVersion, userId, id);
-      dispatch(setUserVersion(res.body.version));
-      setDefaultShippingAddressId(id);
-      return;
-    }
+      if (isShipping) {
+        const res = await apiSetDefaultShippingAddress(userVersion, userId, id);
+        dispatch(setUserVersion(res.body.version));
+        setDefaultShippingAddressId(id);
+        return;
+      }
 
-    if (isBilling) {
-      const res = await apiSetDefaultBillingAddress(userVersion, userId, id);
-      dispatch(setUserVersion(res.body.version));
-      setDefaultBillingAddressId(id);
+      if (isBilling) {
+        const res = await apiSetDefaultBillingAddress(userVersion, userId, id);
+        dispatch(setUserVersion(res.body.version));
+        setDefaultBillingAddressId(id);
+      }
+    } catch (error) {
+      if (error instanceof Error) setError(error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
