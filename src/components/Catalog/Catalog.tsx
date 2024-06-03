@@ -1,86 +1,55 @@
-import { ProductProjection } from '@commercetools/platform-sdk';
-import { Link, Params, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { ProductProjection } from '@commercetools/platform-sdk';
 import styles from './Catalog.module.css';
-import ProductCard from '../Products/ProductCard';
-import {
-  DEFAULT_LANGUAGE_KEY,
-  PRODUCT_DEFAULT_FETCH_LIMIT,
-  ROUTE_PATH,
-} from '../../utils/globalVariables';
+import { CATALOG_PREVIEW_LIMIT, ROUTE_PATH } from '../../utils/globalVariables';
 import { useStoreSelector } from '../../hooks/userRedux';
 import useAsync from '../../hooks/useAsync';
-import { getProductCategoriesMap, searchProducts } from '../../api/products';
-import { QueryArgs } from '../../types/types';
+import { getProductCategoriesMap } from '../../api/products';
 import Breadcrumbs from '../Breadcrumbs/Breadcrumbs';
 import Loader from '../Modal/Loader';
 import Filters from './Filters/Filters';
-// import debug from '../../utils/debug';
+import Sorting from './Sorting/Sorting';
+import Searching from './Searching/Searching';
+import { doSearchRequest, getID } from '../../api/doProductSearchRequest';
+import ProductCard from '../Products/ProductCard';
 
-type RouteParams = Readonly<Params<string>>;
-type LocationParams = {
-  routeParams?: RouteParams;
-  searchParams: URLSearchParams;
-};
-
-const getID = (routeParams?: RouteParams) => routeParams?.subCatID || routeParams?.catID || '';
-
-const appendFilters = ({
-  locationParams,
-  queryArgs,
+function ProductCards({
+  isPreview,
+  products,
 }: {
-  locationParams: LocationParams;
-  queryArgs: QueryArgs;
-}) => {
-  const id: string = getID(locationParams.routeParams);
-  if (!id && locationParams.searchParams.size === 0) {
-    return queryArgs;
+  products?: ProductProjection[];
+  isPreview?: boolean;
+}) {
+  let allProducts: ProductProjection[] | undefined;
+  if (products) {
+    if (isPreview) {
+      allProducts = products.slice(0, CATALOG_PREVIEW_LIMIT);
+    } else {
+      allProducts = products;
+    }
   }
-
-  const filterQuery: string[] = [];
-  queryArgs['filter.query'] = filterQuery;
-
-  if (id) {
-    filterQuery.push(`categories.id:"${id}"`);
-  }
-  // const priceRange = locationParams.searchParams.get('f_price');
-  locationParams.searchParams.forEach((value, key) => {
-    if (key.startsWith('f_')) filterQuery.push(value);
-  });
-  return queryArgs;
-};
-
-const getQuery = ({ routeParams, searchParams }: LocationParams): QueryArgs => {
-  const queryArgs: QueryArgs = {
-    limit: PRODUCT_DEFAULT_FETCH_LIMIT,
-  };
-  appendFilters({ locationParams: { routeParams, searchParams }, queryArgs });
-  if (queryArgs.sort && queryArgs.sort instanceof Array) {
-    queryArgs.sort.push('"createdAt"');
-  } else {
-    queryArgs.sort = [`name.${DEFAULT_LANGUAGE_KEY} asc`];
-  }
-  return queryArgs;
-};
-
-const doSearchRequest = async ({ routeParams, searchParams }: LocationParams) => {
-  const query = getQuery({ routeParams, searchParams });
-  return searchProducts(query);
-};
-
-export default function Catalog({ withLink }: { withLink?: boolean }) {
+  return allProducts
+    ? allProducts.map((product: ProductProjection) => (
+        <ProductCard key={product.id} product={product} isPreview={isPreview} />
+      ))
+    : null;
+}
+export default function Catalog({ isPreview }: { isPreview?: boolean }) {
   const defaultCategoryName = 'All categories';
   const [currentCategory, setCurrentCategory] = useState('Catalog');
   const routeParams = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const [sortParams, setSortParams] = useState('');
+  const [searchText, setSearchText] = useState('');
+  const locale = useStoreSelector((state) => state.userData.userLanguage);
   const [allProductsResponse, isLoading, err] = useAsync(
     doSearchRequest,
-    { routeParams, searchParams },
-    [routeParams],
+    { routeParams, searchParams, sortParams, searchRequest: { locale, value: searchText } },
+    [routeParams, sortParams, searchText],
   );
   const [categoriesMap] = useAsync(getProductCategoriesMap, undefined, []);
-  const locale = useStoreSelector((state) => state.userData.userLanguage);
   useEffect(() => {
     const id: string = getID(routeParams);
     if (id && categoriesMap) {
@@ -92,9 +61,14 @@ export default function Catalog({ withLink }: { withLink?: boolean }) {
   return (
     <div className={styles.catalog} id="catalog">
       <div className={styles.wrapper}>
-        <Breadcrumbs className={styles.breadcrumbs} />
-        <p className={styles['catalog-header']}>{currentCategory}</p>
-        <Filters />
+        {!isPreview && <Breadcrumbs className={styles.breadcrumbs} />}
+        <p className={styles['catalog-header']}>
+          {!isPreview ? currentCategory : 'The most popular'}
+        </p>
+        {!isPreview && <Filters />}
+        {!isPreview && <Sorting setSortParams={setSortParams} />}
+        {!isPreview && <Searching setSearchText={setSearchText} loading={isLoading} />}
+
         <div className={styles.furniture}>
           {isLoading || err ? (
             <Loader
@@ -105,13 +79,10 @@ export default function Catalog({ withLink }: { withLink?: boolean }) {
               }}
             />
           ) : (
-            allProductsResponse &&
-            allProductsResponse.results.map((product: ProductProjection) => (
-              <ProductCard key={product.id} product={product} />
-            ))
+            <ProductCards products={allProductsResponse?.results} isPreview={isPreview} />
           )}
         </div>
-        {withLink && (
+        {isPreview && (
           <Link className={styles.center} to={ROUTE_PATH.products}>
             <div className={styles.link}>
               <p className={styles.text}>Go to catalog</p>
