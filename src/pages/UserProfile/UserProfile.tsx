@@ -4,9 +4,7 @@ import { useDispatch } from 'react-redux';
 import { useLoaderData, useNavigate } from 'react-router-dom';
 import { loginUser, logoutUser } from '../../api/customers';
 import {
-  addBillingAddressID,
   addNewAddress,
-  addShippingAddressID,
   changeAddress,
   changeUserPassword,
   removeAddress,
@@ -33,8 +31,7 @@ export default function UserProfile() {
   const customer = useLoaderData() as Customer;
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const userVersion = useStoreSelector((state) => state.userData.userVersion);
-  const { isUserAuthorized } = useStoreSelector((state) => state.userData);
+  const { isUserAuthorized, userId, userVersion } = useStoreSelector((state) => state.userData);
 
   const [addresses, setAddresses] = useState(customer.addresses);
   const [shippingAddressIds, setShippingAddressIds] = useState(customer.shippingAddressIds);
@@ -136,7 +133,7 @@ export default function UserProfile() {
     };
 
     try {
-      const res = await updateCustomerPersonalData(userVersion, userInfo);
+      const res = await updateCustomerPersonalData(userVersion, userId, userInfo);
       dispatch(setUserVersion(res.body.version));
     } catch (error) {
       // TODO:
@@ -189,7 +186,7 @@ export default function UserProfile() {
     // 1) send request to API
     // 2) show loading spinner
 
-    const res = await removeAddress(userVersion, addressId);
+    const res = await removeAddress(userVersion, userId, addressId);
     setAddresses(res.body.addresses);
     dispatch(setUserVersion(res.body.version));
     setDeleteAddressId(null);
@@ -200,7 +197,7 @@ export default function UserProfile() {
     // 1) send request to API
     // 2) show loading spinner
 
-    const res = await changeAddress(userVersion, address);
+    const res = await changeAddress(userVersion, userId, address);
     setAddresses(res.body.addresses);
     dispatch(setUserVersion(res.body.version));
     setIsEditAddressModal(false);
@@ -210,28 +207,16 @@ export default function UserProfile() {
     // 1) send request to API
     // 2) show loading spinner
 
-    // console.log('add address: ', address);
-    // console.log('addressType: ', addressType);
+    const res = await addNewAddress(userVersion, userId, address, addressType || '');
+    dispatch(setUserVersion(res.body.version));
+    setAddresses(res.body.addresses);
 
-    const responseAdd = await addNewAddress(userVersion, address);
-    dispatch(setUserVersion(responseAdd.body.version));
-
-    // TODO:
-    // REFACTOR:
-    // add shipping or billing address with one request using multiple actions
-    const newAddressId = responseAdd.body.addresses[responseAdd.body.addresses.length - 1].id;
     if (addressType === 'shipping') {
-      const resId = await addShippingAddressID(userVersion + 1, newAddressId!);
-      setAddresses(resId.body.addresses);
-      setShippingAddressIds(resId.body.shippingAddressIds);
-      dispatch(setUserVersion(resId.body.version));
+      setShippingAddressIds(res.body.shippingAddressIds);
     }
 
     if (addressType === 'billing') {
-      const resId = await addBillingAddressID(userVersion + 1, newAddressId!);
-      setAddresses(resId.body.addresses);
-      setBillingAddressIds(resId.body.billingAddressIds);
-      dispatch(setUserVersion(resId.body.version));
+      setBillingAddressIds(res.body.billingAddressIds);
     }
 
     setIsAddAddressModal(false);
@@ -242,7 +227,7 @@ export default function UserProfile() {
     const isBilling = billingAddressIds?.includes(id);
 
     if (isShipping && isBilling) {
-      const res = await apiSetDefaultShippingAndBillingAddress(userVersion, id);
+      const res = await apiSetDefaultShippingAndBillingAddress(userVersion, userId, id);
       dispatch(setUserVersion(res.body.version));
       setDefaultShippingAddressId(id);
       setDefaultBillingAddressId(id);
@@ -250,14 +235,14 @@ export default function UserProfile() {
     }
 
     if (isShipping) {
-      const res = await apiSetDefaultShippingAddress(userVersion, id);
+      const res = await apiSetDefaultShippingAddress(userVersion, userId, id);
       dispatch(setUserVersion(res.body.version));
       setDefaultShippingAddressId(id);
       return;
     }
 
     if (isBilling) {
-      const res = await apiSetDefaultBillingAddress(userVersion, id);
+      const res = await apiSetDefaultBillingAddress(userVersion, userId, id);
       dispatch(setUserVersion(res.body.version));
       setDefaultBillingAddressId(id);
     }

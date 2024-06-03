@@ -54,3 +54,7 @@ export function enumToArray(enumObject: { [key: string]: string }): string[] {
 export function priceConverter(centAmount: number | undefined): number {
   return centAmount ? centAmount / 100 : NaN;
 }
+
+export function randomUUID() {
+  return window.crypto.randomUUID();
+}
