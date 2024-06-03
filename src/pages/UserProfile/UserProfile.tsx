@@ -141,7 +141,7 @@ export default function UserProfile() {
     setIsLoading(true);
 
     try {
-      const res = await updateCustomerPersonalData(1, userId, userInfo);
+      const res = await updateCustomerPersonalData(userVersion, userId, userInfo);
       dispatch(setUserVersion(res.body.version));
       setSuccessMsg('Your personal data has been successfully updated!');
     } catch (error) {
