@@ -34,6 +34,11 @@
   line-height: 1.5;
   outline: none;
 
+  &:disabled {
+    cursor: not-allowed;
+    background-color: #e3e2e2;
+  }
+
   &:focus {
     border-color: #56b280;
   }
@@ -41,6 +46,11 @@
   &.invalid {
     border-color: #ea5555;
   }
+}
+
+.disabled {
+  cursor: not-allowed;
+  background-color: #e3e2e2;
 }
 
 .label {

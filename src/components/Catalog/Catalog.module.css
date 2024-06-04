@@ -1,7 +1,9 @@
 .catalog {
   margin-top: 20px;
 }
-
+.breadcrumbs {
+  margin-left: 1rem;
+}
 .catalog-header {
   margin: 15px;
   font-size: 36px;
@@ -9,6 +11,8 @@
   font-weight: 500;
   font-style: normal;
   color: var(--main-icon-color);
+  display: flex;
+  justify-content: center;
 
   @media (width <= 1000px) {
     font-size: 24px;
@@ -27,7 +31,8 @@
 }
 
 .center {
-  text-align: -webkit-center;
+  display: flex;
+  justify-content: center;
 }
 
 .wrapper {

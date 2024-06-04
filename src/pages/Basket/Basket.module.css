@@ -8,3 +8,69 @@
     margin-bottom: 0.5rem;
   }
 }
+
+.center {
+  display: flex;
+  justify-content: center;
+}
+
+.link {
+  width: 200px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  height: 40px;
+  border-radius: 5px;
+  color: var(--main-links-color);
+  background-color: var(--main-icon-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+.checkoutLink {
+  margin-left: 40px;
+
+  & .link {
+    margin: 0;
+    background-color: var(--main-contrast-color);
+  }
+
+  &[aria-disabled='true'] {
+    & .link {
+      background-color: var(--dissabled-color);
+    }
+  }
+}
+
+.text {
+  margin: 15px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.subTotalBlock {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 30px;
+
+  & .subTotalPriceContent {
+    & .subTotalPrice {
+      display: flex;
+      justify-content: flex-end;
+      font-weight: bold;
+
+      & p:first-child {
+        margin-right: 10px;
+      }
+    }
+
+    & .subTotalWarning {
+      color: var(--main-text-color);
+    }
+  }
+}

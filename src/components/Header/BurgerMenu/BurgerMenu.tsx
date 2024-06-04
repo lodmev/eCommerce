@@ -9,13 +9,14 @@ import {
   faAddressBook,
   faUser,
   faArrowRightFromBracket,
+  faIdCard,
 } from '@fortawesome/free-solid-svg-icons';
 import { IconDefinition } from '@fortawesome/free-brands-svg-icons';
 import { HashLink } from 'react-router-hash-link';
 import styles from './BurgerMenu.module.css';
 import { ROUTE_PATH } from '../../../utils/globalVariables';
 import { enumToArray } from '../../../utils/functions';
-import { useUserDispatch, useUserSelector } from '../../../hooks/userRedux';
+import { useStoreDispatch, useStoreSelector } from '../../../hooks/userRedux';
 import { setUserLogout } from '../../../store/slices/userSlice';
 
 enum NavigationPath {
@@ -27,6 +28,7 @@ enum NavigationPath {
   Login = 'login',
   Logout = 'logout',
   Basket = 'basket',
+  userProfile = 'user-profile',
 }
 
 const NavigationPathToTitle = new Map<NavigationPath, string>([
@@ -38,6 +40,7 @@ const NavigationPathToTitle = new Map<NavigationPath, string>([
   [NavigationPath.Logout, 'Logout'],
   [NavigationPath.Registration, 'Registration'],
   [NavigationPath.Basket, 'Basket'],
+  [NavigationPath.userProfile, 'Profile'],
 ]);
 
 const NavigationPathToIcon = new Map<NavigationPath, IconDefinition>([
@@ -49,30 +52,36 @@ const NavigationPathToIcon = new Map<NavigationPath, IconDefinition>([
   [NavigationPath.Logout, faArrowRightFromBracket],
   [NavigationPath.Registration, faUser],
   [NavigationPath.Basket, faCartShopping],
+  [NavigationPath.userProfile, faIdCard],
 ]);
 
 const NavigationPathToPath = new Map<NavigationPath, string>([
   [NavigationPath.About, '/#about'],
-  [NavigationPath.Catalog, '/#catalog'],
+  [NavigationPath.Catalog, '/products'],
   [NavigationPath.ProductOfTheMonth, '/#productOfTheMonth'],
   [NavigationPath.Contacts, '/#contacts'],
-  [NavigationPath.Login, `${ROUTE_PATH.login}`],
-  [NavigationPath.Logout, `${ROUTE_PATH.login}`],
-  [NavigationPath.Registration, `${ROUTE_PATH.registration}`],
-  [NavigationPath.Basket, `${ROUTE_PATH.basket}`],
+  [NavigationPath.Login, ROUTE_PATH.login],
+  [NavigationPath.Logout, ROUTE_PATH.login],
+  [NavigationPath.Registration, ROUTE_PATH.registration],
+  [NavigationPath.Basket, ROUTE_PATH.basket],
+  [NavigationPath.userProfile, ROUTE_PATH.userProfile],
 ]);
 
 const NavigationPathToAction = new Map([[NavigationPath.Logout, setUserLogout()]]);
 
 export default function BurgerMenu() {
   const [isOpen, setIsOpen] = useState(false);
-  const { isUserAuthorized } = useUserSelector((state) => state.userData);
-  const dispatch = useUserDispatch();
+  const { isUserAuthorized } = useStoreSelector((state) => state.userData);
+  const dispatch = useStoreDispatch();
   const navigationPaths = enumToArray(NavigationPath).filter((title: string) => {
-    // if ([NavigationPath.Login, NavigationPath.Registration].includes(title as NavigationPath)) {
-    //   return !isUserAuthorized;
-    // }
-    if ([NavigationPath.Logout, NavigationPath.Basket].includes(title as NavigationPath)) {
+    if ([NavigationPath.Login, NavigationPath.Registration].includes(title as NavigationPath)) {
+      return !isUserAuthorized;
+    }
+    if (
+      [NavigationPath.Logout, NavigationPath.userProfile, NavigationPath.Basket].includes(
+        title as NavigationPath,
+      )
+    ) {
       return isUserAuthorized;
     }
     return true;

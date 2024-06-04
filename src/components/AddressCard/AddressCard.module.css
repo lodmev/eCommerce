@@ -1,0 +1,17 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3em;
+  width: 100%;
+  max-width: 265px;
+  min-height: 230px;
+  padding: 1em;
+  border-radius: 5px;
+  background-color: whitesmoke;
+}
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+  margin-top: auto;
+}

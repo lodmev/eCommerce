@@ -34,3 +34,25 @@
   color: #56b280;
   border: 1px solid #56b280;
 }
+
+.red-outlined {
+  background-color: white;
+  color: #b25656;
+  border: 1px solid #b25656;
+}
+
+.green-outlined-small {
+  background-color: white;
+  color: #56b280;
+  border: 1px solid #56b280;
+  padding: 0.35em 0.75em;
+  font-size: 1em;
+}
+
+.red-outlined-small {
+  background-color: white;
+  color: #b25656;
+  border: 1px solid #b25656;
+  padding: 0.35em 0.75em;
+  font-size: 1em;
+}

@@ -1,0 +1,48 @@
+.form {
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+.input-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em;
+  margin-top: 1em;
+}
+
+.modal-password {
+  width: 100%;
+  padding: 1em;
+  background-color: whitesmoke;
+  padding: 1em;
+  border-radius: 5px;
+  border: 1px solid black;
+
+  @media (min-width: 768px) {
+    max-width: 55svw;
+  }
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-evenly;
+  margin-top: 1em;
+}
+
+.new-password-fieldset {
+  padding: 1em;
+  margin-top: 0.5em;
+  border-radius: 5px;
+}
+
+.error-msg {
+  color: #ea5555;
+}
+
+.address-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em;
+  margin-bottom: 1em;
+}

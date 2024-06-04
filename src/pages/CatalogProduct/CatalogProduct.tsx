@@ -1,3 +1,5 @@
+import { Outlet } from 'react-router-dom';
+
 export default function CatalogProduct() {
-  return <div>CatalogProduct page</div>;
+  return <Outlet />;
 }

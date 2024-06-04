@@ -1,79 +1,94 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { ProductProjection } from '@commercetools/platform-sdk';
 import styles from './Catalog.module.css';
-import ProductCard from '../Products/Product';
-import { ROUTE_PATH } from '../../utils/globalVariables';
+import { CATALOG_PREVIEW_LIMIT, ROUTE_PATH } from '../../utils/globalVariables';
+import { useStoreSelector } from '../../hooks/userRedux';
+import useAsync from '../../hooks/useAsync';
+import { getProductCategoriesMap } from '../../api/products';
+import Breadcrumbs from '../Breadcrumbs/Breadcrumbs';
+import Loader from '../Modal/Loader';
+import Filters from './Filters/Filters';
+import Sorting from './Sorting/Sorting';
+import Searching from './Searching/Searching';
+import { doSearchRequest, getID } from '../../api/doProductSearchRequest';
+import ProductCard from '../Products/ProductCard';
 
-const productProjection: ProductProjection = {
-  categories: [],
-  name: {
-    'en-US': 'VIP Comfort',
-  },
-  slug: {
-    'en-US': 'vip-comfort',
-  },
-  variants: [],
-  id: 'e679b176-7421-4f41-8a33-b79b705298a8',
-  version: 5,
-  createdAt: '2024-04-29T21:29:37.659Z',
-  lastModifiedAt: '2024-05-05T12:20:38.271Z',
-  productType: {
-    typeId: 'product-type',
-    id: 'fc6ec58b-1456-4eac-bb86-cdf11e232278',
-  },
-  masterVariant: {
-    id: 1,
-    sku: 'CP2024',
-    key: 'CP2024-V1',
-    prices: [
-      {
-        id: '0ffd9d57-f916-499e-8faa-a7990f522e5d',
-        value: {
-          type: 'centPrecision',
-          currencyCode: 'EUR',
-          centAmount: 4000,
-          fractionDigits: 2,
-        },
-        validFrom: '2024-05-04T21:00:00.000Z',
-        validUntil: '2024-06-29T21:00:00.000Z',
-      },
-    ],
-    images: [
-      {
-        url: 'https://source.unsplash.com/random?chair',
-        dimensions: {
-          w: 1080,
-          h: 953,
-        },
-      },
-    ],
-    attributes: [],
-    assets: [],
-  },
-  key: 'Comfort-CP2024',
-  priceMode: 'Embedded',
-};
-
-export default function Catalog() {
+function ProductCards({
+  isPreview,
+  products,
+}: {
+  products?: ProductProjection[];
+  isPreview?: boolean;
+}) {
+  let allProducts: ProductProjection[] | undefined;
+  if (products) {
+    if (isPreview) {
+      allProducts = products.slice(0, CATALOG_PREVIEW_LIMIT);
+    } else {
+      allProducts = products;
+    }
+  }
+  return allProducts
+    ? allProducts.map((product: ProductProjection) => (
+        <ProductCard key={product.id} product={product} isPreview={isPreview} />
+      ))
+    : null;
+}
+export default function Catalog({ isPreview }: { isPreview?: boolean }) {
+  const defaultCategoryName = 'All categories';
+  const [currentCategory, setCurrentCategory] = useState('Catalog');
+  const routeParams = useParams();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const [sortParams, setSortParams] = useState('');
+  const [searchText, setSearchText] = useState('');
+  const locale = useStoreSelector((state) => state.userData.userLanguage);
+  const [allProductsResponse, isLoading, err] = useAsync(
+    doSearchRequest,
+    { routeParams, searchParams, sortParams, searchRequest: { locale, value: searchText } },
+    [routeParams, sortParams, searchText],
+  );
+  const [categoriesMap] = useAsync(getProductCategoriesMap, undefined, []);
+  useEffect(() => {
+    const id: string = getID(routeParams);
+    if (id && categoriesMap) {
+      setCurrentCategory(categoriesMap[id].name[locale]);
+    } else {
+      setCurrentCategory(defaultCategoryName);
+    }
+  }, [routeParams, categoriesMap]);
   return (
     <div className={styles.catalog} id="catalog">
       <div className={styles.wrapper}>
-        <p className={styles['catalog-header']}>Catalog</p>
+        {!isPreview && <Breadcrumbs className={styles.breadcrumbs} />}
+        <p className={styles['catalog-header']}>
+          {!isPreview ? currentCategory : 'The most popular'}
+        </p>
+        {!isPreview && <Filters />}
+        {!isPreview && <Sorting setSortParams={setSortParams} />}
+        {!isPreview && <Searching setSearchText={setSearchText} loading={isLoading} />}
+
         <div className={styles.furniture}>
-          <ProductCard productProjection={productProjection} />
-          <ProductCard productProjection={productProjection} />
-          <ProductCard productProjection={productProjection} />
-          <ProductCard productProjection={productProjection} />
-          <ProductCard productProjection={productProjection} />
-          <ProductCard productProjection={productProjection} />
-          <ProductCard productProjection={productProjection} />
-          <ProductCard productProjection={productProjection} />
+          {isLoading || err ? (
+            <Loader
+              isLoading={isLoading}
+              errMsg={err?.name}
+              errorHandler={() => {
+                navigate(ROUTE_PATH.main);
+              }}
+            />
+          ) : (
+            <ProductCards products={allProductsResponse?.results} isPreview={isPreview} />
+          )}
         </div>
-        <Link className={styles.center} to={ROUTE_PATH.catalogProduct}>
-          <div className={styles.link}>
-            <p className={styles.text}>Go to catalog</p>
-          </div>
-        </Link>
+        {isPreview && (
+          <Link className={styles.center} to={ROUTE_PATH.products}>
+            <div className={styles.link}>
+              <p className={styles.text}>Go to catalog</p>
+            </div>
+          </Link>
+        )}
       </div>
     </div>
   );

@@ -1,24 +1,35 @@
 import { ProductProjection } from '@commercetools/platform-sdk';
-import { Price } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/common';
 import { Link } from 'react-router-dom';
 import styles from './Product.module.css';
+import { ROUTE_PATH } from '../../utils/globalVariables';
+import { useStoreSelector } from '../../hooks/userRedux';
+import Price from '../Price/Price';
+// import debug from '../../utils/debug';
 
-const lang = 'en-US';
 export default function ProductCard({
-  productProjection,
+  product,
+  isPreview,
 }: {
-  productProjection: ProductProjection;
+  product: ProductProjection;
+  isPreview?: boolean;
 }) {
-  const { name, masterVariant } = productProjection;
-  const price: Price | undefined = masterVariant.prices?.[0];
-  const amount = (price && price.value.centAmount / 100) || 0;
+  const { name, masterVariant, id, description } = product;
+  const locale = useStoreSelector((state) => state.userData.userLanguage);
+  const desc = description ? description[locale] : '';
   const image = masterVariant.images?.[0];
   const imageUrl = image && image.url;
+  const navigationToDetailedProduct = `${ROUTE_PATH.products}/${id}`;
+  const previewClass = isPreview ? styles['product-card_preview'] : '';
+
   return (
-    <Link className={styles['product-card']} to="products/8">
+    <Link
+      className={[styles['product-card'], previewClass].join(' ')}
+      to={navigationToDetailedProduct}
+    >
       <img className={styles['product-card__image']} src={imageUrl} alt="product" />
-      <p className={styles['product-card__brand']}>{name[lang]}</p>
-      <p className={styles['product-card__price']}>{amount}</p>
+      <p className={styles['product-card__brand']}>{name[locale]}</p>
+      {desc && <p className={styles['product-card__description']}>{desc}</p>}
+      <Price price={masterVariant.prices?.[0]} />
       <button
         type="button"
         className={styles['product-card__btn-wishlist']}
