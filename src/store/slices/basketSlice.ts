@@ -1,42 +1,51 @@
 import { ProductProjection } from '@commercetools/platform-sdk';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { buildCreateSlice, asyncThunkCreator } from '@reduxjs/toolkit';
 
+export const createAppSlice = buildCreateSlice({
+  creators: { asyncThunk: asyncThunkCreator },
+});
 type BasketState = {
   productsInBasket: ProductProjection[];
   productIdToQuantity: Record<string, number>;
+  pending: boolean;
+  fulfilled: boolean;
+  err: Error | null;
 };
 
 const initialBasketState: BasketState = {
   productsInBasket: [],
   productIdToQuantity: {},
+  pending: false,
+  fulfilled: false,
+  err: null,
 };
 
 export function calculateTotalPrice(priceValue: number, quantity: number): number {
   return priceValue * quantity;
 }
 
-const basketSlice = createSlice({
+const basketSlice = createAppSlice({
   name: 'basketData',
   initialState: initialBasketState,
-  reducers: {
-    addProductToBasket: (state, action: PayloadAction<ProductProjection>) => {
+  reducers: (create) => ({
+    addProductToBasket: create.reducer<ProductProjection>((state, action) => {
       const { id } = action.payload;
       if (state.productsInBasket.find((product) => product.id === id)) {
         return;
       }
       state.productsInBasket = [...state.productsInBasket, action.payload];
       state.productIdToQuantity[action.payload.id] = 1;
-    },
-    removeProductQuantity: (state, action: PayloadAction<string>) => {
+    }),
+    removeProductQuantity: create.reducer<string>((state, action) => {
       state.productsInBasket = state.productsInBasket.filter(
         ({ id }: ProductProjection) => id !== action.payload,
       );
       delete state.productIdToQuantity[action.payload];
-    },
-    setProductQuantity: (state, action: PayloadAction<{ id: string; quantity: number }>) => {
+    }),
+    setProductQuantity: create.reducer<{ id: string; quantity: number }>((state, action) => {
       state.productIdToQuantity[action.payload.id] = action.payload.quantity;
-    },
-  },
+    }),
+  }),
 });
 export default basketSlice;
 export const { addProductToBasket, setProductQuantity, removeProductQuantity } =

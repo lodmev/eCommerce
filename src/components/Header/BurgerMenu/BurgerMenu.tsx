@@ -77,11 +77,7 @@ export default function BurgerMenu() {
     if ([NavigationPath.Login, NavigationPath.Registration].includes(title as NavigationPath)) {
       return !isUserAuthorized;
     }
-    if (
-      [NavigationPath.Logout, NavigationPath.userProfile, NavigationPath.Basket].includes(
-        title as NavigationPath,
-      )
-    ) {
+    if ([NavigationPath.Logout, NavigationPath.userProfile].includes(title as NavigationPath)) {
       return isUserAuthorized;
     }
     return true;
