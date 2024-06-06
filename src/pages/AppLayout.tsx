@@ -8,7 +8,7 @@ import LoadingSpinner from '../components/LoadingSpinner/LoadingSpinner';
 import Overlay from '../components/Modal/Overlay';
 import { setUserId, setUserVersion } from '../store/slices/userSlice';
 import debug from '../utils/debug';
-import { getToken } from '../utils/token';
+import { isUserAuthorized } from '../utils/token';
 
 export default function AppLayout() {
   const navigation = useNavigation();
@@ -16,7 +16,7 @@ export default function AppLayout() {
   const isLoading = navigation.state === 'loading';
 
   useEffect(() => {
-    if (!getToken()) return;
+    if (!isUserAuthorized()) return;
 
     getCurrentCustomer()
       .then((customer) => {
