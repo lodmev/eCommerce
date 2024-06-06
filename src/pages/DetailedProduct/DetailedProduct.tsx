@@ -1,27 +1,32 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTruck } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Button } from 'antd';
 import { getProductById } from '../../api/products';
 import styles from './DetailedProduct.module.css';
 import { useStoreDispatch, useStoreSelector } from '../../hooks/userRedux';
 import ImageCarousel from '../../components/ImageCarousel/ImageCarousel';
-import ButtonCart from '../../components/Button/ButtonCart';
+// import ButtonCart from '../../components/Button/ButtonCart';
 import Price from '../../components/Price/Price';
 import useAsync from '../../hooks/useAsync';
 import Loader from '../../components/Modal/Loader';
 import { ROUTE_PATH } from '../../utils/globalVariables';
-import { addProductToBasket } from '../../store/slices/basketSlice';
+import { addProduct } from '../../store/slices/basketSlice';
 
 export default function DetailedProduct() {
   const { userLanguage } = useStoreSelector((state) => state.userData);
+  const { productIdToQuantity, pending: cartLoading } = useStoreSelector(
+    (state) => state.basketData,
+  );
+  const dispatch = useStoreDispatch();
   const { id } = useParams();
   const navigate = useNavigate();
   const [productProjection, isLoading, err] = useAsync(getProductById, id, [id]);
   const images = productProjection?.masterVariant?.images;
-  const dispatch = useStoreDispatch();
 
   function onButtonCartClick(): void {
-    dispatch(addProductToBasket(productProjection!));
+    // dispatch(addProductToBasket(productProjection!));
+    dispatch(addProduct(productProjection!));
   }
 
   return isLoading || err ? (
@@ -53,7 +58,16 @@ export default function DetailedProduct() {
           {productProjection?.description?.[userLanguage]}
         </p>
         <div className={styles.button}>
-          <ButtonCart text="+ Add to cart" onClick={onButtonCartClick} />
+          <Button
+            loading={cartLoading}
+            disabled={Boolean(
+              productProjection === undefined || productProjection.id in productIdToQuantity,
+            )}
+            onClick={onButtonCartClick}
+          >
+            Add to card
+          </Button>
+          {/* <ButtonCart text="+ Add to cart" onClick={onButtonCartClick} /> */}
         </div>
       </div>
     </div>

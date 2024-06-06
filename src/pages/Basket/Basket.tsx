@@ -1,31 +1,28 @@
-import { ProductProjection } from '@commercetools/platform-sdk';
+import { LineItem } from '@commercetools/platform-sdk';
 import { Link } from 'react-router-dom';
-import { useEffect } from 'react';
 import styles from './Basket.module.css';
 import ProductInBasket from '../../components/ProductInBasket/ProductInBasket';
-import { useStoreSelector } from '../../hooks/userRedux';
+import { useStoreDispatch, useStoreSelector } from '../../hooks/userRedux';
 import { ROUTE_PATH } from '../../utils/globalVariables';
-import { calculateTotalPrice } from '../../store/slices/basketSlice';
-import { PriceHelper } from '../../utils/priceHelper';
-import { getActiveCart } from '../../api/cart';
-import debug from '../../utils/debug';
+import { fetchCartData } from '../../store/slices/basketSlice';
+// import { PriceHelper } from '../../utils/priceHelper';
+import Loader from '../../components/Modal/Loader';
+// import debug from '../../utils/debug';
 
 export default function Basket() {
-  useEffect(() => {
-    getActiveCart().then(debug.log).catch(debug.error);
-  }, []);
-  const { productsInBasket, productIdToQuantity } = useStoreSelector((state) => state.basketData);
-  let currency = '';
-
-  const subTotalPrice = productsInBasket.reduce((subTotalPrice, product) => {
-    const { id, masterVariant } = product;
-    const priceHelper = new PriceHelper({ price: masterVariant.prices![0] });
-    const { finalPriceValue } = priceHelper;
-    currency = currency || priceHelper.currency;
-    const quantity = productIdToQuantity[id];
-    return subTotalPrice + calculateTotalPrice(+finalPriceValue, quantity);
-  }, 0);
-
+  // const { productsInBasket, productIdToQuantity } = useStoreSelector((state) => state.basketData);
+  // let currency = '';
+  // const subTotalPrice = productsInBasket.reduce((subTotalPrice, product) => {
+  //   const { id, masterVariant } = product;
+  //   const priceHelper = new PriceHelper({ price: masterVariant.prices![0] });
+  //   const { finalPriceValue } = priceHelper;
+  //   currency = currency || priceHelper.currency;
+  //   const quantity = productIdToQuantity[id];
+  //   return subTotalPrice + calculateTotalPrice(+finalPriceValue, quantity);
+  // }, 0);
+  const dispatch = useStoreDispatch();
+  const { cartData, pending, err } = useStoreSelector((state) => state.basketData);
+  if (!cartData) dispatch(fetchCartData());
   return (
     <div className={styles.cart}>
       <Link className={styles.center} to={ROUTE_PATH.products}>
@@ -33,21 +30,18 @@ export default function Basket() {
           <p className={styles.text}>Back To Shopping</p>
         </div>
       </Link>
-      {productsInBasket.length ? (
+      <Loader isLoading={pending} errMsg={err?.message} />
+      {cartData?.lineItems.length ? (
         <div>
-          {productsInBasket.map((product: ProductProjection) => (
-            <ProductInBasket
-              key={product.id}
-              product={product}
-              quantity={productIdToQuantity[product.id]}
-            />
+          {cartData.lineItems.map((lineItem: LineItem) => (
+            <ProductInBasket key={lineItem.id} product={lineItem} quantity={lineItem.quantity} />
           ))}
           <div className={styles.subTotalBlock}>
             <div className={styles.subTotalPriceContent}>
               <div className={styles.subTotalPrice}>
                 <p>Sub-total:</p>
                 <p>
-                  {subTotalPrice} {currency}
+                  {cartData.totalPrice.centAmount / 100} {}
                 </p>
               </div>
               <div className={styles.subTotalWarning}>
@@ -55,7 +49,7 @@ export default function Basket() {
               </div>
             </div>
             <Link
-              aria-disabled={!subTotalPrice}
+              aria-disabled={Boolean(cartData.totalPrice.centAmount)}
               className={`${styles.center} ${styles.checkoutLink}`}
               to={ROUTE_PATH.checkout}
             >

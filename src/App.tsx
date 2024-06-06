@@ -1,7 +1,7 @@
 import './App.css';
 import { Provider } from 'react-redux';
 import { RouterProvider } from 'react-router-dom';
-import store from './store/store';
+import { store } from './store/store';
 import router from './router/router';
 
 function App() {
