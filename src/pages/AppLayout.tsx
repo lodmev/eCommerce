@@ -8,8 +8,7 @@ import LoadingSpinner from '../components/LoadingSpinner/LoadingSpinner';
 import Overlay from '../components/Modal/Overlay';
 import { setUserId, setUserVersion } from '../store/slices/userSlice';
 import debug from '../utils/debug';
-import { getCart } from '../api/cart';
-import { isUserAuthorized } from '../utils/token';
+import { getToken } from '../utils/token';
 
 export default function AppLayout() {
   const navigation = useNavigation();
@@ -17,14 +16,15 @@ export default function AppLayout() {
   const isLoading = navigation.state === 'loading';
 
   useEffect(() => {
-    getCart().then(debug.log).catch(debug.error);
-    if (!isUserAuthorized()) return;
-    getCurrentCustomer().then((customer) => {
-      debug.log('customer: ', customer);
-      dispatch(setUserVersion(customer.version));
-      dispatch(setUserId(customer.id));
-    });
-    // .catch(debug.error);
+    if (!getToken()) return;
+
+    getCurrentCustomer()
+      .then((customer) => {
+        debug.log('customer: ', customer);
+        dispatch(setUserVersion(customer.version));
+        dispatch(setUserId(customer.id));
+      })
+      .catch(debug.error);
   }, [dispatch]);
 
   return (

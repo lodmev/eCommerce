@@ -1,4 +1,4 @@
-import { Cart, ProductProjection } from '@commercetools/platform-sdk';
+import { ProductProjection } from '@commercetools/platform-sdk';
 import { buildCreateSlice, asyncThunkCreator } from '@reduxjs/toolkit';
 
 export const createAppSlice = buildCreateSlice({
@@ -10,7 +10,6 @@ type BasketState = {
   pending: boolean;
   fulfilled: boolean;
   err: Error | null;
-  cartData?: Cart;
 };
 
 const initialBasketState: BasketState = {
@@ -46,11 +45,8 @@ const basketSlice = createAppSlice({
     setProductQuantity: create.reducer<{ id: string; quantity: number }>((state, action) => {
       state.productIdToQuantity[action.payload.id] = action.payload.quantity;
     }),
-    setCartData: create.reducer<Cart>((state, action) => {
-      state.cartData = action.payload;
-    }),
   }),
 });
 export default basketSlice;
-export const { addProductToBasket, setProductQuantity, removeProductQuantity, setCartData } =
+export const { addProductToBasket, setProductQuantity, removeProductQuantity } =
   basketSlice.actions;

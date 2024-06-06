@@ -4,35 +4,18 @@ import {
   MiddlewareRequest,
   MiddlewareResponse,
   Next,
+  PasswordAuthMiddlewareOptions,
+  UserAuthOptions,
   type AuthMiddlewareOptions,
   type HttpMiddlewareOptions,
 } from '@commercetools/sdk-client-v2';
 import { saveTokenIfProvided } from '../utils/token';
-import debug from '../utils/debug';
-
-let needUpdateAuth = false;
-
-export const setUpdateFlag = (status: boolean) => {
-  needUpdateAuth = status;
-};
 
 function afterEx(/* options?: GenericOmit<AfterExecutionMiddlewareOptions, 'middleware'> */) {
   return (next: Next): Next =>
     (req: MiddlewareRequest, res: MiddlewareResponse) => {
       const token = req.headers?.Authorization;
-      // debug.log(req);
       saveTokenIfProvided(token);
-      next(req, res);
-    };
-}
-function beforeEx(/* options?: GenericOmit<AfterExecutionMiddlewareOptions, 'middleware'> */) {
-  return (next: Next): Next =>
-    (req: MiddlewareRequest, res: MiddlewareResponse) => {
-      const token = req.headers?.Authorization;
-      if (req.headers?.Authorization && needUpdateAuth) {
-        req.headers.Authorization = '';
-      }
-      debug.log(token);
       next(req, res);
     };
 }
@@ -66,24 +49,34 @@ const httpMiddlewareOptions: HttpMiddlewareOptions = {
 const baseCtpClient = new ClientBuilder()
   .withProjectKey(import.meta.env.API_CTP_PROJECT_KEY)
   .withClientCredentialsFlow(authMiddlewareOptions)
-  .withHttpMiddleware(httpMiddlewareOptions)
-  .withBeforeExecutionMiddleware({ middleware: beforeEx });
+  .withHttpMiddleware(httpMiddlewareOptions);
 // .withLoggerMiddleware()
 
-const getAnonCtpClientBuilder = () => baseCtpClient.withAnonymousSessionFlow(authMiddlewareOptions);
+const getReadOnlyCtpClient = () => baseCtpClient.build();
 
-const getExistingTokenCtpClientBuilder = (token: string) => {
+const getAnonCtpClient = () =>
+  baseCtpClient.withAnonymousSessionFlow(authMiddlewareOptions).build();
+
+const getExistingTokenCtpClient = (token: string) => {
   const options: ExistingTokenMiddlewareOptions = {
     force: true,
   };
-  return getSaveTokenCtpClientBuilder().withExistingTokenFlow(token, options);
+  return baseCtpClient.withExistingTokenFlow(token, options).build();
 };
 
-const getSaveTokenCtpClientBuilder = () =>
-  getAnonCtpClientBuilder().withAfterExecutionMiddleware({
-    name: 'after-middleware-fn',
-    middleware: afterEx,
-  });
+const getAuthCtpClient = (user: UserAuthOptions) => {
+  const passOptions: PasswordAuthMiddlewareOptions = {
+    ...authMiddlewareOptions,
+    credentials: { ...authMiddlewareOptions.credentials, user },
+  };
+  return baseCtpClient
+    .withAfterExecutionMiddleware({
+      name: 'after-middleware-fn',
+      middleware: afterEx,
+    })
+    .withPasswordFlow(passOptions)
+    .build();
+};
 
 const getCustomersCtpClient = () =>
   new ClientBuilder()
@@ -93,4 +86,10 @@ const getCustomersCtpClient = () =>
     // .withLoggerMiddleware()
     .build();
 
-export { getSaveTokenCtpClientBuilder, getExistingTokenCtpClientBuilder, getCustomersCtpClient };
+export {
+  getReadOnlyCtpClient,
+  getAnonCtpClient,
+  getAuthCtpClient,
+  getExistingTokenCtpClient,
+  getCustomersCtpClient,
+};
