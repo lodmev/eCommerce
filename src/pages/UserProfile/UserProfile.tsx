@@ -2,7 +2,7 @@ import { BaseAddress, Customer } from '@commercetools/platform-sdk';
 import { FormEvent, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useLoaderData, useNavigate } from 'react-router-dom';
-import { loginUser, logoutUser } from '../../api/customers';
+import { getCurrentCustomer, loginUser, logoutUser } from '../../api/customers';
 import {
   addNewAddress,
   changeAddress,
@@ -219,6 +219,7 @@ export default function UserProfile() {
     setIsLoading(true);
 
     try {
+      const { version: userVersion } = await getCurrentCustomer();
       const res = await changeAddress(userVersion, userId, address);
       setAddresses(res.body.addresses);
       dispatch(setUserVersion(res.body.version));

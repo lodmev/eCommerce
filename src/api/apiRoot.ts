@@ -1,48 +1,39 @@
 import { createApiBuilderFromCtpClient } from '@commercetools/platform-sdk';
-import { Client, UserAuthOptions } from '@commercetools/sdk-client-v2';
+import { Client } from '@commercetools/sdk-client-v2';
 import {
-  getAnonCtpClient,
-  getAuthCtpClient,
+  // getAnonCtpClient,
   getCustomersCtpClient,
-  getExistingTokenCtpClient,
-  getReadOnlyCtpClient,
+  getExistingTokenCtpClientBuilder,
+  getSaveTokenCtpClientBuilder,
 } from './clientBuilder';
+import { getToken } from '../utils/token';
+// import debug from '../utils/debug';
 
 const createApi = (client: Client) =>
   createApiBuilderFromCtpClient(client).withProjectKey({
     projectKey: import.meta.env.API_CTP_PROJECT_KEY,
   });
 
-let currentApiClient = createApi(getReadOnlyCtpClient());
+let currentApiClient = createApi(getSaveTokenCtpClientBuilder().build());
 
 const manageCustomersApiClient = createApi(getCustomersCtpClient());
 
-const setDefaultApi = () => {
-  currentApiClient = createApi(getReadOnlyCtpClient());
+const setExistingTokenApi = (token: string) => {
+  currentApiClient = createApi(getExistingTokenCtpClientBuilder(token).build());
 };
 
-const setAuthApi = (user: UserAuthOptions) => {
-  currentApiClient = createApi(getAuthCtpClient(user));
+const setSaveTokenApi = () => {
+  currentApiClient = createApi(getSaveTokenCtpClientBuilder().build());
 };
-const setExistingTokenApi = (token: string) => {
-  currentApiClient = createApi(getExistingTokenCtpClient(token));
-};
-const setAnonApi = () => {
-  currentApiClient = createApi(getAnonCtpClient());
-};
+
+// const setFreshApiClient = () => {};
 
 const getCurrentApiClient = () => {
-  const savedToken = window.sessionStorage.getItem('token');
-  if (savedToken) {
+  const savedToken = getToken();
+  if (savedToken !== null) {
     setExistingTokenApi(savedToken);
+    // debug.log('use existing token client');
   }
   return currentApiClient;
 };
-export {
-  getCurrentApiClient,
-  setDefaultApi,
-  setAuthApi,
-  setAnonApi,
-  setExistingTokenApi,
-  manageCustomersApiClient,
-};
+export { getCurrentApiClient, setExistingTokenApi, setSaveTokenApi, manageCustomersApiClient };

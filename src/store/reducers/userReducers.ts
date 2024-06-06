@@ -6,13 +6,16 @@ import {
   setUserLogin,
   setUserVersion,
 } from '../slices/userSlice';
-import { StoreDispatch } from '../store';
+import { type StoreDispatch } from '../store';
 import { loginUser } from '../../api/customers';
+import { setCartData } from '../slices/basketSlice';
 
 export const loginReducer = (loginData: MyCustomerSignin) => async (dispatch: StoreDispatch) => {
   try {
     dispatch(setUserIsLoading(true));
-    const { version, id } = await loginUser(loginData);
+    const { customer, cart } = await loginUser(loginData);
+    const { version, id } = customer;
+    if (cart) dispatch(setCartData(cart));
     dispatch(setUserLogin());
     dispatch(setUserVersion(version));
     dispatch(setUserId(id));
@@ -23,7 +26,7 @@ export const loginReducer = (loginData: MyCustomerSignin) => async (dispatch: St
     dispatch(setUserIsLoading(false));
   }
 };
-export const registerReduser =
+export const registerReducer =
   async (registrationData: MyCustomerDraft) => async (dispatch: StoreDispatch) => {
     try {
       dispatch(setUserIsLoading(true));
