@@ -1,5 +1,6 @@
-import { ProductProjection } from '@commercetools/platform-sdk';
-import { buildCreateSlice, asyncThunkCreator } from '@reduxjs/toolkit';
+import { Cart, ProductProjection } from '@commercetools/platform-sdk';
+import { buildCreateSlice, asyncThunkCreator, SerializedError } from '@reduxjs/toolkit';
+import { addToCart, getActiveCart } from '../../api/cart';
 
 export const createAppSlice = buildCreateSlice({
   creators: { asyncThunk: asyncThunkCreator },
@@ -9,7 +10,8 @@ type BasketState = {
   productIdToQuantity: Record<string, number>;
   pending: boolean;
   fulfilled: boolean;
-  err: Error | null;
+  err?: SerializedError;
+  cartData?: Cart;
 };
 
 const initialBasketState: BasketState = {
@@ -17,7 +19,6 @@ const initialBasketState: BasketState = {
   productIdToQuantity: {},
   pending: false,
   fulfilled: false,
-  err: null,
 };
 
 export function calculateTotalPrice(priceValue: number, quantity: number): number {
@@ -30,10 +31,8 @@ const basketSlice = createAppSlice({
   reducers: (create) => ({
     addProductToBasket: create.reducer<ProductProjection>((state, action) => {
       const { id } = action.payload;
-      if (state.productsInBasket.find((product) => product.id === id)) {
-        return;
-      }
-      state.productsInBasket = [...state.productsInBasket, action.payload];
+      if (!(id in state.productIdToQuantity)) return;
+      state.productsInBasket.push(action.payload);
       state.productIdToQuantity[action.payload.id] = 1;
     }),
     removeProductQuantity: create.reducer<string>((state, action) => {
@@ -45,8 +44,52 @@ const basketSlice = createAppSlice({
     setProductQuantity: create.reducer<{ id: string; quantity: number }>((state, action) => {
       state.productIdToQuantity[action.payload.id] = action.payload.quantity;
     }),
+    addProduct: create.asyncThunk(
+      async (product: ProductProjection, thunkApi) => {
+        const state = thunkApi.getState() as { basketData: BasketState };
+        if (state.basketData.cartData) {
+          const cart = state.basketData.cartData;
+          return addToCart({ cart, product });
+        }
+        return getActiveCart([{ productId: product.id, variantId: product.masterVariant.id }]);
+      },
+      {
+        pending: (state) => {
+          state.pending = true;
+        },
+        rejected: (state, action) => {
+          state.err = action.error;
+        },
+        fulfilled: (state, action) => {
+          state.cartData = action.payload;
+          state.productIdToQuantity[action.payload.id] = 1;
+        },
+        settled: (state) => {
+          state.pending = false;
+        },
+      },
+    ),
+    fetchCartData: create.asyncThunk(getActiveCart, {
+      pending: (state) => {
+        state.pending = true;
+      },
+      rejected: (state, action) => {
+        state.err = action.error;
+      },
+      fulfilled: (state, action) => {
+        state.cartData = action.payload;
+      },
+      settled: (state) => {
+        state.pending = false;
+      },
+    }),
   }),
 });
 export default basketSlice;
-export const { addProductToBasket, setProductQuantity, removeProductQuantity } =
-  basketSlice.actions;
+export const {
+  addProductToBasket,
+  setProductQuantity,
+  removeProductQuantity,
+  addProduct,
+  fetchCartData,
+} = basketSlice.actions;

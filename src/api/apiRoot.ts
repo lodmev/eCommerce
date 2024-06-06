@@ -10,15 +10,22 @@ import {
   getExistingTokenCtpClient,
   getReadOnlyCtpClient,
 } from './clientBuilder';
-import { getToken, resetAuth, setUseAnon, unSetUseAnon } from '../utils/token';
-// import debug from '../utils/debug';
+import {
+  getToken,
+  isUseAnon,
+  isUserAuthorized,
+  resetAuth,
+  setUseAnon,
+  unSetUseAnon,
+} from '../utils/token';
+import debug from '../utils/debug';
 
 const createApi = (client: Client) =>
   createApiBuilderFromCtpClient(client).withProjectKey({
     projectKey: import.meta.env.API_CTP_PROJECT_KEY,
   });
 
-let currentApiClient: ByProjectKeyRequestBuilder;
+let currentApiClient: ByProjectKeyRequestBuilder = createApi(getReadOnlyCtpClient());
 
 const manageCustomersApiClient = createApi(getCustomersCtpClient());
 
@@ -28,16 +35,24 @@ const setDefaultApi = () => {
   unSetUseAnon();
 };
 
-setDefaultApi();
-
 const setAuthApi = (user: UserAuthOptions) => {
   currentApiClient = createApi(getAuthCtpClient(user));
   unSetUseAnon();
 };
 
 const setAnonApi = () => {
+  resetAuth();
   currentApiClient = createApi(getAnonCtpClient());
   setUseAnon();
+  debug.log('set anon api');
+};
+
+const getAuthOrAnonApi = () => {
+  debug.log(isUserAuthorized, isUseAnon);
+  if (!isUserAuthorized() && !isUseAnon()) {
+    setAnonApi();
+  }
+  return getCurrentApiClient();
 };
 
 const getCurrentApiClient = () => {
@@ -47,4 +62,11 @@ const getCurrentApiClient = () => {
   }
   return currentApiClient;
 };
-export { getCurrentApiClient, setDefaultApi, setAuthApi, setAnonApi, manageCustomersApiClient };
+export {
+  getCurrentApiClient,
+  setDefaultApi,
+  setAuthApi,
+  setAnonApi,
+  getAuthOrAnonApi,
+  manageCustomersApiClient,
+};
