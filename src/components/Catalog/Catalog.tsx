@@ -1,41 +1,20 @@
-import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { ProductProjection } from '@commercetools/platform-sdk';
 import styles from './Catalog.module.css';
-import { CATALOG_PREVIEW_LIMIT, ROUTE_PATH } from '../../utils/globalVariables';
+import { ROUTE_PATH } from '../../utils/globalVariables';
 import { useStoreSelector } from '../../hooks/userRedux';
 import useAsync from '../../hooks/useAsync';
 import { getProductCategoriesMap } from '../../api/products';
 import Breadcrumbs from '../Breadcrumbs/Breadcrumbs';
-import Loader from '../Modal/Loader';
 import Filters from './Filters/Filters';
 import Sorting from './Sorting/Sorting';
 import Searching from './Searching/Searching';
 import { doSearchRequest, getID } from '../../api/doProductSearchRequest';
 import ProductCard from '../Products/ProductCard';
+import ModalAlert from '../Modal/ModalAlert';
+import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 
-function ProductCards({
-  isPreview,
-  products,
-}: {
-  products?: ProductProjection[];
-  isPreview?: boolean;
-}) {
-  let allProducts: ProductProjection[] | undefined;
-  if (products) {
-    if (isPreview) {
-      allProducts = products.slice(0, CATALOG_PREVIEW_LIMIT);
-    } else {
-      allProducts = products;
-    }
-  }
-  return allProducts
-    ? allProducts.map((product: ProductProjection) => (
-        <ProductCard key={product.id} product={product} isPreview={isPreview} />
-      ))
-    : null;
-}
-export default function Catalog({ isPreview }: { isPreview?: boolean }) {
+export default function Catalog() {
   const defaultCategoryName = 'All categories';
   const [currentCategory, setCurrentCategory] = useState('Catalog');
   const routeParams = useParams();
@@ -61,34 +40,27 @@ export default function Catalog({ isPreview }: { isPreview?: boolean }) {
   return (
     <div className={styles.catalog} id="catalog">
       <div className={styles.wrapper}>
-        {!isPreview && <Breadcrumbs className={styles.breadcrumbs} />}
-        <p className={styles['catalog-header']}>
-          {!isPreview ? currentCategory : 'The most popular'}
-        </p>
-        {!isPreview && <Filters />}
-        {!isPreview && <Sorting setSortParams={setSortParams} />}
-        {!isPreview && <Searching setSearchText={setSearchText} loading={isLoading} />}
-
+        <Breadcrumbs className={styles.breadcrumbs} />
+        <p className={styles['catalog-header']}>{currentCategory}</p>
+        <Filters />
+        <Sorting setSortParams={setSortParams} />
+        <Searching setSearchText={setSearchText} loading={isLoading} />
         <div className={styles.furniture}>
-          {isLoading || err ? (
-            <Loader
-              isLoading={isLoading}
-              errMsg={err?.name}
-              errorHandler={() => {
+          {err && (
+            <ModalAlert
+              message={err.message}
+              onConfirm={() => {
                 navigate(ROUTE_PATH.main);
               }}
+              isError
             />
-          ) : (
-            <ProductCards products={allProductsResponse?.results} isPreview={isPreview} />
           )}
+          {allProductsResponse &&
+            allProductsResponse.results.map((product) => (
+              <ProductCard key={product.id} product={product} isPreview />
+            ))}
+          {isLoading && <LoadingSpinner />}
         </div>
-        {isPreview && (
-          <Link className={styles.center} to={ROUTE_PATH.products}>
-            <div className={styles.link}>
-              <p className={styles.text}>Go to catalog</p>
-            </div>
-          </Link>
-        )}
       </div>
     </div>
   );
