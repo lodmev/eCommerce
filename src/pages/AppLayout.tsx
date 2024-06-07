@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 import { Outlet, useNavigation } from 'react-router-dom';
 import { getCurrentCustomer } from '../api/customers';
 import Footer from '../components/Footer/Footer';
@@ -8,24 +7,30 @@ import LoadingSpinner from '../components/LoadingSpinner/LoadingSpinner';
 import Overlay from '../components/Modal/Overlay';
 import { setUserId, setUserVersion } from '../store/slices/userSlice';
 import debug from '../utils/debug';
-import { isUserAuthorized } from '../utils/token';
+import { isUseAnon, isUserAuthorized } from '../utils/token';
+import { useStoreDispatch } from '../hooks/userRedux';
+import { fetchCartData } from '../store/slices/basketSlice';
 
 export default function AppLayout() {
   const navigation = useNavigation();
-  const dispatch = useDispatch();
+  const dispatch = useStoreDispatch();
   const isLoading = navigation.state === 'loading';
 
+  // update store  states
   useEffect(() => {
-    if (!isUserAuthorized()) return;
-
-    getCurrentCustomer()
-      .then((customer) => {
-        debug.log('customer: ', customer);
-        dispatch(setUserVersion(customer.version));
-        dispatch(setUserId(customer.id));
-      })
-      .catch(debug.error);
-  }, [dispatch]);
+    if (isUserAuthorized()) {
+      getCurrentCustomer()
+        .then((customer) => {
+          // debug.log('customer: ', customer);
+          dispatch(setUserVersion(customer.version));
+          dispatch(setUserId(customer.id));
+        })
+        .catch(debug.error);
+    }
+    if (isUserAuthorized() || isUseAnon()) {
+      dispatch(fetchCartData());
+    }
+  }, []);
 
   return (
     <div className="container">

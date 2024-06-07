@@ -1,5 +1,6 @@
 import { LineItem } from '@commercetools/platform-sdk';
 import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
 import styles from './Basket.module.css';
 import ProductInBasket from '../../components/ProductInBasket/ProductInBasket';
 import { useStoreDispatch, useStoreSelector } from '../../hooks/userRedux';
@@ -22,7 +23,9 @@ export default function Basket() {
   // }, 0);
   const dispatch = useStoreDispatch();
   const { cartData, pending, err } = useStoreSelector((state) => state.basketData);
-  if (!cartData) dispatch(fetchCartData());
+  useEffect(() => {
+    dispatch(fetchCartData());
+  }, []);
   return (
     <div className={styles.cart}>
       <Link className={styles.center} to={ROUTE_PATH.products}>
@@ -40,16 +43,14 @@ export default function Basket() {
             <div className={styles.subTotalPriceContent}>
               <div className={styles.subTotalPrice}>
                 <p>Sub-total:</p>
-                <p>
-                  {cartData.totalPrice.centAmount / 100} {}
-                </p>
+                <p>{cartData.totalPrice.centAmount / 100} EUR</p>
               </div>
               <div className={styles.subTotalWarning}>
                 <p>Tax and shipping cost will be calculated later</p>
               </div>
             </div>
             <Link
-              aria-disabled={Boolean(cartData.totalPrice.centAmount)}
+              aria-disabled={Boolean(!cartData.totalPrice.centAmount)}
               className={`${styles.center} ${styles.checkoutLink}`}
               to={ROUTE_PATH.checkout}
             >
