@@ -1,3 +1,15 @@
+/* .button {
+  font-weight: bold;
+  touch-action: manipulation;
+  box-shadow: 2px 2px 7px grey;
+  transition: transform 0.3s;
+  transition: background-color 0.3s;
+  &:active {
+    box-shadow: none;
+    transform: translate(-1px, -1px);
+  }
+} */
+
 .button-cart {
   color: var(--main-text-color);
   padding: 15px 25px;
@@ -23,6 +35,7 @@
   user-select: none;
   touch-action: manipulation;
   cursor: pointer;
+  transition: 0.5s;
 
   &:hover {
     box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);

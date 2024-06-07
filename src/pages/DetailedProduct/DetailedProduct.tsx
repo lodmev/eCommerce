@@ -1,49 +1,23 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTruck } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Button } from 'antd';
-import { ProductProjection } from '@commercetools/platform-sdk';
 import { getProductById } from '../../api/products';
 import styles from './DetailedProduct.module.css';
-import { useStoreDispatch, useStoreSelector } from '../../hooks/userRedux';
+import { useStoreSelector } from '../../hooks/userRedux';
 import ImageCarousel from '../../components/ImageCarousel/ImageCarousel';
 // import ButtonCart from '../../components/Button/ButtonCart';
 import Price from '../../components/Price/Price';
 import useAsync from '../../hooks/useAsync';
 import Loader from '../../components/Modal/Loader';
 import { ROUTE_PATH } from '../../utils/globalVariables';
-import { addProduct } from '../../store/slices/basketSlice';
-
-const shouldBeDisabled = ({
-  isLoading,
-  productProjection,
-  productIdToQuantity,
-}: {
-  isLoading: boolean;
-  productProjection: ProductProjection | undefined;
-  productIdToQuantity: Record<string, number>;
-}) => {
-  if (isLoading) return true;
-  if (!productProjection) return true;
-  if (productProjection.id in productIdToQuantity) return true;
-  return false;
-};
+import ButtonCartAntd from '../../components/Button/ButtonCartAntd';
 
 export default function DetailedProduct() {
   const { userLanguage } = useStoreSelector((state) => state.userData);
-  const { productIdToQuantity, pending: cartLoading } = useStoreSelector(
-    (state) => state.basketData,
-  );
-  const dispatch = useStoreDispatch();
   const { id } = useParams();
   const navigate = useNavigate();
   const [productProjection, isLoading, err] = useAsync(getProductById, id, [id]);
   const images = productProjection?.masterVariant?.images;
-
-  function onButtonCartClick(): void {
-    // dispatch(addProductToBasket(productProjection!));
-    dispatch(addProduct(productProjection!));
-  }
 
   return isLoading || err ? (
     <Loader
@@ -74,20 +48,8 @@ export default function DetailedProduct() {
           {productProjection?.description?.[userLanguage]}
         </p>
         <div className={styles.button}>
-          <Button
-            loading={cartLoading}
-            disabled={shouldBeDisabled({
-              isLoading: cartLoading,
-              productProjection,
-              productIdToQuantity,
-            })}
-            onClick={onButtonCartClick}
-          >
-            {productProjection && productProjection?.id in productIdToQuantity
-              ? 'Already in cart'
-              : 'Add to card'}
-          </Button>
-          {/* <ButtonCart text="+ Add to cart" onClick={onButtonCartClick} /> */}
+          <ButtonCartAntd product={productProjection} />
+          {/* <ButtonCart text="+ Add to cart" onClick={() => {}} /> */}
         </div>
       </div>
     </div>

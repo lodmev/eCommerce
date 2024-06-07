@@ -1,9 +1,10 @@
 import { ProductProjection } from '@commercetools/platform-sdk';
 import { Link } from 'react-router-dom';
-import styles from './Product.module.css';
+import styles from './ProductCard.module.css';
 import { ROUTE_PATH } from '../../utils/globalVariables';
 import { useStoreSelector } from '../../hooks/userRedux';
 import Price from '../Price/Price';
+import ButtonCartAntd from '../Button/ButtonCartAntd';
 // import debug from '../../utils/debug';
 
 export default function ProductCard({
@@ -22,14 +23,14 @@ export default function ProductCard({
   const previewClass = isPreview ? styles['product-card_preview'] : '';
 
   return (
-    <Link
-      className={[styles['product-card'], previewClass].join(' ')}
-      to={navigationToDetailedProduct}
-    >
-      <img className={styles['product-card__image']} src={imageUrl} alt="product" />
-      <p className={styles['product-card__brand']}>{name[locale]}</p>
-      {desc && <p className={styles['product-card__description']}>{desc}</p>}
-      <Price price={masterVariant.prices?.[0]} />
+    <section className={[styles['product-card'], previewClass].join(' ')}>
+      <Link to={navigationToDetailedProduct}>
+        <img className={styles['product-card__image']} src={imageUrl} alt="product" />
+        <p className={styles['product-card__brand']}>{name[locale]}</p>
+        {desc && <p className={styles['product-card__description']}>{desc}</p>}
+        <Price price={masterVariant.prices?.[0]} />
+      </Link>
+      <ButtonCartAntd product={product} />
       <button
         type="button"
         className={styles['product-card__btn-wishlist']}
@@ -42,6 +43,6 @@ export default function ProductCard({
           />
         </svg>
       </button>
-    </Link>
+    </section>
   );
 }

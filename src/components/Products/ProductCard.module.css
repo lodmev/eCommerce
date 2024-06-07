@@ -22,6 +22,9 @@
       transform: scale(1.03);
     }
   }
+  a {
+    color: inherit;
+  }
 }
 .product-card_preview {
   width: auto;
