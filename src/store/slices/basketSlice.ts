@@ -62,7 +62,7 @@ const basketSlice = createAppSlice({
         },
         fulfilled: (state, action) => {
           state.cartData = action.payload;
-          state.productIdToQuantity[action.payload.id] = 1;
+          state.productIdToQuantity[action.meta.arg.id] = 1;
         },
         settled: (state) => {
           state.pending = false;
@@ -78,6 +78,9 @@ const basketSlice = createAppSlice({
       },
       fulfilled: (state, action) => {
         state.cartData = action.payload;
+        action.payload.lineItems.forEach((lineItem) => {
+          state.productIdToQuantity[lineItem.productId] = lineItem.quantity;
+        });
       },
       settled: (state) => {
         state.pending = false;

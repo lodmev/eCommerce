@@ -18,7 +18,7 @@ import {
   setUseAnon,
   unSetUseAnon,
 } from '../utils/token';
-import debug from '../utils/debug';
+// import debug from '../utils/debug';
 
 const createApi = (client: Client) =>
   createApiBuilderFromCtpClient(client).withProjectKey({
@@ -44,11 +44,9 @@ const setAnonApi = () => {
   resetAuth();
   currentApiClient = createApi(getAnonCtpClient());
   setUseAnon();
-  debug.log('set anon api');
 };
 
 const getAuthOrAnonApi = () => {
-  debug.log(isUserAuthorized, isUseAnon);
   if (!isUserAuthorized() && !isUseAnon()) {
     setAnonApi();
   }
