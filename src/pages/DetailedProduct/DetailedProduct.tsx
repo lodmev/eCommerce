@@ -5,12 +5,11 @@ import { getProductById } from '../../api/products';
 import styles from './DetailedProduct.module.css';
 import { useStoreSelector } from '../../hooks/userRedux';
 import ImageCarousel from '../../components/ImageCarousel/ImageCarousel';
-// import ButtonCart from '../../components/Button/ButtonCart';
 import Price from '../../components/Price/Price';
 import useAsync from '../../hooks/useAsync';
 import Loader from '../../components/Modal/Loader';
 import { ROUTE_PATH } from '../../utils/globalVariables';
-import ButtonCartAntd from '../../components/Button/ButtonCartAntd';
+import ButtonCart from '../../components/Button/ButtonCart';
 
 export default function DetailedProduct() {
   const { userLanguage } = useStoreSelector((state) => state.userData);
@@ -48,8 +47,7 @@ export default function DetailedProduct() {
           {productProjection?.description?.[userLanguage]}
         </p>
         <div className={styles.button}>
-          <ButtonCartAntd product={productProjection} />
-          {/* <ButtonCart text="+ Add to cart" onClick={() => {}} /> */}
+          <ButtonCart product={productProjection} />
         </div>
       </div>
     </div>
