@@ -86,6 +86,10 @@ const basketSlice = createAppSlice({
         state.pending = false;
       },
     }),
+    resetCartState: create.reducer<undefined>((state) => {
+      state.cartData = undefined;
+      state.productIdToQuantity = {};
+    }),
   }),
 });
 export default basketSlice;
@@ -95,4 +99,5 @@ export const {
   removeProductQuantity,
   addProduct,
   fetchCartData,
+  resetCartState,
 } = basketSlice.actions;
