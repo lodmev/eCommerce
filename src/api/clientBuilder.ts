@@ -46,22 +46,28 @@ const httpMiddlewareOptions: HttpMiddlewareOptions = {
   fetch,
 };
 
-const baseCtpClient = new ClientBuilder()
-  .withProjectKey(import.meta.env.API_CTP_PROJECT_KEY)
-  .withClientCredentialsFlow(authMiddlewareOptions)
-  .withHttpMiddleware(httpMiddlewareOptions);
+const baseCtpClient = () =>
+  new ClientBuilder()
+    .withProjectKey(import.meta.env.API_CTP_PROJECT_KEY)
+    .withClientCredentialsFlow(authMiddlewareOptions)
+    .withHttpMiddleware(httpMiddlewareOptions)
+    // line below always save token
+    .withAfterExecutionMiddleware({
+      name: 'after-middleware-fn',
+      middleware: afterEx,
+    });
 // .withLoggerMiddleware()
 
-const getReadOnlyCtpClient = () => baseCtpClient.build();
+const getReadOnlyCtpClient = () => baseCtpClient().build();
 
 const getAnonCtpClient = () =>
-  baseCtpClient.withAnonymousSessionFlow(authMiddlewareOptions).build();
+  baseCtpClient().withAnonymousSessionFlow(authMiddlewareOptions).build();
 
 const getExistingTokenCtpClient = (token: string) => {
   const options: ExistingTokenMiddlewareOptions = {
     force: true,
   };
-  return baseCtpClient.withExistingTokenFlow(token, options).build();
+  return baseCtpClient().withExistingTokenFlow(token, options).build();
 };
 
 const getAuthCtpClient = (user: UserAuthOptions) => {
@@ -69,13 +75,15 @@ const getAuthCtpClient = (user: UserAuthOptions) => {
     ...authMiddlewareOptions,
     credentials: { ...authMiddlewareOptions.credentials, user },
   };
-  return baseCtpClient
-    .withAfterExecutionMiddleware({
-      name: 'after-middleware-fn',
-      middleware: afterEx,
-    })
-    .withPasswordFlow(passOptions)
-    .build();
+  return (
+    baseCtpClient()
+      // .withAfterExecutionMiddleware({
+      //   name: 'after-middleware-fn',
+      //   middleware: afterEx,
+      // })
+      .withPasswordFlow(passOptions)
+      .build()
+  );
 };
 
 const getCustomersCtpClient = () =>

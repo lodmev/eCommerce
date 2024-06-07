@@ -3,14 +3,13 @@ import { faTruck } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getProductById } from '../../api/products';
 import styles from './DetailedProduct.module.css';
-import { useStoreDispatch, useStoreSelector } from '../../hooks/userRedux';
+import { useStoreSelector } from '../../hooks/userRedux';
 import ImageCarousel from '../../components/ImageCarousel/ImageCarousel';
-import ButtonCart from '../../components/Button/ButtonCart';
 import Price from '../../components/Price/Price';
 import useAsync from '../../hooks/useAsync';
 import Loader from '../../components/Modal/Loader';
 import { ROUTE_PATH } from '../../utils/globalVariables';
-import { addProductToBasket } from '../../store/slices/basketSlice';
+import ButtonCart from '../../components/Button/ButtonCart';
 
 export default function DetailedProduct() {
   const { userLanguage } = useStoreSelector((state) => state.userData);
@@ -18,11 +17,6 @@ export default function DetailedProduct() {
   const navigate = useNavigate();
   const [productProjection, isLoading, err] = useAsync(getProductById, id, [id]);
   const images = productProjection?.masterVariant?.images;
-  const dispatch = useStoreDispatch();
-
-  function onButtonCartClick(): void {
-    dispatch(addProductToBasket(productProjection!));
-  }
 
   return isLoading || err ? (
     <Loader
@@ -53,7 +47,7 @@ export default function DetailedProduct() {
           {productProjection?.description?.[userLanguage]}
         </p>
         <div className={styles.button}>
-          <ButtonCart text="+ Add to cart" onClick={onButtonCartClick} />
+          <ButtonCart product={productProjection} />
         </div>
       </div>
     </div>

@@ -18,6 +18,7 @@ import { ROUTE_PATH } from '../../../utils/globalVariables';
 import { enumToArray } from '../../../utils/functions';
 import { useStoreDispatch, useStoreSelector } from '../../../hooks/userRedux';
 import { setUserLogout } from '../../../store/slices/userSlice';
+import { resetCartState } from '../../../store/slices/basketSlice';
 
 enum NavigationPath {
   About = 'about',
@@ -67,7 +68,9 @@ const NavigationPathToPath = new Map<NavigationPath, string>([
   [NavigationPath.userProfile, ROUTE_PATH.userProfile],
 ]);
 
-const NavigationPathToAction = new Map([[NavigationPath.Logout, setUserLogout()]]);
+const NavigationPathToAction = new Map([
+  [NavigationPath.Logout, [setUserLogout(), resetCartState()]],
+]);
 
 export default function BurgerMenu() {
   const [isOpen, setIsOpen] = useState(false);
@@ -77,11 +80,7 @@ export default function BurgerMenu() {
     if ([NavigationPath.Login, NavigationPath.Registration].includes(title as NavigationPath)) {
       return !isUserAuthorized;
     }
-    if (
-      [NavigationPath.Logout, NavigationPath.userProfile, NavigationPath.Basket].includes(
-        title as NavigationPath,
-      )
-    ) {
+    if ([NavigationPath.Logout, NavigationPath.userProfile].includes(title as NavigationPath)) {
       return isUserAuthorized;
     }
     return true;
@@ -92,9 +91,11 @@ export default function BurgerMenu() {
   }
 
   function handleNavigationClick(navigationPath: NavigationPath): void {
-    const action = NavigationPathToAction.get(navigationPath);
-    if (action) {
-      dispatch(action);
+    const actions = NavigationPathToAction.get(navigationPath);
+    if (actions) {
+      actions.forEach((action) => {
+        dispatch(action);
+      });
     }
   }
 
