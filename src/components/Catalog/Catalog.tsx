@@ -1,7 +1,7 @@
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import styles from './Catalog.module.css';
-import { ROUTE_PATH } from '../../utils/globalVariables';
+import { PRODUCT_DEFAULT_FETCH_LIMIT, ROUTE_PATH } from '../../utils/globalVariables';
 import { useStoreSelector } from '../../hooks/userRedux';
 import useAsync from '../../hooks/useAsync';
 import { getProductCategoriesMap } from '../../api/products';
@@ -9,10 +9,16 @@ import Breadcrumbs from '../Breadcrumbs/Breadcrumbs';
 import Filters from './Filters/Filters';
 import Sorting from './Sorting/Sorting';
 import Searching from './Searching/Searching';
-import { doSearchRequest, getID } from '../../api/doProductSearchRequest';
+import { doSearchRequest, getID, RequestParams } from '../../api/doProductSearchRequest';
 import ProductCard from '../Products/ProductCard';
 import ModalAlert from '../Modal/ModalAlert';
 import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
+import debug from '../../utils/debug';
+
+const useLazyLoading = (requestParams: RequestParams) => {
+  requestParams.limit = PRODUCT_DEFAULT_FETCH_LIMIT;
+  return useAsync(doSearchRequest, requestParams, [{ ...requestParams }]);
+};
 
 export default function Catalog() {
   const defaultCategoryName = 'All categories';
@@ -23,11 +29,12 @@ export default function Catalog() {
   const [sortParams, setSortParams] = useState('');
   const [searchText, setSearchText] = useState('');
   const locale = useStoreSelector((state) => state.userData.userLanguage);
-  const [allProductsResponse, isLoading, err] = useAsync(
-    doSearchRequest,
-    { routeParams, searchParams, sortParams, searchRequest: { locale, value: searchText } },
-    [routeParams, sortParams, searchText],
-  );
+  const [allProductsResponse, isLoading, err] = useLazyLoading({
+    routeParams,
+    searchParams,
+    sortParams,
+    searchRequest: { locale, value: searchText },
+  });
   const [categoriesMap] = useAsync(getProductCategoriesMap, undefined, []);
   useEffect(() => {
     const id: string = getID(routeParams);
@@ -37,10 +44,13 @@ export default function Catalog() {
       setCurrentCategory(defaultCategoryName);
     }
   }, [routeParams, categoriesMap]);
+  useEffect(() => {
+    debug.log(allProductsResponse);
+  }, [allProductsResponse]);
   return (
     <div className={styles.catalog} id="catalog">
       <div className={styles.wrapper}>
-        <Breadcrumbs className={styles.breadcrumbs} />
+        <Breadcrumbs categoriesMap={categoriesMap} className={styles.breadcrumbs} />
         <p className={styles['catalog-header']}>{currentCategory}</p>
         <Filters />
         <Sorting setSortParams={setSortParams} />
