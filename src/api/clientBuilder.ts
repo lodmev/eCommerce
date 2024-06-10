@@ -9,13 +9,18 @@ import {
   type AuthMiddlewareOptions,
   type HttpMiddlewareOptions,
 } from '@commercetools/sdk-client-v2';
-import { saveTokenIfProvided } from '../utils/token';
+import { saveTokenIfProvided, resetAuth } from '../utils/token';
+// import  debug from '../utils/debug'
 
 function afterEx(/* options?: GenericOmit<AfterExecutionMiddlewareOptions, 'middleware'> */) {
   return (next: Next): Next =>
     (req: MiddlewareRequest, res: MiddlewareResponse) => {
       const token = req.headers?.Authorization;
       saveTokenIfProvided(token);
+      if (res.error && res.error.message === 'invalid_token') {
+        resetAuth();
+      }
+      // debug.log(res)
       next(req, res);
     };
 }
