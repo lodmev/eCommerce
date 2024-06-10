@@ -125,7 +125,7 @@ export default function Catalog() {
             />
           )}
           {allProductsResponse.map((product) => (
-            <ProductCard key={product.id} product={product} isPreview />
+            <ProductCard key={product.id} product={product} />
           ))}
         </div>
         <section className={styles['after-cards']}>

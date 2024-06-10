@@ -1,4 +1,5 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { useState } from 'react';
 import { searchProducts } from '../../api/products';
 import styles from '../Catalog/Catalog.module.css';
 import useAsync from '../../hooks/useAsync';
@@ -8,12 +9,12 @@ import ProductCard from '../Products/ProductCard';
 import { QueryArgs } from '../../types/types';
 
 export default function CatalogPreview() {
-  const navigate = useNavigate();
   const queryArgs: QueryArgs = {
     limit: CATALOG_PREVIEW_LIMIT,
     sort: ['score asc', 'id asc'],
   };
-  const [productsResponse, isLoading, err] = useAsync(searchProducts, queryArgs, []);
+  const [needUpdate, setNeedUpdate] = useState(1);
+  const [productsResponse, isLoading, err] = useAsync(searchProducts, queryArgs, [needUpdate]);
   return (
     <div className={styles.catalog} id="catalog">
       <div className={styles.wrapper}>
@@ -24,7 +25,7 @@ export default function CatalogPreview() {
               isLoading={false}
               errMsg={err?.name}
               errorHandler={() => {
-                navigate(ROUTE_PATH.main);
+                setNeedUpdate((prev) => prev + 1);
               }}
             />
           ) : (
