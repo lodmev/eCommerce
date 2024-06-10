@@ -1,15 +1,9 @@
 import { ReactNode } from 'react';
-import { UIMatch, useMatches, Link, useNavigate } from 'react-router-dom';
+import { UIMatch, useMatches, Link } from 'react-router-dom';
 import { Breadcrumb } from 'antd';
 import { BreadcrumbItemType } from 'antd/es/breadcrumb/Breadcrumb';
 import { useStoreSelector } from '../../hooks/userRedux';
-import Overlay from '../Modal/Overlay';
-import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
-import ModalConfirm from '../Modal/ModalConfirm';
 import { CategoriesMap } from '../../types/types';
-import useAsync from '../../hooks/useAsync';
-import { getProductCategoriesMap } from '../../api/products';
-import { ROUTE_PATH } from '../../utils/globalVariables';
 // import debug from '../../utils/debug';
 
 export type CrumbTypes = 'mainList' | 'category' | 'subcategory';
@@ -84,33 +78,21 @@ const createCrumbItems = (
   });
   return items;
 };
-export default function Breadcrumbs({ className }: { className?: string }): ReactNode {
+export default function Breadcrumbs({
+  categoriesMap,
+  className,
+}: {
+  categoriesMap?: CategoriesMap;
+  className?: string;
+}): ReactNode {
   const matches = useMatches();
-  const navigate = useNavigate();
-  const [productCategoriesMap, isLoading, err] = useAsync(getProductCategoriesMap, undefined, []);
   const locale = useStoreSelector((state) => state.userData.userLanguage);
   const crumbs = matches
     .filter((match) => Boolean((match.handle as { crumb?: CrumbType })?.crumb))
     .map((match) => (match.handle as { crumb: CrumbType })?.crumb(match));
-  return isLoading || err ? (
-    <Overlay>
-      {isLoading && <LoadingSpinner />}
-      {err && (
-        <ModalConfirm
-          message={err.message}
-          isError
-          onConfirm={() => {
-            navigate(ROUTE_PATH.main);
-          }}
-        />
-      )}
-    </Overlay>
-  ) : (
-    productCategoriesMap && (
-      <Breadcrumb
-        className={className}
-        items={createCrumbItems(crumbs, productCategoriesMap, locale)}
-      />
+  return (
+    categoriesMap && (
+      <Breadcrumb className={className} items={createCrumbItems(crumbs, categoriesMap, locale)} />
     )
   );
 }

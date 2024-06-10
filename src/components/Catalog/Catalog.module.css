@@ -63,3 +63,9 @@
     transform: scale(1.05);
   }
 }
+.after-cards {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5em;
+}

@@ -1,12 +1,12 @@
 import Description from '../../components/Description/Description';
-import Catalog from '../../components/Catalog/Catalog';
 import ProductOfTheMonth from '../../components/ProductOfTheMonth/ProductOfTheMonth';
+import CatalogPreview from '../../components/CatalogPreview/CatalogPreview';
 
 export default function Main() {
   return (
     <>
       <Description />
-      <Catalog isPreview />
+      <CatalogPreview />
       <ProductOfTheMonth />
     </>
   );

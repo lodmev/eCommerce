@@ -9,6 +9,7 @@ import {
   getCustomersCtpClient,
   getExistingTokenCtpClient,
   getReadOnlyCtpClient,
+  tokenError,
 } from './clientBuilder';
 import {
   getToken,
@@ -32,7 +33,6 @@ const manageCustomersApiClient = createApi(getCustomersCtpClient());
 const setDefaultApi = () => {
   currentApiClient = createApi(getReadOnlyCtpClient());
   resetAuth();
-  unSetUseAnon();
 };
 
 const setAuthApi = (user: UserAuthOptions) => {
@@ -54,6 +54,11 @@ const getAuthOrAnonApi = () => {
 };
 
 const getCurrentApiClient = () => {
+  if (tokenError.isBroken) {
+    resetAuth();
+    currentApiClient = createApi(getReadOnlyCtpClient());
+    tokenError.isBroken = false;
+  }
   const savedToken = getToken();
   if (savedToken) {
     currentApiClient = createApi(getExistingTokenCtpClient(savedToken));
