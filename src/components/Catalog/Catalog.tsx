@@ -1,5 +1,7 @@
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { ProductProjection } from '@commercetools/platform-sdk';
+import { Button } from 'antd';
 import styles from './Catalog.module.css';
 import { PRODUCT_DEFAULT_FETCH_LIMIT, ROUTE_PATH } from '../../utils/globalVariables';
 import { useStoreSelector } from '../../hooks/userRedux';
@@ -15,9 +17,69 @@ import ModalAlert from '../Modal/ModalAlert';
 import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 import debug from '../../utils/debug';
 
-const useLazyLoading = (requestParams: RequestParams) => {
+const useLazyLoading = (
+  requestParams: RequestParams,
+): [ProductProjection[], boolean, Error | undefined, () => void, boolean] => {
+  const [total, setTotal] = useState(0);
+  const [offset, setOffset] = useState(0);
+  const [error, setError] = useState<Error | undefined>();
+  const [isLoading, setIsLoading] = useState(false);
+  const [results, setResults] = useState<ProductProjection[]>([]);
+  const [thatsAll, setThatsAll] = useState(false);
   requestParams.limit = PRODUCT_DEFAULT_FETCH_LIMIT;
-  return useAsync(doSearchRequest, requestParams, [{ ...requestParams }]);
+  const updateDependencies = [
+    requestParams.routeParams,
+    requestParams.searchParams,
+    requestParams.searchRequest.value,
+    requestParams.sortParams,
+  ];
+  const loadNext = () => {
+    if (offset < total) {
+      setOffset((prev) => {
+        if (prev + PRODUCT_DEFAULT_FETCH_LIMIT <= total) return prev + PRODUCT_DEFAULT_FETCH_LIMIT;
+        return prev + total - prev;
+      });
+    } else {
+      setThatsAll(true);
+    }
+  };
+  requestParams.offset = offset;
+  // effect below for reset params to default
+  useEffect(() => {
+    setResults([]);
+    setOffset(0);
+    setThatsAll(false);
+  }, updateDependencies);
+  useEffect(() => {
+    setIsLoading(true);
+    doSearchRequest(requestParams)
+      .then((response) => {
+        // debug.log(response);
+        if (response.total) {
+          setTotal(response.total);
+          if (response.total === response.count || response.count < PRODUCT_DEFAULT_FETCH_LIMIT) {
+            setThatsAll(true);
+          }
+        } else {
+          debug.error(`didn't got "total" field`);
+        }
+        setResults((prev) => {
+          prev.splice(offset, response.count, ...response.results);
+          return prev;
+        });
+      })
+      .catch((e) => {
+        if (e instanceof Error) {
+          setError(e);
+        } else {
+          setError(new Error('unknown error while loading products'));
+        }
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, [...updateDependencies, offset]);
+  return [results, isLoading, error, loadNext, thatsAll];
 };
 
 export default function Catalog() {
@@ -29,7 +91,7 @@ export default function Catalog() {
   const [sortParams, setSortParams] = useState('');
   const [searchText, setSearchText] = useState('');
   const locale = useStoreSelector((state) => state.userData.userLanguage);
-  const [allProductsResponse, isLoading, err] = useLazyLoading({
+  const [allProductsResponse, isLoading, err, loadNext, thatsAll] = useLazyLoading({
     routeParams,
     searchParams,
     sortParams,
@@ -44,9 +106,6 @@ export default function Catalog() {
       setCurrentCategory(defaultCategoryName);
     }
   }, [routeParams, categoriesMap]);
-  useEffect(() => {
-    debug.log(allProductsResponse);
-  }, [allProductsResponse]);
   return (
     <div className={styles.catalog} id="catalog">
       <div className={styles.wrapper}>
@@ -65,12 +124,16 @@ export default function Catalog() {
               isError
             />
           )}
-          {allProductsResponse &&
-            allProductsResponse.results.map((product) => (
-              <ProductCard key={product.id} product={product} isPreview />
-            ))}
-          {isLoading && <LoadingSpinner />}
+          {allProductsResponse.map((product) => (
+            <ProductCard key={product.id} product={product} isPreview />
+          ))}
         </div>
+        <section className={styles['after-cards']}>
+          {isLoading && <LoadingSpinner />}
+          <Button onClick={loadNext} disabled={isLoading || thatsAll} type="primary">
+            {thatsAll ? 'No more with this criteria' : 'Load more'}
+          </Button>
+        </section>
       </div>
     </div>
   );
