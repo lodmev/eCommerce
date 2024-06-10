@@ -30,4 +30,5 @@ export const setUserLogout = () => storage.removeItem(USER_FLAG);
 export const resetAuth = () => {
   removeToken();
   setUserLogout();
+  unSetUseAnon();
 };
