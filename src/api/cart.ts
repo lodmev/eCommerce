@@ -79,3 +79,24 @@ export const changeQuantity = async ({
     .execute();
   return resp.body;
 };
+
+export const removeFromCart = async ({ cart, product }: { cart: Cart; product: LineItem }) => {
+  const apiClient = getAuthOrAnonApi();
+  const resp = await apiClient
+    .me()
+    .carts()
+    .withId({ ID: cart.id })
+    .post({
+      body: {
+        version: cart.version,
+        actions: [
+          {
+            action: 'removeLineItem',
+            lineItemId: product.id,
+          },
+        ],
+      },
+    })
+    .execute();
+  return resp.body;
+};

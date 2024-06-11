@@ -1,6 +1,6 @@
 import { Cart, LineItem, ProductProjection } from '@commercetools/platform-sdk';
 import { buildCreateSlice, asyncThunkCreator, SerializedError } from '@reduxjs/toolkit';
-import { addToCart, changeQuantity, getActiveCart } from '../../api/cart';
+import { addToCart, changeQuantity, getActiveCart, removeFromCart } from '../../api/cart';
 
 export const createAppSlice = buildCreateSlice({
   creators: { asyncThunk: asyncThunkCreator },
@@ -29,12 +29,28 @@ const basketSlice = createAppSlice({
   name: 'basketData',
   initialState: initialBasketState,
   reducers: (create) => ({
-    removeProductQuantity: create.reducer<string>((state, action) => {
-      state.productsInBasket = state.productsInBasket.filter(
-        ({ id }: ProductProjection) => id !== action.payload,
-      );
-      delete state.productIdToQuantity[action.payload];
-    }),
+    removeProductQuantity: create.asyncThunk(
+      async (product: LineItem, thunkApi) => {
+        const state = thunkApi.getState() as { basketData: BasketState };
+        const cart = state.basketData.cartData!;
+        return removeFromCart({ cart, product });
+      },
+      {
+        pending: (state) => {
+          state.pending = true;
+        },
+        rejected: (state, action) => {
+          state.err = action.error;
+        },
+        fulfilled: (state, action) => {
+          state.cartData = action.payload;
+          delete state.productIdToQuantity[action.meta.arg.productId];
+        },
+        settled: (state) => {
+          state.pending = false;
+        },
+      },
+    ),
     addProduct: create.asyncThunk(
       async (product: ProductProjection, thunkApi) => {
         const state = thunkApi.getState() as { basketData: BasketState };

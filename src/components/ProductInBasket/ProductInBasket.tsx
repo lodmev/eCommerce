@@ -31,7 +31,7 @@ export default function ProductInBasket({ product, quantity }: Props) {
   }
 
   function onDeleteClick(): void {
-    dispatch(removeProductQuantity(product.id));
+    dispatch(removeProductQuantity(product));
   }
 
   return (
