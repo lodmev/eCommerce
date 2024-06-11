@@ -28,7 +28,6 @@ export const loginUser = async (loginData: MyCustomerSignin): Promise<Customer> 
       .post({ body: { ...loginData } })
       .execute();
   }
-  resetAuth();
   setAuthApi(getUserAuth(loginData));
   const resp = await getCurrentApiClient()
     .me()
