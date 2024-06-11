@@ -27,7 +27,7 @@ export default function ProductInBasket({ product, quantity }: Props) {
   const totalPrice = calculateTotalPrice(+finalPriceValue, quantity);
 
   function handleQuantityUpdate(quantity: number): void {
-    dispatch(setProductQuantity({ id: product.id, quantity }));
+    dispatch(setProductQuantity({ product, quantity }));
   }
 
   function onDeleteClick(): void {
