@@ -69,7 +69,7 @@ const NavigationPathToPath = new Map<NavigationPath, string>([
 ]);
 
 const NavigationPathToAction = new Map([
-  [NavigationPath.Logout, [setUserLogout(), resetCartState()]],
+  [NavigationPath.Logout, [setUserLogout(), resetCartState(null)]],
 ]);
 
 export default function BurgerMenu() {

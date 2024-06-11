@@ -100,3 +100,18 @@ export const removeFromCart = async ({ cart, product }: { cart: Cart; product: L
     .execute();
   return resp.body;
 };
+
+export const deleteCart = async (cart: Cart) => {
+  const apiClient = getAuthOrAnonApi();
+  const resp = await apiClient
+    .me()
+    .carts()
+    .withId({ ID: cart.id })
+    .delete({
+      queryArgs: {
+        version: cart.version,
+      },
+    })
+    .execute();
+  return resp.body;
+};

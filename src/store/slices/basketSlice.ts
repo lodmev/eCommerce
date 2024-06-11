@@ -1,6 +1,12 @@
 import { Cart, LineItem, ProductProjection } from '@commercetools/platform-sdk';
 import { buildCreateSlice, asyncThunkCreator, SerializedError } from '@reduxjs/toolkit';
-import { addToCart, changeQuantity, getActiveCart, removeFromCart } from '../../api/cart';
+import {
+  addToCart,
+  changeQuantity,
+  deleteCart,
+  getActiveCart,
+  removeFromCart,
+} from '../../api/cart';
 
 export const createAppSlice = buildCreateSlice({
   creators: { asyncThunk: asyncThunkCreator },
@@ -93,10 +99,28 @@ const basketSlice = createAppSlice({
         state.pending = false;
       },
     }),
-    resetCartState: create.reducer<undefined>((state) => {
-      state.cartData = undefined;
-      state.productIdToQuantity = {};
-    }),
+    resetCartState: create.asyncThunk(
+      async (_params: null, thunkApi) => {
+        const state = thunkApi.getState() as { basketData: BasketState };
+        const cart = state.basketData.cartData!;
+        return deleteCart(cart);
+      },
+      {
+        pending: (state) => {
+          state.pending = true;
+        },
+        rejected: (state, action) => {
+          state.err = action.error;
+        },
+        fulfilled: (state) => {
+          state.cartData = undefined;
+          state.productIdToQuantity = {};
+        },
+        settled: (state) => {
+          state.pending = false;
+        },
+      },
+    ),
     setProductQuantity: create.asyncThunk(
       async ({ product, quantity }: { product: LineItem; quantity: number }, thunkApi) => {
         const state = thunkApi.getState() as { basketData: BasketState };
