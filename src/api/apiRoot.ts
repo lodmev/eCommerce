@@ -11,14 +11,7 @@ import {
   getReadOnlyCtpClient,
   tokenError,
 } from './clientBuilder';
-import {
-  getToken,
-  isUseAnon,
-  isUserAuthorized,
-  resetAuth,
-  setUseAnon,
-  unSetUseAnon,
-} from '../utils/token';
+import { getToken, isUseAnon, isUserAuthorized, resetAuth, setUseAnon } from '../utils/token';
 // import debug from '../utils/debug';
 
 const createApi = (client: Client) =>
@@ -31,13 +24,13 @@ let currentApiClient: ByProjectKeyRequestBuilder = createApi(getReadOnlyCtpClien
 const manageCustomersApiClient = createApi(getCustomersCtpClient());
 
 const setDefaultApi = () => {
-  currentApiClient = createApi(getReadOnlyCtpClient());
   resetAuth();
+  currentApiClient = createApi(getReadOnlyCtpClient());
 };
 
 const setAuthApi = (user: UserAuthOptions) => {
+  resetAuth();
   currentApiClient = createApi(getAuthCtpClient(user));
-  unSetUseAnon();
 };
 
 const setAnonApi = () => {
@@ -47,7 +40,10 @@ const setAnonApi = () => {
 };
 
 const getAuthOrAnonApi = () => {
-  if (!isUserAuthorized() && !isUseAnon()) {
+  if (tokenError.isBroken) {
+    setAnonApi();
+    tokenError.isBroken = false;
+  } else if (!isUserAuthorized() && !isUseAnon()) {
     setAnonApi();
   }
   return getCurrentApiClient();
@@ -55,8 +51,7 @@ const getAuthOrAnonApi = () => {
 
 const getCurrentApiClient = () => {
   if (tokenError.isBroken) {
-    resetAuth();
-    currentApiClient = createApi(getReadOnlyCtpClient());
+    setDefaultApi();
     tokenError.isBroken = false;
   }
   const savedToken = getToken();
