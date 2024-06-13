@@ -3,11 +3,20 @@ import styles from './About.module.css';
 import avatarDmitry from '../../assets/avatar-dmitriy.jpg';
 import avatarAndrii from '../../assets/avatar-andrii.jpeg';
 import avatarVictoria from '../../assets/avatar-victoria.jpeg';
+import rsSchoolLogo from '../../assets/rs_school_js.svg';
 
 export default function About() {
   return (
     <>
       <h1 className={styles.heading}>Great Job Team</h1>
+      <a
+        className={styles['school-link']}
+        href="https://rs.school/"
+        target="_blank"
+        rel="noreferrer"
+      >
+        <img className={styles.logo} src={rsSchoolLogo} alt="rs school logo" />
+      </a>
       <p className={styles['collaboration-text']}>
         Our development team exemplifies the power of collaboration, working seamlessly to transform
         ideas into a successful product. We communicated primarily through Discord group chats,

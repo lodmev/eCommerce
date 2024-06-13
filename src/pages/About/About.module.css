@@ -1,6 +1,22 @@
 .heading {
-  margin-bottom: 1em;
   text-align: center;
+}
+
+.school-link {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1em;
+}
+
+.logo {
+  width: 200px;
+  height: 100px;
+  margin: 0 auto;
+
+  @media (max-width: 576px) {
+    width: 100%;
+    max-width: 200px;
+  }
 }
 
 .collaboration-text {
