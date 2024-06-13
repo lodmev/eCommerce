@@ -1,0 +1,14 @@
+.heading {
+  margin-bottom: 1em;
+  text-align: center;
+}
+
+.collaboration-text {
+  margin-bottom: 1em;
+}
+
+.team-members-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5em;
+}
