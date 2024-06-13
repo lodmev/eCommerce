@@ -21,6 +21,8 @@
 
 .header {
   margin-bottom: 1em;
+  background-color: transparent;
+  position: static;
 }
 
 .card-github-link {
