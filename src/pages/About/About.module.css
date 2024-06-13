@@ -6,12 +6,29 @@
   display: flex;
   justify-content: center;
   margin-bottom: 1em;
+  transition: transform 0.3s ease;
+  /* & img {
+    transform: scale(1.1) rotate(-15deg);
+  } */
+
+  @media (hover: hover) {
+    &:hover {
+      transform: scale(1.1) rotate(-7deg);
+    }
+  }
 }
 
 .logo {
   width: 200px;
-  height: 100px;
+  height: 150px;
   margin: 0 auto;
+  transition: filter 0.3s ease;
+
+  @media (hover: hover) {
+    &:hover {
+      filter: drop-shadow(-5px 5px 12px rgba(0, 0, 0, 0.4));
+    }
+  }
 
   @media (max-width: 576px) {
     width: 100%;
