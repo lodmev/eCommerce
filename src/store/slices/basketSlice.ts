@@ -1,6 +1,12 @@
-import { Cart, ProductProjection } from '@commercetools/platform-sdk';
+import { Cart, LineItem, ProductProjection } from '@commercetools/platform-sdk';
 import { buildCreateSlice, asyncThunkCreator, SerializedError } from '@reduxjs/toolkit';
-import { addToCart, getActiveCart } from '../../api/cart';
+import {
+  addToCart,
+  changeQuantity,
+  deleteCart,
+  getActiveCart,
+  removeFromCart,
+} from '../../api/cart';
 
 export const createAppSlice = buildCreateSlice({
   creators: { asyncThunk: asyncThunkCreator },
@@ -29,21 +35,28 @@ const basketSlice = createAppSlice({
   name: 'basketData',
   initialState: initialBasketState,
   reducers: (create) => ({
-    addProductToBasket: create.reducer<ProductProjection>((state, action) => {
-      const { id } = action.payload;
-      if (!(id in state.productIdToQuantity)) return;
-      state.productsInBasket.push(action.payload);
-      state.productIdToQuantity[action.payload.id] = 1;
-    }),
-    removeProductQuantity: create.reducer<string>((state, action) => {
-      state.productsInBasket = state.productsInBasket.filter(
-        ({ id }: ProductProjection) => id !== action.payload,
-      );
-      delete state.productIdToQuantity[action.payload];
-    }),
-    setProductQuantity: create.reducer<{ id: string; quantity: number }>((state, action) => {
-      state.productIdToQuantity[action.payload.id] = action.payload.quantity;
-    }),
+    removeProductQuantity: create.asyncThunk(
+      async (product: LineItem, thunkApi) => {
+        const state = thunkApi.getState() as { basketData: BasketState };
+        const cart = state.basketData.cartData!;
+        return removeFromCart({ cart, product });
+      },
+      {
+        pending: (state) => {
+          state.pending = true;
+        },
+        rejected: (state, action) => {
+          state.err = action.error;
+        },
+        fulfilled: (state, action) => {
+          state.cartData = action.payload;
+          delete state.productIdToQuantity[action.meta.arg.productId];
+        },
+        settled: (state) => {
+          state.pending = false;
+        },
+      },
+    ),
     addProduct: create.asyncThunk(
       async (product: ProductProjection, thunkApi) => {
         const state = thunkApi.getState() as { basketData: BasketState };
@@ -86,15 +99,59 @@ const basketSlice = createAppSlice({
         state.pending = false;
       },
     }),
-    resetCartState: create.reducer<undefined>((state) => {
-      state.cartData = undefined;
-      state.productIdToQuantity = {};
-    }),
+    resetCartState: create.asyncThunk(
+      async (_params: null, thunkApi) => {
+        const state = thunkApi.getState() as { basketData: BasketState };
+        const cart = state.basketData.cartData!;
+        return deleteCart(cart);
+      },
+      {
+        pending: (state) => {
+          state.pending = true;
+        },
+        rejected: (state, action) => {
+          state.err = action.error;
+        },
+        fulfilled: (state) => {
+          state.cartData = undefined;
+          state.productIdToQuantity = {};
+        },
+        settled: (state) => {
+          state.pending = false;
+        },
+      },
+    ),
+    setProductQuantity: create.asyncThunk(
+      async ({ product, quantity }: { product: LineItem; quantity: number }, thunkApi) => {
+        const state = thunkApi.getState() as { basketData: BasketState };
+        const cart = state.basketData.cartData!;
+        return changeQuantity({ cart, product, quantity });
+      },
+      {
+        pending: (state) => {
+          state.pending = true;
+        },
+        rejected: (state, action) => {
+          state.err = action.error;
+        },
+        fulfilled: (state, action) => {
+          state.cartData = action.payload;
+          const productId = action.meta.arg.product.id;
+          const updatedQuantityItem = action.payload?.lineItems.find(
+            ({ id }: LineItem) => id === productId,
+          );
+          state.productIdToQuantity[productId] =
+            updatedQuantityItem?.quantity || action.meta.arg.quantity;
+        },
+        settled: (state) => {
+          state.pending = false;
+        },
+      },
+    ),
   }),
 });
 export default basketSlice;
 export const {
-  addProductToBasket,
   setProductQuantity,
   removeProductQuantity,
   addProduct,

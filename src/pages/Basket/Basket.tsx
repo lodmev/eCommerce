@@ -1,14 +1,20 @@
 import { LineItem } from '@commercetools/platform-sdk';
 import { Link } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { faArrowLeft, faTrashCanArrowUp } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styles from './Basket.module.css';
 import ProductInBasket from '../../components/ProductInBasket/ProductInBasket';
 import { useStoreDispatch, useStoreSelector } from '../../hooks/userRedux';
 import { ROUTE_PATH } from '../../utils/globalVariables';
-import { fetchCartData } from '../../store/slices/basketSlice';
+import { fetchCartData, resetCartState } from '../../store/slices/basketSlice';
 // import { PriceHelper } from '../../utils/priceHelper';
 import Loader from '../../components/Modal/Loader';
+import Overlay from '../../components/Modal/Overlay';
+import ModalAlert from '../../components/Modal/ModalAlert';
 // import debug from '../../utils/debug';
+
+const clearCartConfirmMessage: string = 'Are you sure you want to delete all items in the cart?';
 
 export default function Basket() {
   // const { productsInBasket, productIdToQuantity } = useStoreSelector((state) => state.basketData);
@@ -26,13 +32,36 @@ export default function Basket() {
   useEffect(() => {
     dispatch(fetchCartData());
   }, []);
+
+  const [clearCartConfirmVisible, setClearCartConfirmVisible] = useState<boolean>(false);
+
+  function onClearAllClick(): void {
+    setClearCartConfirmVisible(true);
+  }
+
+  function onClearAllConfirmed(): void {
+    setClearCartConfirmVisible(false);
+    dispatch(resetCartState(null));
+  }
+
   return (
     <div className={styles.cart}>
-      <Link className={styles.center} to={ROUTE_PATH.products}>
-        <div className={styles.link}>
-          <p className={styles.text}>Back To Shopping</p>
-        </div>
-      </Link>
+      <div className={styles.actions}>
+        <Link className={styles.center} to={ROUTE_PATH.products}>
+          <div className={styles.link}>
+            <FontAwesomeIcon icon={faArrowLeft} className={styles.icon} />
+            <p className={styles.text}>Back To Shopping</p>
+          </div>
+        </Link>
+        {cartData?.lineItems.length ? (
+          <div className={styles.link} role="button" tabIndex={0} onClick={onClearAllClick}>
+            <p className={styles.text}>Clear Cart</p>
+            <FontAwesomeIcon icon={faTrashCanArrowUp} className={styles.icon} />
+          </div>
+        ) : (
+          ''
+        )}
+      </div>
       <Loader isLoading={pending} errMsg={err?.message} />
       {cartData?.lineItems.length ? (
         <div>
@@ -62,6 +91,11 @@ export default function Basket() {
         </div>
       ) : (
         <h2>{`You haven't added items to your cart yet`}</h2>
+      )}
+      {clearCartConfirmVisible && (
+        <Overlay>
+          <ModalAlert onConfirm={onClearAllConfirmed} message={clearCartConfirmMessage} />
+        </Overlay>
       )}
     </div>
   );

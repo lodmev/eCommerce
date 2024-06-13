@@ -1,4 +1,4 @@
-import { Cart, MyLineItemDraft, ProductProjection } from '@commercetools/platform-sdk';
+import { Cart, LineItem, MyLineItemDraft, ProductProjection } from '@commercetools/platform-sdk';
 import { isUseAnon, isUserAuthorized } from '../utils/token';
 import { getAuthOrAnonApi, setAnonApi } from './apiRoot';
 
@@ -48,4 +48,70 @@ export const getActiveCart = async (lineItems?: MyLineItemDraft[]) => {
     }
     throw e;
   }
+};
+
+export const changeQuantity = async ({
+  cart,
+  product,
+  quantity,
+}: {
+  cart: Cart;
+  product: LineItem;
+  quantity: number;
+}) => {
+  const apiClient = getAuthOrAnonApi();
+  const resp = await apiClient
+    .me()
+    .carts()
+    .withId({ ID: cart.id })
+    .post({
+      body: {
+        version: cart.version,
+        actions: [
+          {
+            action: 'changeLineItemQuantity',
+            lineItemId: product.id,
+            quantity,
+          },
+        ],
+      },
+    })
+    .execute();
+  return resp.body;
+};
+
+export const removeFromCart = async ({ cart, product }: { cart: Cart; product: LineItem }) => {
+  const apiClient = getAuthOrAnonApi();
+  const resp = await apiClient
+    .me()
+    .carts()
+    .withId({ ID: cart.id })
+    .post({
+      body: {
+        version: cart.version,
+        actions: [
+          {
+            action: 'removeLineItem',
+            lineItemId: product.id,
+          },
+        ],
+      },
+    })
+    .execute();
+  return resp.body;
+};
+
+export const deleteCart = async (cart: Cart) => {
+  const apiClient = getAuthOrAnonApi();
+  const resp = await apiClient
+    .me()
+    .carts()
+    .withId({ ID: cart.id })
+    .delete({
+      queryArgs: {
+        version: cart.version,
+      },
+    })
+    .execute();
+  return resp.body;
 };
