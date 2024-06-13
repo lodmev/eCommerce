@@ -57,7 +57,7 @@ const NavigationPathToIcon = new Map<NavigationPath, IconDefinition>([
 ]);
 
 const NavigationPathToPath = new Map<NavigationPath, string>([
-  [NavigationPath.About, '/#about'],
+  [NavigationPath.About, ROUTE_PATH.about],
   [NavigationPath.Catalog, '/products'],
   [NavigationPath.ProductOfTheMonth, '/#productOfTheMonth'],
   [NavigationPath.Contacts, '/#contacts'],
