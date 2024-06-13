@@ -15,9 +15,9 @@ export default function Description() {
           discover the perfect blend of style and functionality to transform your living space into
           a sanctuary of comfort and beauty.
         </p>
-        <Link className={styles.center} to={ROUTE_PATH.aboutUs}>
+        <Link className={styles.center} to={ROUTE_PATH.about}>
           <div className={styles.link}>
-            <p>Learn more</p>
+            <p>About Us</p>
           </div>
         </Link>
       </div>
