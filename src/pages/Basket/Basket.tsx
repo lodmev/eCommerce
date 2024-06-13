@@ -7,7 +7,7 @@ import styles from './Basket.module.css';
 import ProductInBasket from '../../components/ProductInBasket/ProductInBasket';
 import { useStoreDispatch, useStoreSelector } from '../../hooks/userRedux';
 import { ROUTE_PATH } from '../../utils/globalVariables';
-import { fetchCartData, resetCartState } from '../../store/slices/basketSlice';
+import { fetchCartData, deleteCartThunk } from '../../store/slices/basketSlice';
 // import { PriceHelper } from '../../utils/priceHelper';
 import Loader from '../../components/Modal/Loader';
 import Overlay from '../../components/Modal/Overlay';
@@ -41,7 +41,7 @@ export default function Basket() {
 
   function onClearAllConfirmed(): void {
     setClearCartConfirmVisible(false);
-    dispatch(resetCartState(null));
+    dispatch(deleteCartThunk());
   }
 
   return (

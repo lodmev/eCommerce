@@ -106,7 +106,7 @@ const basketSlice = createAppSlice({
       state.cartData = undefined;
       state.productIdToQuantity = {};
     }),
-    deleteCart: create.asyncThunk(
+    deleteCartThunk: create.asyncThunk(
       async (_, thunkApi) => {
         const state = thunkApi.getState() as { basketData: BasketState };
         const cart = state.basketData.cartData!;
@@ -118,6 +118,14 @@ const basketSlice = createAppSlice({
           state.pending = true;
         },
         rejected: (state, action) => {
+          if (
+            action.payload instanceof Object &&
+            'responseCode' in action.payload &&
+            action.payload.responseCode === 404
+          ) {
+            state.cartData = undefined;
+            state.productIdToQuantity = {};
+          }
           state.err = action.error;
         },
         fulfilled: (state) => {
@@ -166,4 +174,5 @@ export const {
   addProduct,
   fetchCartData,
   resetCartState,
+  deleteCartThunk,
 } = basketSlice.actions;
