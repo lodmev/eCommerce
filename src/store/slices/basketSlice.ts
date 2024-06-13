@@ -43,6 +43,7 @@ const basketSlice = createAppSlice({
       },
       {
         pending: (state) => {
+          state.err = undefined;
           state.pending = true;
         },
         rejected: (state, action) => {
@@ -68,6 +69,7 @@ const basketSlice = createAppSlice({
       },
       {
         pending: (state) => {
+          state.err = undefined;
           state.pending = true;
         },
         rejected: (state, action) => {
@@ -84,6 +86,7 @@ const basketSlice = createAppSlice({
     ),
     fetchCartData: create.asyncThunk(getActiveCart, {
       pending: (state) => {
+        state.err = undefined;
         state.pending = true;
       },
       rejected: (state, action) => {
@@ -99,14 +102,19 @@ const basketSlice = createAppSlice({
         state.pending = false;
       },
     }),
-    resetCartState: create.asyncThunk(
-      async (_params: null, thunkApi) => {
+    resetCartState: create.reducer<undefined>((state) => {
+      state.cartData = undefined;
+      state.productIdToQuantity = {};
+    }),
+    deleteCart: create.asyncThunk(
+      async (_, thunkApi) => {
         const state = thunkApi.getState() as { basketData: BasketState };
         const cart = state.basketData.cartData!;
         return deleteCart(cart);
       },
       {
         pending: (state) => {
+          state.err = undefined;
           state.pending = true;
         },
         rejected: (state, action) => {
@@ -129,6 +137,7 @@ const basketSlice = createAppSlice({
       },
       {
         pending: (state) => {
+          state.err = undefined;
           state.pending = true;
         },
         rejected: (state, action) => {
