@@ -17,7 +17,7 @@ export default function Description() {
         </p>
         <Link className={styles.center} to={ROUTE_PATH.about}>
           <div className={styles.link}>
-            <p>Learn more</p>
+            <p>About Us</p>
           </div>
         </Link>
       </div>
