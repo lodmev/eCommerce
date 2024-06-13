@@ -1,5 +1,5 @@
 import { Navigate, createBrowserRouter } from 'react-router-dom';
-import AboutUs from '../pages/AboutUs/AboutUs';
+import About from '../pages/About/About';
 import NotFound from '../pages/NotFound/NotFound';
 import AppLayout from '../pages/AppLayout';
 import Basket from '../pages/Basket/Basket';
@@ -23,8 +23,8 @@ const router = createBrowserRouter([
         path: ROUTE_PATH.main,
       },
       {
-        element: <AboutUs />,
-        path: ROUTE_PATH.aboutUs,
+        element: <About />,
+        path: ROUTE_PATH.about,
       },
       {
         element: <Basket />,
