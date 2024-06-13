@@ -1,4 +1,7 @@
-import { createApiBuilderFromCtpClient } from '@commercetools/platform-sdk';
+import {
+  ByProjectKeyRequestBuilder,
+  createApiBuilderFromCtpClient,
+} from '@commercetools/platform-sdk';
 import { Client, UserAuthOptions } from '@commercetools/sdk-client-v2';
 import {
   getAnonCtpClient,
@@ -6,35 +9,54 @@ import {
   getCustomersCtpClient,
   getExistingTokenCtpClient,
   getReadOnlyCtpClient,
+  tokenError,
 } from './clientBuilder';
+import { getToken, isUseAnon, isUserAuthorized, resetAuth, setUseAnon } from '../utils/token';
+// import debug from '../utils/debug';
 
 const createApi = (client: Client) =>
   createApiBuilderFromCtpClient(client).withProjectKey({
     projectKey: import.meta.env.API_CTP_PROJECT_KEY,
   });
 
-let currentApiClient = createApi(getReadOnlyCtpClient());
+let currentApiClient: ByProjectKeyRequestBuilder = createApi(getReadOnlyCtpClient());
 
 const manageCustomersApiClient = createApi(getCustomersCtpClient());
 
 const setDefaultApi = () => {
+  resetAuth();
   currentApiClient = createApi(getReadOnlyCtpClient());
 };
 
 const setAuthApi = (user: UserAuthOptions) => {
+  resetAuth();
   currentApiClient = createApi(getAuthCtpClient(user));
 };
-const setExistingTokenApi = (token: string) => {
-  currentApiClient = createApi(getExistingTokenCtpClient(token));
-};
+
 const setAnonApi = () => {
+  resetAuth();
   currentApiClient = createApi(getAnonCtpClient());
+  setUseAnon();
+};
+
+const getAuthOrAnonApi = () => {
+  if (tokenError.isBroken) {
+    setAnonApi();
+    tokenError.isBroken = false;
+  } else if (!isUserAuthorized() && !isUseAnon()) {
+    setAnonApi();
+  }
+  return getCurrentApiClient();
 };
 
 const getCurrentApiClient = () => {
-  const savedToken = window.sessionStorage.getItem('token');
+  if (tokenError.isBroken) {
+    setDefaultApi();
+    tokenError.isBroken = false;
+  }
+  const savedToken = getToken();
   if (savedToken) {
-    setExistingTokenApi(savedToken);
+    currentApiClient = createApi(getExistingTokenCtpClient(savedToken));
   }
   return currentApiClient;
 };
@@ -43,6 +65,6 @@ export {
   setDefaultApi,
   setAuthApi,
   setAnonApi,
-  setExistingTokenApi,
+  getAuthOrAnonApi,
   manageCustomersApiClient,
 };

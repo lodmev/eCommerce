@@ -1,55 +1,85 @@
-import { ProductProjection } from '@commercetools/platform-sdk';
+import { LineItem } from '@commercetools/platform-sdk';
 import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { faArrowLeft, faTrashCanArrowUp } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styles from './Basket.module.css';
 import ProductInBasket from '../../components/ProductInBasket/ProductInBasket';
-import { useStoreSelector } from '../../hooks/userRedux';
+import { useStoreDispatch, useStoreSelector } from '../../hooks/userRedux';
 import { ROUTE_PATH } from '../../utils/globalVariables';
-import { calculateTotalPrice } from '../../store/slices/basketSlice';
-import { PriceHelper } from '../../utils/priceHelper';
+import { fetchCartData, resetCartState } from '../../store/slices/basketSlice';
+// import { PriceHelper } from '../../utils/priceHelper';
+import Loader from '../../components/Modal/Loader';
+import Overlay from '../../components/Modal/Overlay';
+import ModalAlert from '../../components/Modal/ModalAlert';
+// import debug from '../../utils/debug';
+
+const clearCartConfirmMessage: string = 'Are you sure you want to delete all items in the cart?';
 
 export default function Basket() {
-  const { productsInBasket, productIdToQuantity } = useStoreSelector((state) => state.basketData);
-  let currency = '';
+  // const { productsInBasket, productIdToQuantity } = useStoreSelector((state) => state.basketData);
+  // let currency = '';
+  // const subTotalPrice = productsInBasket.reduce((subTotalPrice, product) => {
+  //   const { id, masterVariant } = product;
+  //   const priceHelper = new PriceHelper({ price: masterVariant.prices![0] });
+  //   const { finalPriceValue } = priceHelper;
+  //   currency = currency || priceHelper.currency;
+  //   const quantity = productIdToQuantity[id];
+  //   return subTotalPrice + calculateTotalPrice(+finalPriceValue, quantity);
+  // }, 0);
+  const dispatch = useStoreDispatch();
+  const { cartData, pending, err } = useStoreSelector((state) => state.basketData);
+  useEffect(() => {
+    dispatch(fetchCartData());
+  }, []);
 
-  const subTotalPrice = productsInBasket.reduce((subTotalPrice, product) => {
-    const { id, masterVariant } = product;
-    const priceHelper = new PriceHelper({ price: masterVariant.prices![0] });
-    const { finalPriceValue } = priceHelper;
-    currency = currency || priceHelper.currency;
-    const quantity = productIdToQuantity[id];
-    return subTotalPrice + calculateTotalPrice(+finalPriceValue, quantity);
-  }, 0);
+  const [clearCartConfirmVisible, setClearCartConfirmVisible] = useState<boolean>(false);
+
+  function onClearAllClick(): void {
+    setClearCartConfirmVisible(true);
+  }
+
+  function onClearAllConfirmed(): void {
+    setClearCartConfirmVisible(false);
+    dispatch(resetCartState(null));
+  }
 
   return (
     <div className={styles.cart}>
-      <Link className={styles.center} to={ROUTE_PATH.products}>
-        <div className={styles.link}>
-          <p className={styles.text}>Back To Shopping</p>
-        </div>
-      </Link>
-      {productsInBasket.length ? (
+      <div className={styles.actions}>
+        <Link className={styles.center} to={ROUTE_PATH.products}>
+          <div className={styles.link}>
+            <FontAwesomeIcon icon={faArrowLeft} className={styles.icon} />
+            <p className={styles.text}>Back To Shopping</p>
+          </div>
+        </Link>
+        {cartData?.lineItems.length ? (
+          <div className={styles.link} role="button" tabIndex={0} onClick={onClearAllClick}>
+            <p className={styles.text}>Clear Cart</p>
+            <FontAwesomeIcon icon={faTrashCanArrowUp} className={styles.icon} />
+          </div>
+        ) : (
+          ''
+        )}
+      </div>
+      <Loader isLoading={pending} errMsg={err?.message} />
+      {cartData?.lineItems.length ? (
         <div>
-          {productsInBasket.map((product: ProductProjection) => (
-            <ProductInBasket
-              key={product.id}
-              product={product}
-              quantity={productIdToQuantity[product.id]}
-            />
+          {cartData.lineItems.map((lineItem: LineItem) => (
+            <ProductInBasket key={lineItem.id} product={lineItem} quantity={lineItem.quantity} />
           ))}
           <div className={styles.subTotalBlock}>
             <div className={styles.subTotalPriceContent}>
               <div className={styles.subTotalPrice}>
                 <p>Sub-total:</p>
-                <p>
-                  {subTotalPrice} {currency}
-                </p>
+                <p>{cartData.totalPrice.centAmount / 100} EUR</p>
               </div>
               <div className={styles.subTotalWarning}>
                 <p>Tax and shipping cost will be calculated later</p>
               </div>
             </div>
             <Link
-              aria-disabled={!subTotalPrice}
+              aria-disabled={Boolean(!cartData.totalPrice.centAmount)}
               className={`${styles.center} ${styles.checkoutLink}`}
               to={ROUTE_PATH.checkout}
             >
@@ -61,6 +91,11 @@ export default function Basket() {
         </div>
       ) : (
         <h2>{`You haven't added items to your cart yet`}</h2>
+      )}
+      {clearCartConfirmVisible && (
+        <Overlay>
+          <ModalAlert onConfirm={onClearAllConfirmed} message={clearCartConfirmMessage} />
+        </Overlay>
       )}
     </div>
   );
