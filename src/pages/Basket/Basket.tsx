@@ -1,8 +1,13 @@
 import { LineItem } from '@commercetools/platform-sdk';
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { faArrowLeft, faTrashCanArrowUp } from '@fortawesome/free-solid-svg-icons';
+import {
+  faArrowLeft,
+  faMoneyCheckDollar,
+  faTrashCanArrowUp,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Input } from 'antd';
 import styles from './Basket.module.css';
 import ProductInBasket from '../../components/ProductInBasket/ProductInBasket';
 import { useStoreDispatch, useStoreSelector } from '../../hooks/userRedux';
@@ -68,6 +73,18 @@ export default function Basket() {
           {cartData.lineItems.map((lineItem: LineItem) => (
             <ProductInBasket key={lineItem.id} product={lineItem} quantity={lineItem.quantity} />
           ))}
+
+          <div className={styles.promocodeContent}>
+            <div className={styles.promocodeInput}>
+              <p>Input your promo code</p>
+              <Input />
+              <div className={styles.link} role="button" tabIndex={0}>
+                <p className={styles.text}>Apply promo code</p>
+                <FontAwesomeIcon icon={faMoneyCheckDollar} className={styles.icon} />
+              </div>
+            </div>
+          </div>
+
           <div className={styles.subTotalBlock}>
             <div className={styles.subTotalPriceContent}>
               <div className={styles.subTotalPrice}>

@@ -62,13 +62,13 @@
 
 .subTotalBlock {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   margin-top: 30px;
 
   & .subTotalPriceContent {
     & .subTotalPrice {
       display: flex;
-      justify-content: flex-end;
+      justify-content: flex-start;
       font-weight: bold;
 
       & p:first-child {
@@ -80,4 +80,10 @@
       color: var(--main-text-color);
     }
   }
+}
+
+.promocodeContent {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 30px;
 }
