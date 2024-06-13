@@ -1,4 +1,10 @@
-import { Cart, LineItem, MyLineItemDraft, ProductProjection } from '@commercetools/platform-sdk';
+import {
+  Cart,
+  ClientResponse,
+  LineItem,
+  MyLineItemDraft,
+  ProductProjection,
+} from '@commercetools/platform-sdk';
 import { isUseAnon, isUserAuthorized } from '../utils/token';
 import { getAuthOrAnonApi, setAnonApi } from './apiRoot';
 
@@ -101,7 +107,7 @@ export const removeFromCart = async ({ cart, product }: { cart: Cart; product: L
   return resp.body;
 };
 
-export const deleteCart = async (cart: Cart) => {
+export const deleteCart = async (cart: Cart): Promise<ClientResponse<Cart>> => {
   const apiClient = getAuthOrAnonApi();
   const resp = await apiClient
     .me()
@@ -113,5 +119,5 @@ export const deleteCart = async (cart: Cart) => {
       },
     })
     .execute();
-  return resp.body;
+  return resp;
 };

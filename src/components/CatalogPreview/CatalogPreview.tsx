@@ -23,7 +23,7 @@ export default function CatalogPreview() {
           {isLoading || err ? (
             <Loader
               isLoading={false}
-              errMsg={err?.name}
+              errMsg={err?.message}
               errorHandler={() => {
                 setNeedUpdate((prev) => prev + 1);
               }}
