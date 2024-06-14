@@ -17,16 +17,6 @@ import ModalConfirm from '../../components/Modal/ModalConfirm';
 const clearCartConfirmMessage: string = 'Are you sure you want to delete all items in the cart?';
 
 export default function Basket() {
-  // const { productsInBasket, productIdToQuantity } = useStoreSelector((state) => state.basketData);
-  // let currency = '';
-  // const subTotalPrice = productsInBasket.reduce((subTotalPrice, product) => {
-  //   const { id, masterVariant } = product;
-  //   const priceHelper = new PriceHelper({ price: masterVariant.prices![0] });
-  //   const { finalPriceValue } = priceHelper;
-  //   currency = currency || priceHelper.currency;
-  //   const quantity = productIdToQuantity[id];
-  //   return subTotalPrice + calculateTotalPrice(+finalPriceValue, quantity);
-  // }, 0);
   const dispatch = useStoreDispatch();
   const { cartData, pending, err } = useStoreSelector((state) => state.basketData);
   useEffect(() => {
