@@ -52,6 +52,9 @@ export const getActiveCart = async (lineItems?: MyLineItemDraft[]) => {
       }
       if (e.statusCode === 404) return createCart(lineItems);
     }
+    if (!import.meta.env.DEV) {
+      window.console.clear();
+    }
     throw e;
   }
 };
