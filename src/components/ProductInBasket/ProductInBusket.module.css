@@ -1,8 +1,9 @@
 .product {
   display: flex;
-  width: fit-content;
   background-color: var(--main-container-color);
   align-items: center;
+  justify-content: space-evenly;
+  gap: 1rem;
   padding: 10px;
   border-radius: 15px;
   margin-bottom: 10px;
@@ -10,12 +11,21 @@
   text-align: center;
 }
 
+.prices {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  @media (width <= 540px) {
+    flex-direction: column;
+  }
+}
 .content {
   display: flex;
   flex: 1;
   justify-content: space-between;
+  gap: 1rem;
 
-  @media (width <= 600px) {
+  @media (width <= 800px) {
     flex-direction: column;
     align-items: center;
     flex: unset;
@@ -34,14 +44,12 @@
   }
 }
 
-.name {
-  width: 250px;
-}
-
 .price {
   width: 110px;
 }
-
+.price_total {
+  font-weight: 500;
+}
 .icon {
   cursor: pointer;
 }

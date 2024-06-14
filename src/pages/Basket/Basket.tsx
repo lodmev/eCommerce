@@ -48,9 +48,7 @@ export default function Basket() {
             <p className={styles.text}>Clear Cart</p>
             <FontAwesomeIcon icon={faTrashCanArrowUp} className={styles.icon} />
           </div>
-        ) : (
-          ''
-        )}
+        ) : null}
       </div>
       <Loader isLoading={pending} errMsg={err?.message} />
       {cartData?.lineItems.length ? (
