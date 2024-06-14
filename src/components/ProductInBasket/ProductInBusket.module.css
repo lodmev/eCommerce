@@ -9,6 +9,16 @@
   margin-bottom: 10px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
   text-align: center;
+  * {
+    gap: inherit;
+  }
+  @media (width <= 540px) {
+    flex-direction: column;
+    gap: 0.5rem;
+    * {
+      line-height: 110%;
+    }
+  }
 }
 
 .prices {
@@ -23,7 +33,6 @@
   display: flex;
   flex: 1;
   justify-content: space-between;
-  gap: 1rem;
 
   @media (width <= 800px) {
     flex-direction: column;
@@ -38,10 +47,10 @@
   height: 150px;
   border-radius: 15px;
 
-  @media (width <= 400px) {
+  /* @media (width <= 400px) {
     width: 100px;
     height: 100px;
-  }
+  } */
 }
 
 .price {
