@@ -68,7 +68,7 @@ export default function Basket() {
             </div>
             <Link
               aria-disabled={Boolean(!cartData.totalPrice.centAmount)}
-              className={`${styles.center} ${styles.checkoutLink}`}
+              className={`${styles.checkoutLink}`}
               to={ROUTE_PATH.checkout}
             >
               <div className={styles.link}>
