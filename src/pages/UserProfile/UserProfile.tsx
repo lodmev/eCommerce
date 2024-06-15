@@ -1,5 +1,5 @@
 import { BaseAddress, Customer } from '@commercetools/platform-sdk';
-import { FormEvent, useState } from 'react';
+import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useLoaderData, useNavigate } from 'react-router-dom';
 import { loginUser, logoutUser } from '../../api/customers';
@@ -16,17 +16,15 @@ import {
 import AddressCard from '../../components/AddressCard/AddressCard';
 import Button from '../../components/Button/Button';
 import FormChangePassword from '../../components/FormChangePassword/FormChangePassword';
-import Input from '../../components/Input/Input';
+import FormPersonalData from '../../components/FormPersonalData/FormPersonalData';
 import Loader from '../../components/Modal/Loader';
 import ModalAddress from '../../components/Modal/ModalAddress';
 import ModalAlert from '../../components/Modal/ModalAlert';
 import ModalConfirm from '../../components/Modal/ModalConfirm';
 import Overlay from '../../components/Modal/Overlay';
 import { useStoreSelector } from '../../hooks/userRedux';
-import useValidateInput from '../../hooks/useValidateInput';
 import { setUserVersion } from '../../store/slices/userSlice';
 import { IUpdateUserInfo } from '../../types/interfaces';
-import { validateAge, validateEmail, validateName } from '../../utils/functions';
 import { ROUTE_PATH } from '../../utils/globalVariables';
 import styles from './UserProfile.module.css';
 
@@ -46,7 +44,6 @@ export default function UserProfile() {
     customer.defaultBillingAddressId,
   );
 
-  const [isEditUserInfo, setIsEditUserInfo] = useState(false);
   const [isChangePassword, setIsChangePassword] = useState(false);
   const [isEditAddressModal, setIsEditAddressModal] = useState(false);
   const [isAddAddressModal, setIsAddAddressModal] = useState(false);
@@ -58,60 +55,11 @@ export default function UserProfile() {
 
   if (!isUserAuthorized) navigate(ROUTE_PATH.main);
 
-  const {
-    value: firstNameInputValue,
-    isValid: firstNameIsValid,
-    hasError: firstNameHasError,
-    inputBlurHandler: firstNameBlurHandler,
-    valueChangeHandler: firstNameChangeHandler,
-  } = useValidateInput(validateName, customer.firstName);
-
-  const {
-    value: lastNameInputValue,
-    isValid: lastNameIsValid,
-    hasError: lastNameHasError,
-    inputBlurHandler: lastNameBlurHandler,
-    valueChangeHandler: lastNameChangeHandler,
-  } = useValidateInput(validateName, customer.lastName);
-
-  const {
-    value: dateInputValue,
-    isValid: dateIsValid,
-    hasError: dateHasError,
-    inputBlurHandler: dateBlurHandler,
-    valueChangeHandler: dateChangeHandler,
-  } = useValidateInput(validateAge, customer.dateOfBirth);
-
-  const {
-    value: emailInputValue,
-    isValid: emailIsValid,
-    hasError: emailHasError,
-    inputBlurHandler: emailBlurHandler,
-    valueChangeHandler: emailChangeHandler,
-  } = useValidateInput(validateEmail, customer.email);
-
   const handleModalError = () => {
     setError(null);
   };
 
-  const handleChangePersonalData = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    if (!isEditUserInfo) return;
-
-    const isAllValid = [emailIsValid, firstNameIsValid, lastNameIsValid, dateIsValid].every(
-      (value) => value,
-    );
-
-    if (!isAllValid) return;
-
-    const userInfo: IUpdateUserInfo = {
-      email: emailInputValue,
-      firstName: firstNameInputValue,
-      lastName: lastNameInputValue,
-      dateOfBirth: dateInputValue,
-    };
-
+  const handleChangePersonalData = async (userInfo: IUpdateUserInfo) => {
     setIsLoading(true);
 
     try {
@@ -124,7 +72,6 @@ export default function UserProfile() {
       }
     } finally {
       setIsLoading(false);
-      setIsEditUserInfo(false);
     }
   };
 
@@ -135,7 +82,8 @@ export default function UserProfile() {
       const res = await changeUserPassword(userVersion, userId, currentPassword, newPassword);
       dispatch(setUserVersion(res.body.version));
       logoutUser();
-      loginUser({ email: emailInputValue, password: newPassword });
+      /* TODO: Fix email */
+      loginUser({ email: customer.email, password: newPassword });
       setSuccessMsg('Your password has been successfully changed.');
       setIsChangePassword(false);
     } catch (error) {
@@ -233,76 +181,15 @@ export default function UserProfile() {
   };
 
   return (
-    <form className={styles.form} onSubmit={handleChangePersonalData}>
-      <h1>User Profile</h1>
-      <div>
-        <div className={styles['input-group']}>
-          <Input
-            label="First Name"
-            id="first-name"
-            type="text"
-            onBlur={firstNameBlurHandler}
-            onChange={firstNameChangeHandler}
-            value={firstNameInputValue}
-            invalid={isEditUserInfo && firstNameHasError}
-            placeholder="First Name"
-            errorText="Must contain at least one character and no special characters or numbers"
-            disabled={!isEditUserInfo}
-          />
-          <Input
-            label="Last Name"
-            id="last-name"
-            type="text"
-            onBlur={lastNameBlurHandler}
-            onChange={lastNameChangeHandler}
-            value={lastNameInputValue}
-            invalid={isEditUserInfo && lastNameHasError}
-            placeholder="Last Name"
-            errorText="Must contain at least one character and no special characters or numbers"
-            disabled={!isEditUserInfo}
-          />
-        </div>
-        <Input
-          type="date"
-          label="Date of birth"
-          onBlur={dateBlurHandler}
-          onChange={dateChangeHandler}
-          value={dateInputValue}
-          invalid={isEditUserInfo && dateHasError}
-          errorText="Must be older than 13 years"
-          disabled={!isEditUserInfo}
-        />
-        <Input
-          type="email"
-          label="Current Email"
-          onBlur={emailBlurHandler}
-          onChange={emailChangeHandler}
-          invalid={isEditUserInfo && emailHasError}
-          value={emailInputValue}
-          placeholder="Email"
-          errorText="Invalid email address"
-          disabled={!isEditUserInfo}
-        />
-        <div className={styles['input-group']}>
-          <Button
-            onClick={() => setIsEditUserInfo((prev) => !prev)}
-            type="button"
-            styleClass="green-outlined"
-          >
-            {isEditUserInfo ? 'Cancel editing' : 'Edit Personal Data'}
-          </Button>
-          <Button disabled={!isEditUserInfo} type="submit" styleClass="green-outlined">
-            Save Changes
-          </Button>
-          <Button
-            type="button"
-            onClick={() => setIsChangePassword((prev) => !prev)}
-            styleClass="green-outlined"
-          >
-            Change Password
-          </Button>
-        </div>
-      </div>
+    <div className={styles.wrapper}>
+      <FormPersonalData customer={customer} onSubmit={handleChangePersonalData} />
+      <Button
+        type="button"
+        onClick={() => setIsChangePassword((prev) => !prev)}
+        styleClass="green-outlined"
+      >
+        Change Password
+      </Button>
       <div>
         <div className={styles['input-group']}>
           {isChangePassword && (
@@ -387,6 +274,6 @@ export default function UserProfile() {
           <ModalAlert onConfirm={() => setSuccessMsg(null)} message={successMsg} />
         </Overlay>
       )}
-    </form>
+    </div>
   );
 }
