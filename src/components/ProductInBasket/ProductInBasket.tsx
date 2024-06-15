@@ -39,14 +39,16 @@ export default function ProductInBasket({ product, quantity }: Props) {
       <img src={imageUrl} className={styles.img} alt="product" />
       <div className={styles.content}>
         <p className={styles.name}>{name[locale]}</p>
-        <p className={styles.price}>
-          {finalPriceValue} {priceHelper.currency}
-        </p>
-        <Quantity initValue={quantity} outputCallback={handleQuantityUpdate} />
-        <p className={styles.price}>
-          {totalPrice} {priceHelper.currency}
-        </p>
-        <FontAwesomeIcon icon={faTrashCan} className={styles.icon} onClick={onDeleteClick} />
+        <section className={styles.prices}>
+          <p className={styles.price}>
+            {finalPriceValue} {priceHelper.currency}
+          </p>
+          <Quantity initValue={quantity} outputCallback={handleQuantityUpdate} />
+          <p className={`${styles.price} ${styles.price_total}`}>
+            {totalPrice} {priceHelper.currency}
+          </p>
+          <FontAwesomeIcon icon={faTrashCan} className={styles.icon} onClick={onDeleteClick} />
+        </section>
       </div>
     </div>
   );
