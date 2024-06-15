@@ -41,8 +41,6 @@
 }
 
 .checkoutLink {
-  margin-left: 40px;
-
   & .link {
     margin: 0;
     background-color: var(--main-contrast-color);
@@ -66,11 +64,12 @@
   display: flex;
   justify-content: flex-end;
   margin-top: 30px;
+  gap: 1rem;
 
   & .subTotalPriceContent {
     & .subTotalPrice {
       display: flex;
-      justify-content: flex-end;
+      justify-content: inherit;
       font-weight: bold;
 
       & p:first-child {
@@ -81,5 +80,9 @@
     & .subTotalWarning {
       color: var(--main-text-color);
     }
+  }
+  @media screen and (width <= 555px) {
+    flex-direction: column;
+    justify-content: flex-start;
   }
 }
