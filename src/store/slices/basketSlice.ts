@@ -87,6 +87,7 @@ const basketSlice = createAppSlice({
     fetchCartData: create.asyncThunk(getActiveCart, {
       pending: (state) => {
         state.err = undefined;
+        state.productIdToQuantity = {};
         state.pending = true;
       },
       rejected: (state, action) => {

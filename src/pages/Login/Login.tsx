@@ -9,6 +9,7 @@ import Overlay from '../../components/Modal/Overlay';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import ModalConfirm from '../../components/Modal/ModalConfirm';
 import { setUserError } from '../../store/slices/userSlice';
+import { fetchCartData } from '../../store/slices/basketSlice';
 
 export default function Login() {
   const navigator = useNavigate();
@@ -20,6 +21,7 @@ export default function Login() {
 
   const handleLogin = (loginData: MyCustomerSignin) => {
     dispatch(loginReducer(loginData));
+    dispatch(fetchCartData());
   };
 
   return (
