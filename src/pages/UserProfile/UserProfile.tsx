@@ -15,6 +15,7 @@ import {
 } from '../../api/profile';
 import AddressCard from '../../components/AddressCard/AddressCard';
 import Button from '../../components/Button/Button';
+import FormChangePassword from '../../components/FormChangePassword/FormChangePassword';
 import Input from '../../components/Input/Input';
 import Loader from '../../components/Modal/Loader';
 import ModalAddress from '../../components/Modal/ModalAddress';
@@ -25,7 +26,7 @@ import { useStoreSelector } from '../../hooks/userRedux';
 import useValidateInput from '../../hooks/useValidateInput';
 import { setUserVersion } from '../../store/slices/userSlice';
 import { IUpdateUserInfo } from '../../types/interfaces';
-import { validateAge, validateEmail, validateName, validatePassword } from '../../utils/functions';
+import { validateAge, validateEmail, validateName } from '../../utils/functions';
 import { ROUTE_PATH } from '../../utils/globalVariables';
 import styles from './UserProfile.module.css';
 
@@ -47,7 +48,6 @@ export default function UserProfile() {
 
   const [isEditUserInfo, setIsEditUserInfo] = useState(false);
   const [isChangePassword, setIsChangePassword] = useState(false);
-  const [isNewPasswordFieldsCorrect, setIsNewPasswordFieldsCorrect] = useState(true);
   const [isEditAddressModal, setIsEditAddressModal] = useState(false);
   const [isAddAddressModal, setIsAddAddressModal] = useState(false);
   const [deleteAddressId, setDeleteAddressId] = useState<string | null>(null);
@@ -90,33 +90,6 @@ export default function UserProfile() {
     valueChangeHandler: emailChangeHandler,
   } = useValidateInput(validateEmail, customer.email);
 
-  const {
-    value: currentPasswordInputValue,
-    isValid: currentPasswordIsValid,
-    hasError: currentPasswordHasError,
-    inputBlurHandler: currentPasswordBlurHandler,
-    valueChangeHandler: currentPasswordChangeHandler,
-    reset: currentPasswordReset,
-  } = useValidateInput(validatePassword);
-
-  const {
-    value: newPasswordInputValue,
-    isValid: newPasswordIsValid,
-    hasError: newPasswordHasError,
-    inputBlurHandler: newPasswordBlurHandler,
-    valueChangeHandler: newPasswordChangeHandler,
-    reset: newPasswordReset,
-  } = useValidateInput(validatePassword);
-
-  const {
-    value: confirmNewPasswordInputValue,
-    isValid: confirmNewPasswordIsValid,
-    hasError: confirmNewPasswordHasError,
-    inputBlurHandler: confirmNewPasswordBlurHandler,
-    valueChangeHandler: confirmNewPasswordChangeHandler,
-    reset: confirmNewPasswordReset,
-  } = useValidateInput(validatePassword);
-
   const handleModalError = () => {
     setError(null);
   };
@@ -155,48 +128,21 @@ export default function UserProfile() {
     }
   };
 
-  const handleChangePassword = async () => {
-    const isNewPasswordConfirmed = newPasswordInputValue === confirmNewPasswordInputValue;
-    const isAllInputsCorrect = [
-      isNewPasswordConfirmed,
-      currentPasswordIsValid,
-      newPasswordIsValid,
-      confirmNewPasswordIsValid,
-    ].every((val) => val);
-
-    setIsNewPasswordFieldsCorrect(isNewPasswordConfirmed);
-
-    if (!isAllInputsCorrect) return;
-
+  const handleChangePassword = async (currentPassword: string, newPassword: string) => {
     setIsLoading(true);
 
     try {
-      const res = await changeUserPassword(
-        userVersion,
-        userId,
-        currentPasswordInputValue,
-        newPasswordInputValue,
-      );
+      const res = await changeUserPassword(userVersion, userId, currentPassword, newPassword);
       dispatch(setUserVersion(res.body.version));
-      // TODO:
-      // 1) Update auth token
       logoutUser();
-      loginUser({ email: emailInputValue, password: newPasswordInputValue });
+      loginUser({ email: emailInputValue, password: newPassword });
       setSuccessMsg('Your password has been successfully changed.');
-      currentPasswordReset();
-      newPasswordReset();
-      confirmNewPasswordReset();
       setIsChangePassword(false);
     } catch (error) {
       if (error instanceof Error) setError(error);
     } finally {
       setIsLoading(false);
     }
-
-    /*
-    // TODO:
-    // handle invalid token error
-    */
   };
 
   const handleDeleteAddress = async () => {
@@ -360,68 +306,10 @@ export default function UserProfile() {
       <div>
         <div className={styles['input-group']}>
           {isChangePassword && (
-            <Overlay>
-              <div className={styles['modal-password']}>
-                <h2>Change password</h2>
-                <Input
-                  onBlur={currentPasswordBlurHandler}
-                  onChange={currentPasswordChangeHandler}
-                  value={currentPasswordInputValue}
-                  invalid={currentPasswordHasError}
-                  id="currentPassword"
-                  label="Your current password"
-                  type="password"
-                  placeholder="Current Password"
-                  errorText="Minimum 8 characters, at least 1 uppercase letter, 1 lowercase letter, 1 number and must not contain leading or trailing whitespace."
-                />
-                <fieldset className={styles['new-password-fieldset']}>
-                  <legend>New Password</legend>
-                  <Input
-                    onBlur={newPasswordBlurHandler}
-                    onChange={newPasswordChangeHandler}
-                    value={newPasswordInputValue}
-                    invalid={newPasswordHasError}
-                    id="newPassword"
-                    label="Your new password"
-                    type="password"
-                    placeholder="New Password"
-                    errorText="Minimum 8 characters, at least 1 uppercase letter, 1 lowercase letter, 1 number and must not contain leading or trailing whitespace."
-                  />
-                  <Input
-                    onBlur={confirmNewPasswordBlurHandler}
-                    onChange={confirmNewPasswordChangeHandler}
-                    value={confirmNewPasswordInputValue}
-                    invalid={confirmNewPasswordHasError}
-                    id="confirmNewPassword"
-                    label="Confirm your new password"
-                    type="password"
-                    placeholder="Confirm New Password"
-                    errorText="Minimum 8 characters, at least 1 uppercase letter, 1 lowercase letter, 1 number and must not contain leading or trailing whitespace."
-                  />
-                  {!isNewPasswordFieldsCorrect && (
-                    <p className={styles['error-msg']}>Passwords does not match</p>
-                  )}
-                </fieldset>
-                <div className={styles['modal-buttons']}>
-                  <Button
-                    type="button"
-                    onClick={() => {
-                      setIsChangePassword(false);
-                      setIsNewPasswordFieldsCorrect(true);
-                      currentPasswordReset();
-                      newPasswordReset();
-                      confirmNewPasswordReset();
-                    }}
-                    styleClass="red-outlined"
-                  >
-                    Cancel
-                  </Button>
-                  <Button type="button" onClick={handleChangePassword} styleClass="green-outlined">
-                    Confirm
-                  </Button>
-                </div>
-              </div>
-            </Overlay>
+            <FormChangePassword
+              onCancel={() => setIsChangePassword(false)}
+              onChangePassword={handleChangePassword}
+            />
           )}
         </div>
       </div>
