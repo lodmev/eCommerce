@@ -61,11 +61,8 @@ const basketSlice = createAppSlice({
     addProduct: create.asyncThunk(
       async (product: ProductProjection, thunkApi) => {
         const state = thunkApi.getState() as { basketData: BasketState };
-        if (state.basketData.cartData) {
-          const cart = state.basketData.cartData;
-          return addToCart({ cart, product });
-        }
-        return getActiveCart([{ productId: product.id, variantId: product.masterVariant.id }]);
+        const cart = state.basketData.cartData;
+        return addToCart({ cart, product });
       },
       {
         pending: (state) => {

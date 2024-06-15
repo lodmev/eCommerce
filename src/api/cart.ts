@@ -17,15 +17,16 @@ export const createCart = async (lineItems?: MyLineItemDraft[]) => {
     .execute();
   return resp.body;
 };
-export const addToCart = async ({ cart, product }: { cart: Cart; product: ProductProjection }) => {
+export const addToCart = async ({ cart, product }: { cart?: Cart; product: ProductProjection }) => {
   const apiClient = getAuthOrAnonApi();
+  const currentCart = cart ?? (await getActiveCart());
   const resp = await apiClient
     .me()
     .carts()
-    .withId({ ID: cart.id })
+    .withId({ ID: currentCart.id })
     .post({
       body: {
-        version: cart.version,
+        version: currentCart.version,
         actions: [
           {
             action: 'addLineItem',
