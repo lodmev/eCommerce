@@ -3,7 +3,7 @@
   display: flex;
   border-radius: 50%;
   aspect-ratio: 1;
-  height: 17px;
+  height: 70%;
   position: absolute;
   background-color: var(--main-bg-color);
   border: 1px solid var(--main-text-color);
@@ -11,7 +11,7 @@
   font-size: 63%;
   align-items: center;
   justify-content: center;
-  top: -9px;
-  left: 19px;
+  top: -16%;
+  left: 15%;
   font-weight: 600;
 }
