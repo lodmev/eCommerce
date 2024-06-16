@@ -19,6 +19,7 @@ import { enumToArray } from '../../../utils/functions';
 import { useStoreDispatch, useStoreSelector } from '../../../hooks/userRedux';
 import { setUserLogout } from '../../../store/slices/userSlice';
 import { resetCartState } from '../../../store/slices/basketSlice';
+import BasketIconWrapper from './BasketIconWrapper';
 
 enum NavigationPath {
   About = 'about',
@@ -33,7 +34,7 @@ enum NavigationPath {
 }
 
 const NavigationPathToTitle = new Map<NavigationPath, string>([
-  [NavigationPath.About, 'About'],
+  [NavigationPath.About, 'About Us'],
   [NavigationPath.Catalog, 'Catalog'],
   [NavigationPath.ProductOfTheMonth, 'Product Of The Month'],
   [NavigationPath.Contacts, 'Contacts'],
@@ -121,10 +122,20 @@ export default function BurgerMenu() {
                   onClick={() => handleNavigationClick(navigationPath)}
                   key={key}
                 >
-                  <FontAwesomeIcon
-                    icon={NavigationPathToIcon.get(navigationPath)!}
-                    className={styles.icon}
-                  />
+                  {navigationPath === NavigationPath.Basket ? (
+                    <BasketIconWrapper>
+                      <FontAwesomeIcon
+                        icon={NavigationPathToIcon.get(navigationPath)!}
+                        className={styles.icon}
+                      />
+                    </BasketIconWrapper>
+                  ) : (
+                    <FontAwesomeIcon
+                      icon={NavigationPathToIcon.get(navigationPath)!}
+                      className={styles.icon}
+                    />
+                  )}
+
                   <p className={styles.text}>{NavigationPathToTitle.get(navigationPath)}</p>
                 </HashLink>
               );
