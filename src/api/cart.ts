@@ -7,6 +7,7 @@ import {
 } from '@commercetools/platform-sdk';
 import { isUseAnon, isUserAuthorized } from '../utils/token';
 import { getAuthOrAnonApi, setAnonApi } from './apiRoot';
+// import debug from '../utils/debug';
 
 export const createCart = async (lineItems?: MyLineItemDraft[]) => {
   const apiClient = getAuthOrAnonApi();
@@ -17,15 +18,20 @@ export const createCart = async (lineItems?: MyLineItemDraft[]) => {
     .execute();
   return resp.body;
 };
-export const addToCart = async ({ cart, product }: { cart: Cart; product: ProductProjection }) => {
+export const addToCart = async ({ cart, product }: { cart?: Cart; product: ProductProjection }) => {
+  if (!cart && !isUserAuthorized() && !isUseAnon()) {
+    return createCart([{ productId: product.id, variantId: product.masterVariant.id }]);
+  }
   const apiClient = getAuthOrAnonApi();
+  // debug.log('isUseAnon:', isUseAnon());
+  const currentCart = cart ?? (await getActiveCart());
   const resp = await apiClient
     .me()
     .carts()
-    .withId({ ID: cart.id })
+    .withId({ ID: currentCart.id })
     .post({
       body: {
-        version: cart.version,
+        version: currentCart.version,
         actions: [
           {
             action: 'addLineItem',
@@ -39,7 +45,6 @@ export const addToCart = async ({ cart, product }: { cart: Cart; product: Produc
   return resp.body;
 };
 export const getActiveCart = async (lineItems?: MyLineItemDraft[]) => {
-  if (!isUserAuthorized() && !isUseAnon()) return createCart(lineItems);
   const apiClient = getAuthOrAnonApi();
   try {
     const resp = await apiClient.me().activeCart().get().execute();
@@ -51,6 +56,9 @@ export const getActiveCart = async (lineItems?: MyLineItemDraft[]) => {
         return createCart(lineItems);
       }
       if (e.statusCode === 404) return createCart(lineItems);
+    }
+    if (!import.meta.env.DEV) {
+      window.console.clear();
     }
     throw e;
   }

@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, forwardRef, useState } from 'react';
 import { IconHide, IconShow } from '../Icons/Icons';
 import styles from './Input.module.css';
 
@@ -15,7 +15,7 @@ type Props = {
   onBlur?: () => void;
 };
 
-export default function Input(props: Props) {
+const Input = forwardRef<HTMLInputElement, Props>((props: Props, ref) => {
   const [isVisiblePassword, setIsVisiblePassword] = useState(false);
 
   const { id, onChange, label, value, onBlur, errorText, placeholder, type, invalid, disabled } =
@@ -37,6 +37,7 @@ export default function Input(props: Props) {
             onBlur={onBlur}
             placeholder={placeholder}
             type={isVisiblePassword ? 'text' : type}
+            ref={ref}
           />
           <button
             className={styles.toggler}
@@ -67,9 +68,12 @@ export default function Input(props: Props) {
           onBlur={onBlur}
           placeholder={placeholder}
           type={isVisiblePassword ? 'text' : type}
+          autoComplete={id}
+          ref={ref}
         />
       </div>
       {invalid && <p className={styles['error-text']}>{errorText}</p>}
     </div>
   );
-}
+});
+export default Input;

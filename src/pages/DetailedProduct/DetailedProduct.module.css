@@ -5,11 +5,18 @@
   background-color: var(--main-container-color);
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
   padding: 15px 0;
+  @media screen and (width <= 520px) {
+    flex-direction: column;
+    align-items: center;
+  }
 }
 
 .description {
   width: 50%;
   margin: 10px;
+  @media screen and (width <= 520px) {
+    width: 90%;
+  }
 }
 
 .image {
@@ -86,7 +93,7 @@
   }
 }
 
-.button {
+.buttons {
   margin-top: auto;
 }
 
