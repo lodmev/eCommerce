@@ -62,7 +62,7 @@
 
 .subTotalBlock {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   margin-top: 30px;
   gap: 1rem;
 
@@ -75,6 +75,12 @@
       & p:first-child {
         margin-right: 10px;
       }
+
+      & .initialPrice {
+        text-decoration: line-through 2px;
+        text-decoration-color: #ea5555;
+        margin-right: 10px;
+      }
     }
 
     & .subTotalWarning {
@@ -84,5 +90,18 @@
   @media screen and (width <= 555px) {
     flex-direction: column;
     justify-content: flex-start;
+  }
+}
+
+.promoCodeContent {
+  display: flex;
+  margin-top: 30px;
+}
+
+.promoCodeInput {
+  display: flex;
+
+  & .link {
+    margin: 0 0 0 10px;
   }
 }

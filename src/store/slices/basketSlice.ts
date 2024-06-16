@@ -2,6 +2,7 @@ import { Cart, LineItem, ProductProjection } from '@commercetools/platform-sdk';
 import { buildCreateSlice, asyncThunkCreator, SerializedError } from '@reduxjs/toolkit';
 import {
   addToCart,
+  applyDiscountCode,
   changeQuantity,
   deleteCart,
   getActiveCart,
@@ -100,6 +101,31 @@ const basketSlice = createAppSlice({
         state.pending = false;
       },
     }),
+    applyPromoCode: create.asyncThunk(
+      async (promoCode: string, thunkApi) => {
+        const state = thunkApi.getState() as { basketData: BasketState };
+        const cart = state.basketData.cartData!;
+        return applyDiscountCode({ cart, promoCode });
+      },
+      {
+        pending: (state) => {
+          state.err = undefined;
+          state.pending = true;
+        },
+        rejected: (state, action) => {
+          state.err = action.error;
+        },
+        fulfilled: (state, action) => {
+          state.cartData = action.payload;
+          action.payload.lineItems.forEach((lineItem) => {
+            state.productIdToQuantity[lineItem.productId] = lineItem.quantity;
+          });
+        },
+        settled: (state) => {
+          state.pending = false;
+        },
+      },
+    ),
     resetCartState: create.reducer<undefined>((state) => {
       state.cartData = undefined;
       state.productIdToQuantity = {};
@@ -173,4 +199,5 @@ export const {
   fetchCartData,
   resetCartState,
   deleteCartThunk,
+  applyPromoCode,
 } = basketSlice.actions;

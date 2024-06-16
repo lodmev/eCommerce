@@ -1,0 +1,50 @@
+.container {
+  display: flex;
+  justify-content: end;
+  height: 500px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-image: url('../../assets/promocode.png');
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  margin: 20px 0;
+}
+
+.link {
+  width: 200px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  height: 40px;
+  border-radius: 5px;
+  color: var(--main-links-color);
+  background-color: var(--main-icon-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  align-self: end;
+  margin-right: 50px;
+  margin-bottom: 150px;
+
+  @media (width <= 700px) {
+    width: 150px;
+    height: 30px;
+    margin: 20px 20px;
+  }
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+.promo-code {
+  text-align: center;
+  color: var(--main-text-color);
+  cursor: pointer;
+  background-color: var(--main-container-color);
+  padding: 10px;
+  border-radius: 20px;
+
+  &:not(:last-child) {
+    margin-bottom: 10px;
+  }
+}
