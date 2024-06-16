@@ -1,0 +1,6 @@
+.address-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em;
+  margin-bottom: 1em;
+}
