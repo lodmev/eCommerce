@@ -1,4 +1,4 @@
-import { LineItem } from '@commercetools/platform-sdk';
+import { Cart, LineItem } from '@commercetools/platform-sdk';
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import {
@@ -40,6 +40,16 @@ export default function Basket() {
 
   function onApplyPromoCodeClick(): void {
     dispatch(applyPromoCode(promoCodeInputValue));
+  }
+
+  function formatPrice(centAmount: number): string {
+    return `${centAmount / 100} EUR`;
+  }
+
+  function getPriceBeforeDiscount(cartData: Cart): string {
+    const totalPrice = cartData.totalPrice.centAmount;
+    const discountedAmount = cartData.discountOnTotalPrice?.discountedAmount.centAmount || 0;
+    return formatPrice(totalPrice + discountedAmount);
   }
 
   return (
@@ -92,7 +102,10 @@ export default function Basket() {
             <div className={styles.subTotalPriceContent}>
               <div className={styles.subTotalPrice}>
                 <p>Sub-total:</p>
-                <p>{cartData.totalPrice.centAmount / 100} EUR</p>
+                {cartData.discountOnTotalPrice && (
+                  <p className={styles.initialPrice}>{getPriceBeforeDiscount(cartData)}</p>
+                )}
+                <p>{formatPrice(cartData.totalPrice.centAmount)}</p>
               </div>
               <div className={styles.subTotalWarning}>
                 <p>Tax and shipping cost will be calculated later</p>

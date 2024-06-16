@@ -74,6 +74,12 @@
       & p:first-child {
         margin-right: 10px;
       }
+
+      & .initialPrice {
+        text-decoration: line-through;
+        text-decoration-color: #ea5555;
+        margin-right: 10px;
+      }
     }
 
     & .subTotalWarning {
