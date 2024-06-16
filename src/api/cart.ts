@@ -121,3 +121,24 @@ export const deleteCart = async (cart: Cart): Promise<ClientResponse<Cart>> => {
     .execute();
   return resp;
 };
+
+export const applyDiscountCode = async ({ cart, promoCode }: { cart: Cart; promoCode: string }) => {
+  const apiClient = getAuthOrAnonApi();
+  const resp = await apiClient
+    .me()
+    .carts()
+    .withId({ ID: cart.id })
+    .post({
+      body: {
+        version: cart.version,
+        actions: [
+          {
+            action: 'addDiscountCode',
+            code: promoCode,
+          },
+        ],
+      },
+    })
+    .execute();
+  return resp.body;
+};

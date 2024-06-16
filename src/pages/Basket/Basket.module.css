@@ -82,8 +82,15 @@
   }
 }
 
-.promocodeContent {
+.promoCodeContent {
   display: flex;
-  justify-content: flex-end;
   margin-top: 30px;
+}
+
+.promoCodeInput {
+  display: flex;
+
+  & .link {
+    margin: 0 0 0 10px;
+  }
 }

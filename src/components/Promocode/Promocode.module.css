@@ -25,7 +25,26 @@
   margin-right: 50px;
   margin-bottom: 150px;
 
+  @media (width <= 700px) {
+    width: 150px;
+    height: 30px;
+    margin: 20px 20px;
+  }
+
   &:hover {
     transform: scale(1.05);
+  }
+}
+
+.promo-code {
+  text-align: center;
+  color: var(--main-text-color);
+  cursor: pointer;
+  background-color: var(--main-container-color);
+  padding: 10px;
+  border-radius: 20px;
+
+  &:not(:last-child) {
+    margin-bottom: 10px;
   }
 }
