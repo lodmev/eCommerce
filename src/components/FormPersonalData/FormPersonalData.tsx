@@ -10,9 +10,10 @@ import styles from './FormPersonalData.module.css';
 type Props = {
   customer: Customer;
   onSubmit: (userInfo: IUpdateUserInfo) => void;
+  onEmailUpdate: (email: string) => void;
 };
 
-export default function FormPersonalData({ customer, onSubmit }: Props) {
+export default function FormPersonalData({ customer, onSubmit, onEmailUpdate }: Props) {
   const [isEditUserInfo, setIsEditUserInfo] = useState(false);
 
   const {
@@ -64,6 +65,8 @@ export default function FormPersonalData({ customer, onSubmit }: Props) {
       lastName: lastNameInputValue,
       dateOfBirth: dateInputValue,
     };
+
+    onEmailUpdate(emailInputValue);
 
     onSubmit(userInfo);
     setIsEditUserInfo(false);

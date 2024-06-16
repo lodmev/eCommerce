@@ -44,6 +44,8 @@ export default function UserProfile() {
     customer.defaultBillingAddressId,
   );
 
+  const [userEmail, setUserEmail] = useState(customer.email);
+
   const [isChangePassword, setIsChangePassword] = useState(false);
   const [isEditAddressModal, setIsEditAddressModal] = useState(false);
   const [isAddAddressModal, setIsAddAddressModal] = useState(false);
@@ -83,7 +85,7 @@ export default function UserProfile() {
       dispatch(setUserVersion(res.body.version));
       logoutUser();
       /* TODO: Fix email */
-      loginUser({ email: customer.email, password: newPassword });
+      loginUser({ email: userEmail, password: newPassword });
       setSuccessMsg('Your password has been successfully changed.');
       setIsChangePassword(false);
     } catch (error) {
@@ -182,7 +184,11 @@ export default function UserProfile() {
 
   return (
     <div className={styles.wrapper}>
-      <FormPersonalData customer={customer} onSubmit={handleChangePersonalData} />
+      <FormPersonalData
+        customer={customer}
+        onEmailUpdate={(email: string) => setUserEmail(email)}
+        onSubmit={handleChangePersonalData}
+      />
       <Button
         type="button"
         onClick={() => setIsChangePassword((prev) => !prev)}
@@ -190,16 +196,12 @@ export default function UserProfile() {
       >
         Change Password
       </Button>
-      <div>
-        <div className={styles['input-group']}>
-          {isChangePassword && (
-            <FormChangePassword
-              onCancel={() => setIsChangePassword(false)}
-              onChangePassword={handleChangePassword}
-            />
-          )}
-        </div>
-      </div>
+      {isChangePassword && (
+        <FormChangePassword
+          onCancel={() => setIsChangePassword(false)}
+          onChangePassword={handleChangePassword}
+        />
+      )}
       <h2>Addresses:</h2>
       <ul className={styles['address-cards']}>
         {addresses.map((address) => (
