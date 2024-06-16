@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 import useValidateInput from '../../hooks/useValidateInput';
 import { validatePassword } from '../../utils/functions';
 import Button from '../Button/Button';
@@ -41,7 +41,9 @@ export default function FormChangePassword({ onChangePassword, onCancel }: Props
     reset: confirmNewPasswordReset,
   } = useValidateInput(validatePassword);
 
-  function handleChangePassword() {
+  function handleChangePassword(e: FormEvent) {
+    e.preventDefault();
+
     const isNewPasswordConfirmed = newPasswordInputValue === confirmNewPasswordInputValue;
     currentPasswordBlurHandler();
     newPasswordBlurHandler();
@@ -67,7 +69,7 @@ export default function FormChangePassword({ onChangePassword, onCancel }: Props
 
   return (
     <Overlay>
-      <div className={styles['modal-password']}>
+      <form onSubmit={handleChangePassword} className={styles['modal-password']}>
         <h2>Change password</h2>
         <Input
           onBlur={currentPasswordBlurHandler}
@@ -122,11 +124,11 @@ export default function FormChangePassword({ onChangePassword, onCancel }: Props
           >
             Cancel
           </Button>
-          <Button type="button" onClick={handleChangePassword} styleClass="green-outlined">
+          <Button type="submit" styleClass="green-outlined">
             Confirm
           </Button>
         </div>
-      </div>
+      </form>
     </Overlay>
   );
 }

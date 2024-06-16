@@ -9,19 +9,15 @@ import {
   changeUserPassword,
   removeAddress,
   updateCustomerPersonalData,
-  setDefaultBillingAddress as apiSetDefaultBillingAddress,
-  setDefaultShippingAddress as apiSetDefaultShippingAddress,
-  setDefaultShippingAndBillingAddress as apiSetDefaultShippingAndBillingAddress,
+  setDefaultBillingAddress,
+  setDefaultShippingAddress,
+  setDefaultShippingAndBillingAddress,
 } from '../../api/profile';
-import AddressCard from '../../components/AddressCard/AddressCard';
+import AddressCardsList from '../../components/AddressCardsList/AddressCardsList';
 import Button from '../../components/Button/Button';
 import FormChangePassword from '../../components/FormChangePassword/FormChangePassword';
 import FormPersonalData from '../../components/FormPersonalData/FormPersonalData';
 import Loader from '../../components/Modal/Loader';
-import ModalAddress from '../../components/Modal/ModalAddress';
-import ModalAlert from '../../components/Modal/ModalAlert';
-import ModalConfirm from '../../components/Modal/ModalConfirm';
-import Overlay from '../../components/Modal/Overlay';
 import { useStoreSelector } from '../../hooks/userRedux';
 import { setUserVersion } from '../../store/slices/userSlice';
 import { IUpdateUserInfo } from '../../types/interfaces';
@@ -34,23 +30,9 @@ export default function UserProfile() {
   const dispatch = useDispatch();
   const { isUserAuthorized, userId, userVersion } = useStoreSelector((state) => state.userData);
 
-  const [addresses, setAddresses] = useState(customer.addresses);
-  const [shippingAddressIds, setShippingAddressIds] = useState(customer.shippingAddressIds);
-  const [billingAddressIds, setBillingAddressIds] = useState(customer.billingAddressIds);
-  const [defaultShippingAddressId, setDefaultShippingAddressId] = useState(
-    customer.defaultShippingAddressId,
-  );
-  const [defaultBillingAddressId, setDefaultBillingAddressId] = useState(
-    customer.defaultBillingAddressId,
-  );
-
   const [userEmail, setUserEmail] = useState(customer.email);
 
   const [isChangePassword, setIsChangePassword] = useState(false);
-  const [isEditAddressModal, setIsEditAddressModal] = useState(false);
-  const [isAddAddressModal, setIsAddAddressModal] = useState(false);
-  const [deleteAddressId, setDeleteAddressId] = useState<string | null>(null);
-  const [editingAddress, setEditingAddress] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
@@ -84,7 +66,6 @@ export default function UserProfile() {
       const res = await changeUserPassword(userVersion, userId, currentPassword, newPassword);
       dispatch(setUserVersion(res.body.version));
       logoutUser();
-      /* TODO: Fix email */
       loginUser({ email: userEmail, password: newPassword });
       setSuccessMsg('Your password has been successfully changed.');
       setIsChangePassword(false);
@@ -95,85 +76,77 @@ export default function UserProfile() {
     }
   };
 
-  const handleDeleteAddress = async () => {
-    setDeleteAddressId(null);
+  const handleDeleteAddress = async (addressId: string) => {
     setIsLoading(true);
 
     try {
-      const res = await removeAddress(userVersion, userId, deleteAddressId!);
-      setAddresses(res.body.addresses);
+      const res = await removeAddress(userVersion, userId, addressId);
       dispatch(setUserVersion(res.body.version));
+      return res;
     } catch (error) {
       if (error instanceof Error) setError(error);
     } finally {
       setIsLoading(false);
     }
+
+    return null;
   };
 
   const handleEditAddress = async (address: BaseAddress) => {
-    setIsEditAddressModal(false);
     setIsLoading(true);
 
     try {
       const res = await changeAddress(userVersion, userId, address);
-      setAddresses(res.body.addresses);
       dispatch(setUserVersion(res.body.version));
+      return res;
     } catch (error) {
       if (error instanceof Error) setError(error);
     } finally {
       setIsLoading(false);
     }
+
+    return null;
   };
 
   const handleAddAddress = async (address: BaseAddress, addressType?: string) => {
-    setIsAddAddressModal(false);
     setIsLoading(true);
 
     try {
       const res = await addNewAddress(userVersion, userId, address, addressType || '');
       dispatch(setUserVersion(res.body.version));
-      setAddresses(res.body.addresses);
-
-      if (addressType === 'shipping') {
-        setShippingAddressIds(res.body.shippingAddressIds);
-      }
-
-      if (addressType === 'billing') {
-        setBillingAddressIds(res.body.billingAddressIds);
-      }
+      return res;
     } catch (error) {
       if (error instanceof Error) setError(error);
     } finally {
       setIsLoading(false);
     }
+
+    return null;
   };
 
-  const handleChangeDefaultAddress = async (id: string) => {
+  const handleChangeDefaultAddress = async (
+    isShipping: boolean,
+    isBilling: boolean,
+    id: string,
+  ) => {
     setIsLoading(true);
-
-    const isShipping = shippingAddressIds?.includes(id);
-    const isBilling = billingAddressIds?.includes(id);
 
     try {
       if (isShipping && isBilling) {
-        const res = await apiSetDefaultShippingAndBillingAddress(userVersion, userId, id);
+        const res = await setDefaultShippingAndBillingAddress(userVersion, userId, id);
         dispatch(setUserVersion(res.body.version));
-        setDefaultShippingAddressId(id);
-        setDefaultBillingAddressId(id);
         return;
       }
 
       if (isShipping) {
-        const res = await apiSetDefaultShippingAddress(userVersion, userId, id);
+        const res = await setDefaultShippingAddress(userVersion, userId, id);
         dispatch(setUserVersion(res.body.version));
-        setDefaultShippingAddressId(id);
         return;
       }
 
       if (isBilling) {
-        const res = await apiSetDefaultBillingAddress(userVersion, userId, id);
+        const res = await setDefaultBillingAddress(userVersion, userId, id);
         dispatch(setUserVersion(res.body.version));
-        setDefaultBillingAddressId(id);
       }
     } catch (error) {
       if (error instanceof Error) setError(error);
@@ -203,79 +176,16 @@ export default function UserProfile() {
         />
       )}
       <h2>Addresses:</h2>
-      <ul className={styles['address-cards']}>
-        {addresses.map((address) => (
-          <AddressCard
-            key={address.id}
-            id={address.id}
-            country={address.country}
-            city={address.city}
-            streetName={address.streetName}
-            postalCode={address.postalCode}
-            shippingAddressIds={shippingAddressIds}
-            billingAddressIds={billingAddressIds}
-            defaultShippingAddressId={defaultShippingAddressId}
-            defaultBillingAddressId={defaultBillingAddressId}
-            onClickDelete={() => {
-              setDeleteAddressId(address.id!);
-            }}
-            onClickEdit={() => {
-              const isDefaultShipping = shippingAddressIds?.includes(defaultShippingAddressId!);
-              const isDefaultBilling = billingAddressIds?.includes(defaultBillingAddressId!);
-
-              setEditingAddress({
-                id: address.id,
-                country: address.country,
-                city: address.city,
-                streetName: address.streetName,
-                postalCode: address.postalCode,
-                isShipping: shippingAddressIds?.includes(address.id || ''),
-                isBilling: billingAddressIds?.includes(address.id || ''),
-                isDefaultBilling,
-                isDefaultShipping,
-              });
-              setIsEditAddressModal(true);
-            }}
-            onChangeDefault={handleChangeDefaultAddress}
-          />
-        ))}
-      </ul>
-      <Button onClick={() => setIsAddAddressModal(true)} type="button" styleClass="green-outlined">
-        + Add New Address
-      </Button>
+      <AddressCardsList
+        customer={customer}
+        onEditAddress={handleEditAddress}
+        onDeleteAddress={handleDeleteAddress}
+        onChangeDefaultAddress={handleChangeDefaultAddress}
+        onAddAddress={handleAddAddress}
+        successMsg={successMsg}
+        setSuccessMsg={setSuccessMsg}
+      />
       <Loader isLoading={isLoading} errMsg={error?.message} errorHandler={handleModalError} />
-      {isEditAddressModal && (
-        <Overlay>
-          <ModalAddress
-            onCancel={() => setIsEditAddressModal(false)}
-            onConfirm={handleEditAddress}
-            editingAddress={editingAddress}
-          />
-        </Overlay>
-      )}
-      {isAddAddressModal && (
-        <Overlay>
-          <ModalAddress
-            onCancel={() => setIsAddAddressModal(false)}
-            onConfirm={handleAddAddress}
-            editingAddress={{}}
-          />
-        </Overlay>
-      )}
-      {deleteAddressId && (
-        <Overlay>
-          <ModalConfirm
-            onCancel={() => setDeleteAddressId(null)}
-            onConfirm={handleDeleteAddress}
-            message="Are you sure want to delete this address?"
-          />
-        </Overlay>
-      )}
-      {successMsg && (
-        <Overlay>
-          <ModalAlert onConfirm={() => setSuccessMsg(null)} message={successMsg} />
-        </Overlay>
-      )}
     </div>
   );
 }
