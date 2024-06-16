@@ -7,6 +7,7 @@ import {
 } from '@commercetools/platform-sdk';
 import { isUseAnon, isUserAuthorized } from '../utils/token';
 import { getAuthOrAnonApi, setAnonApi } from './apiRoot';
+// import debug from '../utils/debug';
 
 export const createCart = async (lineItems?: MyLineItemDraft[]) => {
   const apiClient = getAuthOrAnonApi();
@@ -18,7 +19,11 @@ export const createCart = async (lineItems?: MyLineItemDraft[]) => {
   return resp.body;
 };
 export const addToCart = async ({ cart, product }: { cart?: Cart; product: ProductProjection }) => {
+  if (!cart && !isUserAuthorized() && !isUseAnon()) {
+    return createCart([{ productId: product.id, variantId: product.masterVariant.id }]);
+  }
   const apiClient = getAuthOrAnonApi();
+  // debug.log('isUseAnon:', isUseAnon());
   const currentCart = cart ?? (await getActiveCart());
   const resp = await apiClient
     .me()
@@ -40,7 +45,6 @@ export const addToCart = async ({ cart, product }: { cart?: Cart; product: Produ
   return resp.body;
 };
 export const getActiveCart = async (lineItems?: MyLineItemDraft[]) => {
-  if (!isUserAuthorized() && !isUseAnon()) return createCart(lineItems);
   const apiClient = getAuthOrAnonApi();
   try {
     const resp = await apiClient.me().activeCart().get().execute();
