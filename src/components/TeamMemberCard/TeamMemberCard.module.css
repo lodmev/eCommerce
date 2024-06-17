@@ -15,10 +15,6 @@
   border-radius: 50%;
   cursor: pointer;
   transition: transform 0.3s ease;
-  &:hover {
-    transform: scale(1.5) rotate(-4deg);
-    box-shadow: var(--main-bg-color);
-  }
 }
 
 .header {
