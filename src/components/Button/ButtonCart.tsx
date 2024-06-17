@@ -53,9 +53,9 @@ export default function ButtonCart({ product }: { product?: ProductProjection | 
       theme={{
         components: {
           Button: {
-            colorPrimary: `${gradient} #54d484`,
-            colorPrimaryHover: `${gradient} #98e4b4`,
-            colorPrimaryActive: `${gradient} #01bc46`,
+            colorPrimary: `${gradient} #66695c`,
+            colorPrimaryHover: `${gradient} #66695c`,
+            colorPrimaryActive: `${gradient} #66695c`,
           },
         },
       }}
