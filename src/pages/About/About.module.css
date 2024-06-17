@@ -1,6 +1,16 @@
 .heading {
   text-align: center;
   margin-bottom: 0.5em;
+  color: var(--main-text-color);
+  transition:
+    color 0.3s ease,
+    background-color 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05) rotate(-2deg);
+    transition: transform 0.3s ease;
+    box-shadow: var(--main-bg-color);
+  }
 }
 
 .school-link {
@@ -34,11 +44,16 @@
 }
 
 .collaboration-text {
-  margin-bottom: 1em;
+  margin: 1em;
+  text-align: justify;
+  text-indent: 2em;
 }
 
 .team-members-cards {
   display: flex;
   flex-direction: column;
   gap: 1.5em;
+  text-align: justify;
+  text-indent: 2em;
+  margin: 1em;
 }
