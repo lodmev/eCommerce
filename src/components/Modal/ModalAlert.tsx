@@ -7,7 +7,7 @@ type Props = {
   isError?: boolean;
 };
 
-export default function ModalConfirm(props: Props) {
+export default function ModalAlert(props: Props) {
   const { onConfirm, message, isError = false } = props;
 
   const errorStyle = isError ? ` ${styles.error}` : '';

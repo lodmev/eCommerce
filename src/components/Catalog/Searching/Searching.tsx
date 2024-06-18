@@ -18,7 +18,7 @@ function SearchInput({ setSearchText, loading }: SearchInputProps) {
       placeholder="input search text"
       allowClear
       enterButton="Search"
-      loading={loading}
+      disabled={loading}
       size="small"
       onSearch={onSearch}
     />

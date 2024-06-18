@@ -1,56 +1,117 @@
-import { ProductProjection } from '@commercetools/platform-sdk';
+import { Cart, LineItem } from '@commercetools/platform-sdk';
 import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import {
+  faArrowLeft,
+  faMoneyCheckDollar,
+  faTrashCanArrowUp,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Input } from 'antd';
 import styles from './Basket.module.css';
 import ProductInBasket from '../../components/ProductInBasket/ProductInBasket';
-import { useStoreSelector } from '../../hooks/userRedux';
+import { useStoreDispatch, useStoreSelector } from '../../hooks/userRedux';
 import { ROUTE_PATH } from '../../utils/globalVariables';
-import { calculateTotalPrice } from '../../store/slices/basketSlice';
-import { PriceHelper } from '../../utils/priceHelper';
+import { fetchCartData, deleteCartThunk, applyPromoCode } from '../../store/slices/basketSlice';
+import Loader from '../../components/Modal/Loader';
+import Overlay from '../../components/Modal/Overlay';
+import ModalConfirm from '../../components/Modal/ModalConfirm';
+
+const clearCartConfirmMessage: string = 'Are you sure you want to delete all items in the cart?';
 
 export default function Basket() {
-  const { productsInBasket, productIdToQuantity } = useStoreSelector((state) => state.basketData);
-  let currency = '';
+  const dispatch = useStoreDispatch();
+  const { cartData, pending, err } = useStoreSelector((state) => state.basketData);
+  useEffect(() => {
+    dispatch(fetchCartData());
+  }, []);
 
-  const subTotalPrice = productsInBasket.reduce((subTotalPrice, product) => {
-    const { id, masterVariant } = product;
-    const priceHelper = new PriceHelper({ price: masterVariant.prices![0] });
-    const { finalPriceValue } = priceHelper;
-    currency = currency || priceHelper.currency;
-    const quantity = productIdToQuantity[id];
-    return subTotalPrice + calculateTotalPrice(+finalPriceValue, quantity);
-  }, 0);
+  const [clearCartConfirmVisible, setClearCartConfirmVisible] = useState<boolean>(false);
+  const [promoCodeInputValue, setPromoCodeInputValue] = useState<string>('');
+
+  function onClearAllClick(): void {
+    setClearCartConfirmVisible(true);
+  }
+
+  function onClearAllConfirmed(): void {
+    setClearCartConfirmVisible(false);
+    dispatch(deleteCartThunk());
+  }
+
+  function onApplyPromoCodeClick(): void {
+    dispatch(applyPromoCode(promoCodeInputValue));
+  }
+
+  function formatPrice(centAmount: number): string {
+    return `${centAmount / 100} EUR`;
+  }
+
+  function getPriceBeforeDiscount(cartData: Cart): string {
+    const totalPrice = cartData.totalPrice.centAmount;
+    const discountedAmount = cartData.discountOnTotalPrice?.discountedAmount.centAmount || 0;
+    return formatPrice(totalPrice + discountedAmount);
+  }
 
   return (
     <div className={styles.cart}>
-      <Link className={styles.center} to={ROUTE_PATH.products}>
-        <div className={styles.link}>
-          <p className={styles.text}>Back To Shopping</p>
-        </div>
-      </Link>
-      {productsInBasket.length ? (
+      <div className={styles.actions}>
+        <Link className={styles.center} to={ROUTE_PATH.products}>
+          <div className={styles.link}>
+            <FontAwesomeIcon icon={faArrowLeft} className={styles.icon} />
+            <p className={styles.text}>Back To Shopping</p>
+          </div>
+        </Link>
+        {cartData?.lineItems.length ? (
+          <div className={styles.link} role="button" tabIndex={0} onClick={onClearAllClick}>
+            <p className={styles.text}>Clear Cart</p>
+            <FontAwesomeIcon icon={faTrashCanArrowUp} className={styles.icon} />
+          </div>
+        ) : null}
+      </div>
+      <Loader isLoading={pending} errMsg={err?.message} />
+      {cartData?.lineItems.length ? (
         <div>
-          {productsInBasket.map((product: ProductProjection) => (
-            <ProductInBasket
-              key={product.id}
-              product={product}
-              quantity={productIdToQuantity[product.id]}
-            />
+          {cartData.lineItems.map((lineItem: LineItem) => (
+            <ProductInBasket key={lineItem.id} product={lineItem} quantity={lineItem.quantity} />
           ))}
+
+          <div className={styles.promoCodeContent}>
+            <div className={styles.promoCodeInput}>
+              <Input
+                onChange={(e) => setPromoCodeInputValue(e.target.value)}
+                value={promoCodeInputValue}
+                id="promoCode"
+                type="text"
+                placeholder="Input your promo code"
+              />
+              <div
+                className={styles.link}
+                role="button"
+                tabIndex={0}
+                onClick={onApplyPromoCodeClick}
+              >
+                <p className={styles.text}>Apply</p>
+                <FontAwesomeIcon icon={faMoneyCheckDollar} className={styles.icon} />
+              </div>
+            </div>
+          </div>
+
           <div className={styles.subTotalBlock}>
             <div className={styles.subTotalPriceContent}>
               <div className={styles.subTotalPrice}>
                 <p>Sub-total:</p>
-                <p>
-                  {subTotalPrice} {currency}
-                </p>
+                {cartData.discountOnTotalPrice && (
+                  <p className={styles.initialPrice}>{getPriceBeforeDiscount(cartData)}</p>
+                )}
+                <p>{formatPrice(cartData.totalPrice.centAmount)}</p>
               </div>
               <div className={styles.subTotalWarning}>
                 <p>Tax and shipping cost will be calculated later</p>
               </div>
             </div>
             <Link
-              aria-disabled={!subTotalPrice}
-              className={`${styles.center} ${styles.checkoutLink}`}
+              aria-disabled={Boolean(!cartData.totalPrice.centAmount)}
+              className={`${styles.checkoutLink}`}
               to={ROUTE_PATH.checkout}
             >
               <div className={styles.link}>
@@ -61,6 +122,17 @@ export default function Basket() {
         </div>
       ) : (
         <h2>{`You haven't added items to your cart yet`}</h2>
+      )}
+      {clearCartConfirmVisible && (
+        <Overlay>
+          <ModalConfirm
+            onCancel={() => {
+              setClearCartConfirmVisible(false);
+            }}
+            onConfirm={onClearAllConfirmed}
+            message={clearCartConfirmMessage}
+          />
+        </Overlay>
       )}
     </div>
   );

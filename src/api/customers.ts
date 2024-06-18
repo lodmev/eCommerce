@@ -6,30 +6,45 @@ import {
   setAuthApi,
   setDefaultApi,
 } from './apiRoot';
-import { removeToken } from '../utils/token';
+import { isUseAnon, resetAuth, setUserLogin } from '../utils/token';
 import { RegisterCustomerDraft } from '../types/types';
 
 const getUserAuth = (user: Pick<RegisterCustomerDraft, 'email' | 'password'>): UserAuthOptions => ({
   username: user.email,
   password: user.password,
 });
+
 export const getCurrentCustomer = async () => {
   const response = await getCurrentApiClient().me().get().execute();
+  setUserLogin();
   const customer = response.body;
   return customer;
 };
 export const loginUser = async (loginData: MyCustomerSignin): Promise<Customer> => {
+  if (isUseAnon()) {
+    await getCurrentApiClient()
+      .me()
+      .login()
+      .post({ body: { ...loginData } })
+      .execute();
+  }
   setAuthApi(getUserAuth(loginData));
-  return getCurrentCustomer();
+  const resp = await getCurrentApiClient()
+    .me()
+    .login()
+    .post({ body: { ...loginData } })
+    .execute();
+  setUserLogin();
+  return resp.body.customer;
 };
 
 export const signupUser = async (registrationData: RegisterCustomerDraft): Promise<Customer> => {
-  setDefaultApi();
+  // setDefaultApi();
   await manageCustomersApiClient.customers().post({ body: registrationData }).execute();
   return loginUser(registrationData);
 };
 
 export const logoutUser = () => {
-  removeToken();
+  resetAuth();
   setDefaultApi();
 };

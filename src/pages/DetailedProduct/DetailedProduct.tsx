@@ -1,27 +1,44 @@
+import { useEffect } from 'react';
+import { Button } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTruck } from '@fortawesome/free-solid-svg-icons';
+import { faTruck, faCircleXmark } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getProductById } from '../../api/products';
 import styles from './DetailedProduct.module.css';
 import { useStoreDispatch, useStoreSelector } from '../../hooks/userRedux';
 import ImageCarousel from '../../components/ImageCarousel/ImageCarousel';
-import ButtonCart from '../../components/Button/ButtonCart';
 import Price from '../../components/Price/Price';
 import useAsync from '../../hooks/useAsync';
 import Loader from '../../components/Modal/Loader';
 import { ROUTE_PATH } from '../../utils/globalVariables';
-import { addProductToBasket } from '../../store/slices/basketSlice';
+import ButtonCart from '../../components/Button/ButtonCart';
+import { fetchCartData, removeProductQuantity } from '../../store/slices/basketSlice';
 
 export default function DetailedProduct() {
+  const dispatch = useStoreDispatch();
   const { userLanguage } = useStoreSelector((state) => state.userData);
+
+  const { cartData } = useStoreSelector((state) => state.basketData);
+  useEffect(() => {
+    dispatch(fetchCartData());
+  }, []);
+
+  const { productIdToQuantity: addedProductsIds, pending: cartLoading } = useStoreSelector(
+    (state) => state.basketData,
+  );
   const { id } = useParams();
   const navigate = useNavigate();
   const [productProjection, isLoading, err] = useAsync(getProductById, id, [id]);
   const images = productProjection?.masterVariant?.images;
-  const dispatch = useStoreDispatch();
 
-  function onButtonCartClick(): void {
-    dispatch(addProductToBasket(productProjection!));
+  const isProductInCart = productProjection && productProjection.id in addedProductsIds;
+
+  function onRemoveFromCart() {
+    const thisProduct = cartData?.lineItems.filter(
+      (item) => item.productId === productProjection?.id,
+    );
+
+    if (thisProduct) dispatch(removeProductQuantity(thisProduct[0]));
   }
 
   return isLoading || err ? (
@@ -52,8 +69,18 @@ export default function DetailedProduct() {
           Product description:
           {productProjection?.description?.[userLanguage]}
         </p>
-        <div className={styles.button}>
-          <ButtonCart text="+ Add to cart" onClick={onButtonCartClick} />
+        <div className={styles.buttons}>
+          <ButtonCart product={productProjection} />
+          {isProductInCart && (
+            <Button
+              onClick={onRemoveFromCart}
+              type="text"
+              loading={cartLoading}
+              icon={<FontAwesomeIcon icon={faCircleXmark} />}
+            >
+              Remove from cart
+            </Button>
+          )}
         </div>
       </div>
     </div>

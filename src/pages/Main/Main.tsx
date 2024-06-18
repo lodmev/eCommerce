@@ -1,12 +1,14 @@
 import Description from '../../components/Description/Description';
-import Catalog from '../../components/Catalog/Catalog';
 import ProductOfTheMonth from '../../components/ProductOfTheMonth/ProductOfTheMonth';
+import CatalogPreview from '../../components/CatalogPreview/CatalogPreview';
+import PromoCode from '../../components/Promocode/PromoCode';
 
 export default function Main() {
   return (
     <>
       <Description />
-      <Catalog isPreview />
+      <CatalogPreview />
+      <PromoCode />
       <ProductOfTheMonth />
     </>
   );

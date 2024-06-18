@@ -18,6 +18,8 @@ import { ROUTE_PATH } from '../../../utils/globalVariables';
 import { enumToArray } from '../../../utils/functions';
 import { useStoreDispatch, useStoreSelector } from '../../../hooks/userRedux';
 import { setUserLogout } from '../../../store/slices/userSlice';
+import { resetCartState } from '../../../store/slices/basketSlice';
+import BasketIconWrapper from './BasketIconWrapper';
 
 enum NavigationPath {
   About = 'about',
@@ -32,7 +34,7 @@ enum NavigationPath {
 }
 
 const NavigationPathToTitle = new Map<NavigationPath, string>([
-  [NavigationPath.About, 'About'],
+  [NavigationPath.About, 'About Us'],
   [NavigationPath.Catalog, 'Catalog'],
   [NavigationPath.ProductOfTheMonth, 'Product Of The Month'],
   [NavigationPath.Contacts, 'Contacts'],
@@ -56,7 +58,7 @@ const NavigationPathToIcon = new Map<NavigationPath, IconDefinition>([
 ]);
 
 const NavigationPathToPath = new Map<NavigationPath, string>([
-  [NavigationPath.About, '/#about'],
+  [NavigationPath.About, ROUTE_PATH.about],
   [NavigationPath.Catalog, '/products'],
   [NavigationPath.ProductOfTheMonth, '/#productOfTheMonth'],
   [NavigationPath.Contacts, '/#contacts'],
@@ -67,7 +69,9 @@ const NavigationPathToPath = new Map<NavigationPath, string>([
   [NavigationPath.userProfile, ROUTE_PATH.userProfile],
 ]);
 
-const NavigationPathToAction = new Map([[NavigationPath.Logout, setUserLogout()]]);
+const NavigationPathToAction = new Map([
+  [NavigationPath.Logout, [setUserLogout(), resetCartState()]],
+]);
 
 export default function BurgerMenu() {
   const [isOpen, setIsOpen] = useState(false);
@@ -77,11 +81,7 @@ export default function BurgerMenu() {
     if ([NavigationPath.Login, NavigationPath.Registration].includes(title as NavigationPath)) {
       return !isUserAuthorized;
     }
-    if (
-      [NavigationPath.Logout, NavigationPath.userProfile, NavigationPath.Basket].includes(
-        title as NavigationPath,
-      )
-    ) {
+    if ([NavigationPath.Logout, NavigationPath.userProfile].includes(title as NavigationPath)) {
       return isUserAuthorized;
     }
     return true;
@@ -92,9 +92,11 @@ export default function BurgerMenu() {
   }
 
   function handleNavigationClick(navigationPath: NavigationPath): void {
-    const action = NavigationPathToAction.get(navigationPath);
-    if (action) {
-      dispatch(action);
+    const actions = NavigationPathToAction.get(navigationPath);
+    if (actions) {
+      actions.forEach((action) => {
+        dispatch(action);
+      });
     }
   }
 
@@ -120,10 +122,20 @@ export default function BurgerMenu() {
                   onClick={() => handleNavigationClick(navigationPath)}
                   key={key}
                 >
-                  <FontAwesomeIcon
-                    icon={NavigationPathToIcon.get(navigationPath)!}
-                    className={styles.icon}
-                  />
+                  {navigationPath === NavigationPath.Basket ? (
+                    <BasketIconWrapper>
+                      <FontAwesomeIcon
+                        icon={NavigationPathToIcon.get(navigationPath)!}
+                        className={styles.icon}
+                      />
+                    </BasketIconWrapper>
+                  ) : (
+                    <FontAwesomeIcon
+                      icon={NavigationPathToIcon.get(navigationPath)!}
+                      className={styles.icon}
+                    />
+                  )}
+
                   <p className={styles.text}>{NavigationPathToTitle.get(navigationPath)}</p>
                 </HashLink>
               );

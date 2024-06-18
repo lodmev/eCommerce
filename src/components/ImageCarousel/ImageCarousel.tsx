@@ -99,7 +99,6 @@ export default function ImageCarousel({ images }: Props) {
           ))}
         </Carousel>
       </PureModal>
-      ;
     </>
   );
 }

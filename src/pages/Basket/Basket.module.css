@@ -9,6 +9,15 @@
   }
 }
 
+.actions {
+  display: flex;
+  width: 100%;
+  justify-content: space-evenly;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+
 .center {
   display: flex;
   justify-content: center;
@@ -24,7 +33,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 20px 0;
+  cursor: pointer;
 
   &:hover {
     transform: scale(1.05);
@@ -32,8 +41,6 @@
 }
 
 .checkoutLink {
-  margin-left: 40px;
-
   & .link {
     margin: 0;
     background-color: var(--main-contrast-color);
@@ -55,16 +62,23 @@
 
 .subTotalBlock {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   margin-top: 30px;
+  gap: 1rem;
 
   & .subTotalPriceContent {
     & .subTotalPrice {
       display: flex;
-      justify-content: flex-end;
+      justify-content: inherit;
       font-weight: bold;
 
       & p:first-child {
+        margin-right: 10px;
+      }
+
+      & .initialPrice {
+        text-decoration: line-through 2px;
+        text-decoration-color: #ea5555;
         margin-right: 10px;
       }
     }
@@ -72,5 +86,22 @@
     & .subTotalWarning {
       color: var(--main-text-color);
     }
+  }
+  @media screen and (width <= 555px) {
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+}
+
+.promoCodeContent {
+  display: flex;
+  margin-top: 30px;
+}
+
+.promoCodeInput {
+  display: flex;
+
+  & .link {
+    margin: 0 0 0 10px;
   }
 }

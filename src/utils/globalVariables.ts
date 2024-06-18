@@ -12,7 +12,7 @@ export const DIMENSIONS_FILTER_VALUES = {
 
 export const ROUTE_PATH = {
   main: '/',
-  aboutUs: '/about-us',
+  about: '/about',
   basket: '/basket',
   products: '/products',
 

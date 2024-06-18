@@ -8,6 +8,7 @@ import {
 } from '../slices/userSlice';
 import { StoreDispatch } from '../store';
 import { loginUser } from '../../api/customers';
+import { fetchCartData } from '../slices/basketSlice';
 
 export const loginReducer = (loginData: MyCustomerSignin) => async (dispatch: StoreDispatch) => {
   try {
@@ -16,6 +17,7 @@ export const loginReducer = (loginData: MyCustomerSignin) => async (dispatch: St
     dispatch(setUserLogin());
     dispatch(setUserVersion(version));
     dispatch(setUserId(id));
+    dispatch(fetchCartData());
   } catch (e) {
     const err = e as ErrorResponse;
     dispatch(setUserError(err.message));

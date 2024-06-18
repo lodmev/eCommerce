@@ -1,15 +1,16 @@
 import { Params } from 'react-router-dom';
-import { PRODUCT_DEFAULT_FETCH_LIMIT } from '../utils/globalVariables';
 import { searchProducts } from './products';
 import { QueryArgs } from '../types/types';
 // import debug from '../../utils/debug';
 
 type RouteParams = Readonly<Params<string>>;
-type RequestParams = {
+export type RequestParams = {
   routeParams?: RouteParams;
   searchParams: URLSearchParams;
   sortParams: string;
   searchRequest: { locale: string; value: string };
+  limit?: number;
+  offset?: number;
 };
 
 export const getID = (routeParams?: RouteParams) =>
@@ -42,14 +43,17 @@ const getQuery = ({
   routeParams,
   searchParams,
   sortParams,
-  searchRequest: searchText,
+  searchRequest,
+  limit,
+  offset,
 }: RequestParams): QueryArgs => {
   const queryArgs: QueryArgs = {
-    limit: PRODUCT_DEFAULT_FETCH_LIMIT,
+    limit,
+    offset,
   };
   // add search text
-  if (searchText.value) {
-    queryArgs[`text.${searchText.locale}`] = searchText.value;
+  if (searchRequest.value) {
+    queryArgs[`text.${searchRequest.locale}`] = searchRequest.value;
     queryArgs.fuzzy = true;
   }
   // append filters
@@ -63,12 +67,7 @@ const getQuery = ({
   }
   return queryArgs;
 };
-export const doSearchRequest = async ({
-  routeParams,
-  searchParams,
-  sortParams,
-  searchRequest: searchText,
-}: RequestParams) => {
-  const query = getQuery({ routeParams, searchParams, sortParams, searchRequest: searchText });
+export const doSearchRequest = async (params: RequestParams) => {
+  const query = getQuery(params);
   return searchProducts(query);
 };

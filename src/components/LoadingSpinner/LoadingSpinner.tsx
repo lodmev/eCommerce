@@ -13,7 +13,6 @@ export default function LoadingSpinner() {
         <div />
         <div />
       </div>
-      <h3>Loading...</h3>
     </div>
   );
 }

@@ -23,7 +23,7 @@ const inputStateReducer = (state: InputState, action: InputActions): InputState 
     case InputActionType.INPUT:
       return {
         value: action.payload ?? '',
-        isTouched: state.isTouched,
+        isTouched: (action.payload && action.payload.length > 3) || state.isTouched,
       };
     case InputActionType.BLUR:
       return {
