@@ -1,0 +1,15 @@
+.button {
+  font-weight: bold;
+  touch-action: manipulation;
+  box-shadow: 2px 2px 7px grey;
+  transition: transform 0.3s;
+  transition: background-color 0.3s;
+  &:active {
+    box-shadow: none;
+    transform: translate(-1px, -1px);
+  }
+}
+
+.in-cart-text {
+  margin-bottom: 0.5em;
+}

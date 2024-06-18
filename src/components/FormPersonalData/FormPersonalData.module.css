@@ -1,0 +1,10 @@
+.form {
+  margin-bottom: 1em;
+}
+
+.input-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em;
+  margin-top: 1em;
+}

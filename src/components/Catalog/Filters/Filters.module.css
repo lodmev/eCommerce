@@ -1,0 +1,26 @@
+.filters {
+  margin: 1rem;
+  font-weight: 500;
+}
+.manual-input__label {
+  width: 1.7rem;
+}
+.form-buttons {
+  margin-top: 1rem;
+}
+
+.select-color {
+  min-width: 10rem;
+  max-width: 100%;
+}
+
+.applied-filters {
+  margin-left: 1rem;
+  font-weight: 500;
+  span {
+    font-weight: normal;
+    color: #69b1ff;
+    margin-left: 0.3rem;
+    margin-right: 0.1rem;
+  }
+}

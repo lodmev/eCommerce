@@ -1,0 +1,107 @@
+.cart {
+  min-height: 20rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  h2 {
+    margin-bottom: 0.5rem;
+  }
+}
+
+.actions {
+  display: flex;
+  width: 100%;
+  justify-content: space-evenly;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+}
+
+.link {
+  width: 200px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  height: 40px;
+  border-radius: 5px;
+  color: var(--main-links-color);
+  background-color: var(--main-icon-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+.checkoutLink {
+  & .link {
+    margin: 0;
+    background-color: var(--main-contrast-color);
+  }
+
+  &[aria-disabled='true'] {
+    & .link {
+      background-color: var(--dissabled-color);
+    }
+  }
+}
+
+.text {
+  margin: 15px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.subTotalBlock {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+  gap: 1rem;
+
+  & .subTotalPriceContent {
+    & .subTotalPrice {
+      display: flex;
+      justify-content: inherit;
+      font-weight: bold;
+
+      & p:first-child {
+        margin-right: 10px;
+      }
+
+      & .initialPrice {
+        text-decoration: line-through 2px;
+        text-decoration-color: #ea5555;
+        margin-right: 10px;
+      }
+    }
+
+    & .subTotalWarning {
+      color: var(--main-text-color);
+    }
+  }
+  @media screen and (width <= 555px) {
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+}
+
+.promoCodeContent {
+  display: flex;
+  margin-top: 30px;
+}
+
+.promoCodeInput {
+  display: flex;
+
+  & .link {
+    margin: 0 0 0 10px;
+  }
+}

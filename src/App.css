@@ -1,0 +1,26 @@
+:root {
+  --main-bg-color: #cfe6d2;
+  --main-icon-color: #66695c;
+  --main-links-color: rgba(247, 248, 250, 0.8);
+  --main-text-color: #66695c;
+  --main-container-color: #e5f5e6;
+  --main-contrast-color: #56b280;
+  --dissabled-color: #a1a1a1;
+}
+
+#root {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 0.5rem;
+  position: relative;
+  height: 100vh;
+}
+
+a {
+  text-decoration: inherit;
+
+  &[aria-disabled='true'] {
+    pointer-events: none;
+  }
+}

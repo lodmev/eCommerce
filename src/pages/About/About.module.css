@@ -1,0 +1,59 @@
+.heading {
+  text-align: center;
+  margin-bottom: 0.5em;
+  color: var(--main-text-color);
+  transition:
+    color 0.3s ease,
+    background-color 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05) rotate(-2deg);
+    transition: transform 0.3s ease;
+    box-shadow: var(--main-bg-color);
+  }
+}
+
+.school-link {
+  display: block;
+  width: 200px;
+  height: 75px;
+  margin: 0 auto 2em;
+  transition: transform 0.3s ease;
+
+  @media (hover: hover) {
+    &:hover {
+      transform: scale(1.1) rotate(-7deg);
+    }
+  }
+}
+
+.logo {
+  margin: 0 auto;
+  transition: filter 0.3s ease;
+
+  @media (hover: hover) {
+    &:hover {
+      filter: drop-shadow(-5px 5px 12px rgba(0, 0, 0, 0.4));
+    }
+  }
+
+  @media (max-width: 576px) {
+    width: 100%;
+    max-width: 200px;
+  }
+}
+
+.collaboration-text {
+  margin: 1em;
+  text-align: justify;
+  text-indent: 2em;
+}
+
+.team-members-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5em;
+  text-align: justify;
+  text-indent: 2em;
+  margin: 1em;
+}

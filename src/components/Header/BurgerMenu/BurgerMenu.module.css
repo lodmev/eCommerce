@@ -1,0 +1,118 @@
+.burger-menu {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--main-bg-color);
+
+  .burger-button__body {
+    width: 44px;
+    height: 44px;
+    border-radius: 100%;
+    border: 1px solid var(--main-text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    cursor: pointer;
+    position: relative;
+
+    @media (width <= 1000px) {
+      width: 30px;
+      height: 30px;
+    }
+  }
+
+  .burger-button__line {
+    display: block;
+    height: 1px;
+    width: 16px;
+    background-color: var(--main-text-color);
+    transform-origin: center;
+  }
+
+  .burger-button__line:nth-child(1) {
+    transform: translateY(4px);
+  }
+
+  .burger-button__line:nth-child(2) {
+    transform: translateY(-4px);
+  }
+}
+
+.nav-menu {
+  display: flex;
+  width: 100%;
+  position: absolute;
+  z-index: 2;
+  background-color: var(--main-bg-color);
+  flex-direction: column;
+  height: auto;
+  justify-content: start;
+  align-items: center;
+  right: 0;
+  transition: 0.2s ease;
+  margin-top: 15px;
+}
+
+.nav-menu-items {
+  display: flex;
+  list-style-type: none;
+  flex-direction: column;
+  margin: 20px;
+  gap: 20px;
+  align-items: center;
+}
+
+.hidden {
+  display: none;
+}
+
+.nav-menu-link {
+  display: flex;
+  position: relative;
+  color: var(--main-text-color);
+  font-family: 'Inter', sans-serif;
+  font-size: 20px;
+  font-weight: var(--main-text-color);
+  cursor: pointer;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+.background {
+  background-color: #000000ba;
+  height: 100vh;
+  width: 100%;
+  position: absolute;
+  left: 0;
+  top: 75px;
+}
+
+.icon {
+  height: 20px;
+  margin-right: 20px;
+  color: var(--main-icon-color);
+
+  @media (width <= 1000px) {
+    width: 20px;
+    height: 20px;
+  }
+  @media (width <= 600px) {
+    width: 15px;
+    height: 15px;
+  }
+}
+
+.text {
+  font-size: 20px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
+  font-style: normal;
+  color: var(--main-text-color);
+
+  @media (width <= 600px) {
+    font-size: 16px;
+  }
+}
